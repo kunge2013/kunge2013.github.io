@@ -1,23 +1,10 @@
-<!-- MarkdownTOC -->
-
-- [IO流学习总结](#io流学习总结)
-  - [一　Java IO，硬骨头也能变软](#一-java-io，硬骨头也能变软)
-  - [二　java IO体系的学习总结](#二-java-io体系的学习总结)
-  - [三　Java IO面试题](#三-java-io面试题)
-- [NIO与AIO学习总结](#nio与aio学习总结)
-  - [一 Java NIO 概览](#一-java-nio-概览)
-  - [二 Java NIO 之 Buffer\(缓冲区\)](#二-java-nio-之-buffer缓冲区)
-  - [三 Java NIO 之 Channel（通道）](#三-java-nio-之-channel（通道）)
-  - [四 Java NIO之Selector（选择器）](#四-java-nio之selector（选择器）)
-  - [五 Java NIO之拥抱Path和Files](#五-java-nio之拥抱path和files)
-  - [六 NIO学习总结以及NIO新特性介绍](#六-nio学习总结以及nio新特性介绍)
-  - [七 Java NIO AsynchronousFileChannel异步文件通](#七-java-nio-asynchronousfilechannel异步文件通)
-  - [八 高并发Java（8）：NIO和AIO](#八-高并发java（8）：nio和aio)
-- [推荐阅读](#推荐阅读)
-  - [在 Java 7 中体会 NIO.2 异步执行的快乐](#在-java-7-中体会-nio2-异步执行的快乐)
-  - [Java AIO总结与示例](#java-aio总结与示例)
-
-<!-- /MarkdownTOC -->
+---
+layout: post
+title:  "Java  IO流学习总结"
+date:   2020-04-03 23:06:07
+categories: java
+tags: java
+---
 
 
 
