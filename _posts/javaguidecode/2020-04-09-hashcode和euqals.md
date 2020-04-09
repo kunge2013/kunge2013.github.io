@@ -71,7 +71,7 @@ tags: java基础
     我们通过 p1.equals(p2) 来“比较p1和p2是否相等时”。实际上，调用的Object.java的equals()方法，即调用的 (p1==p2) 。它是比较“p1和p2是否是同一个对象”。 
     而由 p1 和 p2 的定义可知，它们虽然内容相同； 但它们是两个不同的对象！因此，返回结果是false。
 
-   2. "覆盖equals()方法"的情况
+   2.  "覆盖equals()方法"的情况
    我们修改上面的EqualsTest1.java：覆盖equals()方法。代码如下 (EqualsTest1.java)：
 	   
 	import java.util.*;
