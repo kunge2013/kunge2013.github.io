@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "java基础"
+title:  "Java hashCode() 和 equals()的若干问题解答"
 date:   2020-04-09 00:06:06
 categories: java基础
 tags: java基础
