@@ -150,10 +150,207 @@ tags: java基础
 
     现在，再回顾一下equals()的作用：判断两个对象是否相等。当我们重写equals()的时候，可千万不好将它的作用给改变了！
 
+##### 第2部分 equals() 与 == 的区别是什么？
+-   == : 它的作用是判断两个对象的地址是不是相等。即，判断两个对象是不试同一个对象。
+-   equals() : 它的作用也是判断两个对象是否相等。但它一般有两种使用情况(前面第1部分已详细介绍过)：
+                 情况1，类没有覆盖equals()方法。则通过equals()比较该类的两个对象时，等价于通过“==”比较这两个对象。
+                 情况2，类覆盖了equals()方法。一般，我们都覆盖equals()方法来两个对象的内容相等；若它们的内容相等，则返回true(即，认为这两个对象相等)。
 
 
-    
+-    下面，通过示例比较它们的区别。
+  代码如下： 
+	
+	 import java.util.*;
+	import java.lang.Comparable;
+	
+	/**
+	 * @desc equals()的测试程序。
+	 * @author fk
+	 */
+	public class EqualsTest3{
+	
+	    public static void main(String[] args) {
+	        // 新建2个相同内容的Person对象，
+	        // 再用equals比较它们是否相等
+	        Person p1 = new Person("eee", 100);
+	        Person p2 = new Person("eee", 100);
+	        System.out.printf("p1.equals(p2) : %s\n", p1.equals(p2));
+	        System.out.printf("p1==p2 : %s\n", p1==p2);
+	    }
+	
+	    /**
+	     * @desc Person类。
+	     */
+	    private static class Person {
+	        int age;
+	        String name;
+	
+	        public Person(String name, int age) {
+	            this.name = name;
+	            this.age = age;
+	        }
+	
+	        public String toString() {
+	            return name + " - " +age;
+	        }
+	
+	        /** 
+	         * @desc 覆盖equals方法 
+	         */  
+	        @Override
+	        public boolean equals(Object obj){  
+	            if(obj == null){  
+	                return false;  
+	            }  
+	              
+	            //如果是同一个对象返回true，反之返回false  
+	            if(this == obj){  
+	                return true;  
+	            }  
+	              
+	            //判断是否类型相同  
+	            if(this.getClass() != obj.getClass()){  
+	                return false;  
+	            }  
+	              
+	            Person person = (Person)obj;  
+	            return name.equals(person.name) && age==person.age;  
+	        } 
+	    }
+	}
 
+ 运行结果：
+
+	p1.equals(p2) : true
+	p1==p2 : false    
+	
+ 结果分析：
+
+	在EqualsTest3.java 中：
+	(01) p1.equals(p2) 
+	        这是判断p1和p2的内容是否相等。因为Person覆盖equals()方法，而这个equals()是用来判断p1和p2的内容是否相等，恰恰p1和p2的内容又相等；因此，返回true。
+	
+	(02) p1==p2
+	       这是判断p1和p2是否是同一个对象。由于它们是各自新建的两个Person对象；因此，返回false。
+	
+		
+##### 第3部分 hashCode() 的作用
+hashCode() 的作用是获取哈希码，也称为散列码；它实际上是返回一个int整数。这个哈希码的作用是确定该对象在哈希表中的索引位置。
+
+hashCode() 定义在JDK的Object.java中，这就意味着Java中的任何类都包含有hashCode() 函数。
+        虽然，每个Java类都包含hashCode() 函数。但是，仅仅当创建并某个“类的散列表”(关于“散列表”见下面说明)时，该类的hashCode() 才有用(作用是：确定该类的每一个对象在散列表中的位置；其它情况下(例如，创建类的单个对象，或者创建类的对象数组等等)，类的hashCode() 没有作用。
+       上面的散列表，指的是：Java集合中本质是散列表的类，如HashMap，Hashtable，HashSet。
+
+  也就是说：hashCode() 在散列表中才有用，在其它情况下没用。在散列表中hashCode() 的作用是获取对象的散列码，进而确定该对象在散列表中的位置。
+
+
+OK！至此，我们搞清楚了：hashCode()的作用是获取散列码。但是，散列码是用来干什么的呢？为什么散列表需要散列码呢？要解决这些问题，就需要理解散列表！关于散列表的内容，非三言两语道的明白；大家可以通过下面几篇文章来学习：
+
+转载 散列表 [Hash Table](https://www.cnblogs.com/skywang12345/p/3311915.html)从理论到实用（上）
+
+转载 散列表 [Hash Table](https://www.cnblogs.com/skywang12345/p/3311909.html)从理论到实用（中）
+
+转载 散列表[Hash Table](https://www.cnblogs.com/skywang12345/p/3311915.html)从理论到实用（下） 
+
+为了能理解后面的内容，这里简单的介绍一下散列码的作用。
+
+
+	我们都知道，散列表存储的是键值对(key-value)，它的特点是：能根据“键”快速的检索出对应的“值”。这其中就利用到了散列码！
+    散列表的本质是通过数组实现的。当我们要获取散列表中的某个“值”时，实际上是要获取数组中的某个位置的元素。而数组的位置，就是通过“键”来获取的；更进一步说，数组的位置，是通过“键”对应的散列码计算得到的。
+	
+下面，我们以HashSet为例，来深入说明hashCode()的作用。
+
+   假设，HashSet中已经有1000个元素。当插入第1001个元素时，需要怎么处理？因为HashSet是Set集合，它允许有重复元素。
+        “将第1001个元素逐个的和前面1000个元素进行比较”？显然，这个效率是相等低下的。散列表很好的解决了这个问题，它根据元素的散列码计算出元素在散列表中的位置，然后将元素插入该位置即可。对于相同的元素，自然是只保存了一个。
+        由此可知，若两个元素相等，它们的散列码一定相等；但反过来确不一定。在散列表中，
+                           1、如果两个对象相等，那么它们的hashCode()值一定要相同；
+                           2、如果两个对象hashCode()相等，它们并不一定相等。
+                           注意：这是在散列表中的情况。在非散列表中一定如此！
+
+ 
+
+对“hashCode()的作用”就谈这么多。
+
+
+--- 
+
+##### 第4部分 hashCode() 和 equals() 的关系
+
+   接下面，我们讨论另外一个话题。网上很多文章将 hashCode() 和 equals 关联起来，有的讲的不透彻，有误导读者的嫌疑。在这里，我自己梳理了一下 “hashCode() 和 equals()的关系”。
+
+   我们以“类的用途”来将“hashCode() 和 equals()的关系”分2种情况来说明。
+
+
+1. 第一种 不会创建“类对应的散列表”
+  这里所说的“不会创建类对应的散列表”是说：我们不会在HashSet, Hashtable, HashMap等等这些本质是散列表的数据结构中，用到该类。例如，不会创建该类的HashSet集合。
+
+   在这种情况下，该类的“hashCode() 和 equals() ”没有半毛钱关系的！
+        这种情况下，equals() 用来比较该类的两个对象是否相等。而hashCode() 则根本没有任何作用，所以，不用理会hashCode()。
+
+下面，我们通过示例查看类的两个对象相等 以及 不等时hashCode()的取值。
+
+源码如下 (NormalHashCodeTest.java)：
+	
+	
+	import java.util.*;
+	import java.lang.Comparable;
+	
+	/**
+	 * @desc 比较equals() 返回true 以及 返回false时， hashCode()的值。
+	 *
+	 * @author fk
+	 */
+	public class NormalHashCodeTest{
+	
+	    public static void main(String[] args) {
+	        // 新建2个相同内容的Person对象，
+	        // 再用equals比较它们是否相等
+	        Person p1 = new Person("eee", 100);
+	        Person p2 = new Person("eee", 100);
+	        Person p3 = new Person("aaa", 200);
+	        System.out.printf("p1.equals(p2) : %s; p1(%d) p2(%d)\n", p1.equals(p2), p1.hashCode(), p2.hashCode());
+	        System.out.printf("p1.equals(p3) : %s; p1(%d) p3(%d)\n", p1.equals(p3), p1.hashCode(), p3.hashCode());
+	    }
+	
+	    /**
+	     * @desc Person类。
+	     */
+	    private static class Person {
+	        int age;
+	        String name;
+	
+	        public Person(String name, int age) {
+	            this.name = name;
+	            this.age = age;
+	        }
+	
+	        public String toString() {
+	            return name + " - " +age;
+	        }
+	
+	        /** 
+	         * @desc 覆盖equals方法 
+	         */  
+	        public boolean equals(Object obj){  
+	            if(obj == null){  
+	                return false;  
+	            }  
+	              
+	            //如果是同一个对象返回true，反之返回false  
+	            if(this == obj){  
+	                return true;  
+	            }  
+	              
+	            //判断是否类型相同  
+	            if(this.getClass() != obj.getClass()){  
+	                return false;  
+	            }  
+	              
+	            Person person = (Person)obj;  
+	            return name.equals(person.name) && age==person.age;  
+	        } 
+	    }
+	}
       
 
 
