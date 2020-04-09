@@ -14,6 +14,7 @@ tags: java基础
 -  4 hashCode() 和 equals() 之间有什么联系？
 
 ##### 第1部分 equals() 的作用
+
 - equals() 的作用是 用来判断两个对象是否相等。
 - equals() 定义在JDK的Object.java中。通过判断两个对象的地址是否相等(即，是否是同一个对象)来区分它们是否相等。源码如下：
    
