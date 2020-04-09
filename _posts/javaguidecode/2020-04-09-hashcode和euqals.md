@@ -147,6 +147,9 @@ import java.lang.Comparable;
 	4. 一致性：如果x.equals(y)返回是"true"，只要x和y内容一直不变，不管你重复x.equals(y)多少次，返回都是"true"。
 	5. 非空性，x.equals(null)，永远返回是"false"；x.equals(和x不同类型的对象)永远返回是"false"。
 
+    现在，再回顾一下equals()的作用：判断两个对象是否相等。当我们重写equals()的时候，可千万不好将它的作用给改变了！
+
+
 
     
 
