@@ -75,8 +75,7 @@ tags: java基础
    我们修改上面的EqualsTest1.java：覆盖equals()方法。代码如下 (EqualsTest1.java)：
 	   
 	import java.util.*;
-import java.lang.Comparable;
-
+    import java.lang.Comparable;
 	/**
 	 * @desc equals()的测试程序。
 	 *
