@@ -5,7 +5,6 @@ date:   2020-04-09 00:06:06
 categories: java基础
 tags: java基础
 ---
-# Java hashCode() 和 equals()的若干问题解答
 
 #### 本章的内容主要解决下面几个问题：
 -  1 equals() 的作用是什么？
