@@ -146,7 +146,7 @@ tags: spring 源码
 		}
 		
 	
--  2. 默认 AbstractApplicationContext#refreshBeanFactory 销毁旧的beanFactory 创建新beanFactory
+-  2.默认 AbstractApplicationContext#refreshBeanFactory 销毁旧的beanFactory 创建新beanFactory
 
 			/**
 			 * This implementation performs an actual refresh of this context's underlying
@@ -173,7 +173,7 @@ tags: spring 源码
 				}
 			}	
 	
--   3.	AbstractRefreshableApplicationContext#createBeanFactory 默认DefaultListableBeanFactory
+-   3.AbstractRefreshableApplicationContext#createBeanFactory 默认DefaultListableBeanFactory
 
 		/**
 		 * Create an internal bean factory for this context.
