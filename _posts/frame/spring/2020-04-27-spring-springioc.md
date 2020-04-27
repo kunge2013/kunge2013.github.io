@@ -131,11 +131,10 @@ tags: spring 源码
 
 ###### a. 针对 org.springframework.context.support.AbstractApplicationContext#obtainFreshBeanFactory() 创建了beanFactory 
 
--  1.obtainFreshBeanFactory的源码如下:
-
-
+-  1.obtainFreshBeanFactory的源码如下, 构建 beanFactory 对象:
+		
 		/**
-		 * 构建 beanFactory 对象
+		 * 
 		 * Tell the subclass to refresh the internal bean factory.
 		 * @return the fresh BeanFactory instance
 		 * @see #refreshBeanFactory()
@@ -149,30 +148,30 @@ tags: spring 源码
 	
 -  2. 默认 AbstractApplicationContext#refreshBeanFactory 销毁旧的beanFactory 创建新beanFactory
 
-		/**
-		 * This implementation performs an actual refresh of this context's underlying
-		 * bean factory, shutting down the previous bean factory (if any) and
-		 * initializing a fresh bean factory for the next phase of the context's lifecycle.
-		 */
-		@Override
-		protected final void refreshBeanFactory() throws BeansException {
-			if (hasBeanFactory()) {
-				destroyBeans();
-				closeBeanFactory();
-			}
-			try {
-				DefaultListableBeanFactory beanFactory = createBeanFactory();
-				beanFactory.setSerializationId(getId());
-				customizeBeanFactory(beanFactory);
-				loadBeanDefinitions(beanFactory);
-				synchronized (this.beanFactoryMonitor) {
-					this.beanFactory = beanFactory;
+			/**
+			 * This implementation performs an actual refresh of this context's underlying
+			 * bean factory, shutting down the previous bean factory (if any) and
+			 * initializing a fresh bean factory for the next phase of the context's lifecycle.
+			 */
+			@Override
+			protected final void refreshBeanFactory() throws BeansException {
+				if (hasBeanFactory()) {
+					destroyBeans();
+					closeBeanFactory();
 				}
-			}
-			catch (IOException ex) {
-				throw new ApplicationContextException("I/O error parsing bean definition source for " + getDisplayName(), ex);
-			}
-		}
+				try {
+					DefaultListableBeanFactory beanFactory = createBeanFactory();
+					beanFactory.setSerializationId(getId());
+					customizeBeanFactory(beanFactory);
+					loadBeanDefinitions(beanFactory);
+					synchronized (this.beanFactoryMonitor) {
+						this.beanFactory = beanFactory;
+					}
+				}
+				catch (IOException ex) {
+					throw new ApplicationContextException("I/O error parsing bean definition source for " + getDisplayName(), ex);
+				}
+			}	
 	
 -   3.	AbstractRefreshableApplicationContext#createBeanFactory 默认DefaultListableBeanFactory
 
