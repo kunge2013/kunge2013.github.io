@@ -12,38 +12,38 @@ tags: spring 源码
 	
 -   1.创建上下文对象
 
-	public ClassPathXmlApplicationContext(
-		String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
-				throws BeansException {
-	
-		super(parent);
-		//初始化文件路径
-		setConfigLocations(configLocations);
-		if (refresh) {
-		// 构建相关对象
-			refresh();
-		}
-	}			
+		public ClassPathXmlApplicationContext(
+			String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
+					throws BeansException {
+		
+			super(parent);
+			//初始化文件路径
+			setConfigLocations(configLocations);
+			if (refresh) {
+			// 构建相关对象
+				refresh();
+			}
+		}			
 	
 -  2.初始化配置文件路径
 
-	/**
-	 * 解析文件相关路径	
-	 * Set the config locations for this application context.
-	 * <p>If not set, the implementation may use a default as appropriate.
-	 */
-	public void setConfigLocations(@Nullable String... locations) {
-		if (locations != null) {
-			Assert.noNullElements(locations, "Config locations must not be null");
-			this.configLocations = new String[locations.length];
-			for (int i = 0; i < locations.length; i++) {
-				this.configLocations[i] = resolvePath(locations[i]).trim();
+		/**
+		 * 解析文件相关路径	
+		 * Set the config locations for this application context.
+		 * <p>If not set, the implementation may use a default as appropriate.
+		 */
+		public void setConfigLocations(@Nullable String... locations) {
+			if (locations != null) {
+				Assert.noNullElements(locations, "Config locations must not be null");
+				this.configLocations = new String[locations.length];
+				for (int i = 0; i < locations.length; i++) {
+					this.configLocations[i] = resolvePath(locations[i]).trim();
+				}
+			}
+			else {
+				this.configLocations = null;
 			}
 		}
-		else {
-			this.configLocations = null;
-		}
-	}
 
 -  3.解析并处理文件
 	
