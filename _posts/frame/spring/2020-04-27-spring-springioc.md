@@ -133,65 +133,66 @@ tags: spring 源码
 
 -  1.obtainFreshBeanFactory的源码如下:
 
-	/**
-	 * 构建 beanFactory 对象
-	 * Tell the subclass to refresh the internal bean factory.
-	 * @return the fresh BeanFactory instance
-	 * @see #refreshBeanFactory()
-	 * @see #getBeanFactory()
-	 */
-	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
-		refreshBeanFactory();// 刷新 或者创建beanFactory
-		return getBeanFactory();
-	}
-	
+
+		/**
+		 * 构建 beanFactory 对象
+		 * Tell the subclass to refresh the internal bean factory.
+		 * @return the fresh BeanFactory instance
+		 * @see #refreshBeanFactory()
+		 * @see #getBeanFactory()
+		 */
+		protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
+			refreshBeanFactory();// 刷新 或者创建beanFactory
+			return getBeanFactory();
+		}
+		
 	
 -  2. 默认 AbstractApplicationContext#refreshBeanFactory 销毁旧的beanFactory 创建新beanFactory
 
-	/**
-	 * This implementation performs an actual refresh of this context's underlying
-	 * bean factory, shutting down the previous bean factory (if any) and
-	 * initializing a fresh bean factory for the next phase of the context's lifecycle.
-	 */
-	@Override
-	protected final void refreshBeanFactory() throws BeansException {
-		if (hasBeanFactory()) {
-			destroyBeans();
-			closeBeanFactory();
-		}
-		try {
-			DefaultListableBeanFactory beanFactory = createBeanFactory();
-			beanFactory.setSerializationId(getId());
-			customizeBeanFactory(beanFactory);
-			loadBeanDefinitions(beanFactory);
-			synchronized (this.beanFactoryMonitor) {
-				this.beanFactory = beanFactory;
+		/**
+		 * This implementation performs an actual refresh of this context's underlying
+		 * bean factory, shutting down the previous bean factory (if any) and
+		 * initializing a fresh bean factory for the next phase of the context's lifecycle.
+		 */
+		@Override
+		protected final void refreshBeanFactory() throws BeansException {
+			if (hasBeanFactory()) {
+				destroyBeans();
+				closeBeanFactory();
+			}
+			try {
+				DefaultListableBeanFactory beanFactory = createBeanFactory();
+				beanFactory.setSerializationId(getId());
+				customizeBeanFactory(beanFactory);
+				loadBeanDefinitions(beanFactory);
+				synchronized (this.beanFactoryMonitor) {
+					this.beanFactory = beanFactory;
+				}
+			}
+			catch (IOException ex) {
+				throw new ApplicationContextException("I/O error parsing bean definition source for " + getDisplayName(), ex);
 			}
 		}
-		catch (IOException ex) {
-			throw new ApplicationContextException("I/O error parsing bean definition source for " + getDisplayName(), ex);
-		}
-	}
 	
 -   3.	AbstractRefreshableApplicationContext#createBeanFactory 默认DefaultListableBeanFactory
 
-	/**
-	 * Create an internal bean factory for this context.
-	 * Called for each {@link #refresh()} attempt.
-	 * <p>The default implementation creates a
-	 * {@link org.springframework.beans.factory.support.DefaultListableBeanFactory}
-	 * with the {@linkplain #getInternalParentBeanFactory() internal bean factory} of this
-	 * context's parent as parent bean factory. Can be overridden in subclasses,
-	 * for example to customize DefaultListableBeanFactory's settings.
-	 * @return the bean factory for this context
-	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowBeanDefinitionOverriding
-	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowEagerClassLoading
-	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowCircularReferences
-	 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowRawInjectionDespiteWrapping
-	 */
-	protected DefaultListableBeanFactory createBeanFactory() {
-		return new DefaultListableBeanFactory(getInternalParentBeanFactory());
-	}
+		/**
+		 * Create an internal bean factory for this context.
+		 * Called for each {@link #refresh()} attempt.
+		 * <p>The default implementation creates a
+		 * {@link org.springframework.beans.factory.support.DefaultListableBeanFactory}
+		 * with the {@linkplain #getInternalParentBeanFactory() internal bean factory} of this
+		 * context's parent as parent bean factory. Can be overridden in subclasses,
+		 * for example to customize DefaultListableBeanFactory's settings.
+		 * @return the bean factory for this context
+		 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowBeanDefinitionOverriding
+		 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowEagerClassLoading
+		 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowCircularReferences
+		 * @see org.springframework.beans.factory.support.DefaultListableBeanFactory#setAllowRawInjectionDespiteWrapping
+		 */
+		protected DefaultListableBeanFactory createBeanFactory() {
+			return new DefaultListableBeanFactory(getInternalParentBeanFactory());
+		}
 
 
 ###### 2.通过org.springframework.context.support.AbstractApplicationContext#prepareBeanFactory 配置 类加载器， 前置后置处理器(用于bean初始化的过程中的生命周期)
