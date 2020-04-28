@@ -121,7 +121,7 @@ tags: spring 源码
 			}
 		}
 
-###### 2.preInstantiateSingletons 具体操作核心实例化bean 的操作是org.springframework.beans.factory.support.AbstractBeanFactory#getBean()
+###### 3.preInstantiateSingletons 具体操作核心实例化bean 的操作是org.springframework.beans.factory.support.AbstractBeanFactory#getBean()
 -  org.springframework.beans.factory.support.AbstractBeanFactory#getBean()
 -    org.springframework.beans.factory.support.AbstractBeanFactory#doGetBean(final String name, @Nullable final Class<T> requiredType,
 			@Nullable final Object[] args, boolean typeCheckOnly)
@@ -311,7 +311,7 @@ doGetBean 源码如下
 	
 	
 	
-###### 3.org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory# createBean实际操作如下 
+###### 4.org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory# createBean实际操作如下 
 
 	/**
 	 * 	 此类的中心方法：创建bean实例、填充bean实例、应用后处理器等。
@@ -380,7 +380,7 @@ doGetBean 源码如下
 	}	
 		
 		
-###### 4.org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory# doCreateBean实际操作如下 	
+###### 5.org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory# doCreateBean实际操作如下 	
 
 	/**
 	 * 	 实际创建指定的bean。在这一点上已经进行了预创建处理，例如在实例化回调之前检查后处理。
@@ -499,7 +499,7 @@ doGetBean 源码如下
 	}
 
 
-###### 5.org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory# populateBean 初始化bean 属性值并装配
+###### 6.org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory# populateBean 初始化bean 属性值并装配
 
 	/**
 	 *   使用bean定义中的属性值填充给定BeanWrapper中的bean实例。
@@ -592,7 +592,7 @@ doGetBean 源码如下
 
 
 
-###### 6.org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory# applyPropertyValues 装配bean 属性值并装配
+###### 7.org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory# applyPropertyValues 装配bean 属性值并装配
 
 	/**
 	 * 	 应用给定的属性值，将任何运行时引用解析到此bean工厂中的其他bean。必须使用深度复制，因此我们不会永久修改此属性。
