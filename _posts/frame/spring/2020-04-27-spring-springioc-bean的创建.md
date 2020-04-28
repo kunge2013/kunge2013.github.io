@@ -116,3 +116,13 @@ tags: spring 源码
 				}
 			}
 		}
+
+###### 2.preInstantiateSingletons 具体操作核心实例化bean 的操作是org.springframework.beans.factory.support.AbstractBeanFactory#getBean()
+-  org.springframework.beans.factory.support.AbstractBeanFactory#getBean()
+-    org.springframework.beans.factory.support.AbstractBeanFactory#doGetBean(final String name, @Nullable final Class<T> requiredType,
+			@Nullable final Object[] args, boolean typeCheckOnly)
+
+doGetBean 源码如下
+	
+	
+		
