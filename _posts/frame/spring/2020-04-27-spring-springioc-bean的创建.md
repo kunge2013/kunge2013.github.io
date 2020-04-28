@@ -53,5 +53,66 @@ tags: spring 源码
 			//实例化所有剩余的（非延迟初始化）单个
 			beanFactory.preInstantiateSingletons();
 		}
-
+		
+###### 2.finishBeanFactoryInitialization 具体操作核心实例化bean 的单例如下 org.springframework.beans.factory.support.DefaultListableBeanFactory # preInstantiateSingletons
 	
+		@Override
+		public void preInstantiateSingletons() throws BeansException {
+			if (logger.isTraceEnabled()) {
+				logger.trace("Pre-instantiating singletons in " + this);
+			}
+	
+			// Iterate over a copy to allow for init methods which in turn register new bean definitions.
+			// 遍历副本以允许init方法注册新的bean定义。
+			// While this may not be part of the regular factory bootstrap, it does otherwise work fine.
+			// 虽然这可能不是常规工厂引导的一部分，但它在其他方面工作正常。
+			List<String> beanNames = new ArrayList<>(this.beanDefinitionNames);
+	
+			// Trigger initialization of all non-lazy singleton beans...
+			//所有非惰性单例bean的触发器初始化。。。
+			for (String beanName : beanNames) {
+				RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
+				if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
+					if (isFactoryBean(beanName)) {
+						Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
+						if (bean instanceof FactoryBean) {
+							final FactoryBean<?> factory = (FactoryBean<?>) bean;
+							boolean isEagerInit;
+							if (System.getSecurityManager() != null && factory instanceof SmartFactoryBean) {
+								isEagerInit = AccessController.doPrivileged((PrivilegedAction<Boolean>)
+												((SmartFactoryBean<?>) factory)::isEagerInit,
+										getAccessControlContext());
+							}
+							else {
+								isEagerInit = (factory instanceof SmartFactoryBean &&
+										((SmartFactoryBean<?>) factory).isEagerInit());
+							}
+							if (isEagerInit) {
+								getBean(beanName);
+							}
+						}
+					}
+					else {
+						getBean(beanName);
+					}
+				}
+			}
+	
+			// Trigger post-initialization callback for all applicable beans...
+			//为所有适用的bean触发初始化后回调。。。
+			for (String beanName : beanNames) {
+				Object singletonInstance = getSingleton(beanName);
+				if (singletonInstance instanceof SmartInitializingSingleton) {
+					final SmartInitializingSingleton smartSingleton = (SmartInitializingSingleton) singletonInstance;
+					if (System.getSecurityManager() != null) {
+						AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+							smartSingleton.afterSingletonsInstantiated();
+							return null;
+						}, getAccessControlContext());
+					}
+					else {
+						smartSingleton.afterSingletonsInstantiated();
+					}
+				}
+			}
+		}
