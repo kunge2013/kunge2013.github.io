@@ -374,3 +374,323 @@ doGetBean 源码如下
 						mbdToUse.getResourceDescription(), beanName, "Unexpected exception during bean creation", ex);
 			}
 		}	
+		
+		
+###### 4.org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory# doCreateBean实际操作如下 	
+
+	/**
+		 * 	 实际创建指定的bean。在这一点上已经进行了预创建处理，例如在实例化回调之前检查后处理。
+		 *	 区分默认bean实例化、使用afactory方法和自动连接构造函数。
+		 * Actually create the specified bean. Pre-creation processing has already happened
+		 * at this point, e.g. checking {@code postProcessBeforeInstantiation} callbacks.
+		 * <p>Differentiates between default bean instantiation, use of a
+		 * factory method, and autowiring a constructor.
+		 * @param beanName the name of the bean
+		 * @param mbd the merged bean definition for the bean
+		 * @param args explicit arguments to use for constructor or factory method invocation
+		 * @return a new instance of the bean
+		 * @throws BeanCreationException if the bean could not be created
+		 * @see #instantiateBean
+		 * @see #instantiateUsingFactoryMethod
+		 * @see #autowireConstructor
+		 */
+		protected Object doCreateBean(final String beanName, final RootBeanDefinition mbd, final @Nullable Object[] args)
+				throws BeanCreationException {
+	
+			// Instantiate the bean.
+			BeanWrapper instanceWrapper = null;
+			if (mbd.isSingleton()) {
+				instanceWrapper = this.factoryBeanInstanceCache.remove(beanName);
+			}
+			if (instanceWrapper == null) {
+				instanceWrapper = createBeanInstance(beanName, mbd, args);
+			}
+			final Object bean = instanceWrapper.getWrappedInstance();
+			Class<?> beanType = instanceWrapper.getWrappedClass();
+			if (beanType != NullBean.class) {
+				mbd.resolvedTargetType = beanType;
+			}
+	
+			// Allow post-processors to modify the merged bean definition.
+			synchronized (mbd.postProcessingLock) {
+				if (!mbd.postProcessed) {
+					try {
+						applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
+					}
+					catch (Throwable ex) {
+						throw new BeanCreationException(mbd.getResourceDescription(), beanName,
+								"Post-processing of merged bean definition failed", ex);
+					}
+					mbd.postProcessed = true;
+				}
+			}
+	
+			// Eagerly cache singletons to be able to resolve circular references
+			// even when triggered by lifecycle interfaces like BeanFactoryAware.
+			boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences &&
+					isSingletonCurrentlyInCreation(beanName));
+			if (earlySingletonExposure) {
+				if (logger.isTraceEnabled()) {
+					logger.trace("Eagerly caching bean '" + beanName +
+							"' to allow for resolving potential circular references");
+				}
+				addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
+			}
+	
+			// Initialize the bean instance.
+			Object exposedObject = bean;
+			try {
+				// 初始化bean 参数信息
+				populateBean(beanName, mbd, instanceWrapper);
+				// 赋值bean 相关对象属性 得到创建的bean 实例
+				exposedObject = initializeBean(beanName, exposedObject, mbd);
+			}
+			catch (Throwable ex) {
+				if (ex instanceof BeanCreationException && beanName.equals(((BeanCreationException) ex).getBeanName())) {
+					throw (BeanCreationException) ex;
+				}
+				else {
+					throw new BeanCreationException(
+							mbd.getResourceDescription(), beanName, "Initialization of bean failed", ex);
+				}
+			}
+	
+			if (earlySingletonExposure) {
+				Object earlySingletonReference = getSingleton(beanName, false);
+				if (earlySingletonReference != null) {
+					if (exposedObject == bean) {
+						exposedObject = earlySingletonReference;
+					}
+					else if (!this.allowRawInjectionDespiteWrapping && hasDependentBean(beanName)) {
+						String[] dependentBeans = getDependentBeans(beanName);
+						Set<String> actualDependentBeans = new LinkedHashSet<>(dependentBeans.length);
+						for (String dependentBean : dependentBeans) {
+							if (!removeSingletonIfCreatedForTypeCheckOnly(dependentBean)) {
+								actualDependentBeans.add(dependentBean);
+							}
+						}
+						if (!actualDependentBeans.isEmpty()) {
+							throw new BeanCurrentlyInCreationException(beanName,
+									"Bean with name '" + beanName + "' has been injected into other beans [" +
+									StringUtils.collectionToCommaDelimitedString(actualDependentBeans) +
+									"] in its raw version as part of a circular reference, but has eventually been " +
+									"wrapped. This means that said other beans do not use the final version of the " +
+									"bean. This is often the result of over-eager type matching - consider using " +
+									"'getBeanNamesOfType' with the 'allowEagerInit' flag turned off, for example.");
+						}
+					}
+				}
+			}
+	
+			// Register bean as disposable.
+			try {
+				registerDisposableBeanIfNecessary(beanName, bean, mbd);
+			}
+			catch (BeanDefinitionValidationException ex) {
+				throw new BeanCreationException(
+						mbd.getResourceDescription(), beanName, "Invalid destruction signature", ex);
+			}
+	
+			return exposedObject;
+		}
+
+
+###### 5.org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory# populateBean 初始化bean 属性值并装配
+
+	/**
+		 *   使用bean定义中的属性值填充给定BeanWrapper中的bean实例。
+		 * Populate the bean instance in the given BeanWrapper with the property values
+		 * from the bean definition.
+		 * @param beanName the name of the bean
+		 * @param mbd the bean definition for the bean
+		 * @param bw the BeanWrapper with bean instance
+		 */
+		@SuppressWarnings("deprecation")  // for postProcessPropertyValues
+		protected void populateBean(String beanName, RootBeanDefinition mbd, @Nullable BeanWrapper bw) {
+			if (bw == null) {
+				if (mbd.hasPropertyValues()) {
+					throw new BeanCreationException(
+							mbd.getResourceDescription(), beanName, "Cannot apply property values to null instance");
+				}
+				else {
+					// Skip property population phase for null instance.
+					return;
+				}
+			}
+	
+			// Give any InstantiationAwareBeanPostProcessors the opportunity to modify the
+			// state of the bean before properties are set. This can be used, for example,
+			// to support styles of field injection.
+			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
+				for (BeanPostProcessor bp : getBeanPostProcessors()) {
+					if (bp instanceof InstantiationAwareBeanPostProcessor) {
+						InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+						if (!ibp.postProcessAfterInstantiation(bw.getWrappedInstance(), beanName)) {
+							return;
+						}
+					}
+				}
+			}
+	
+			PropertyValues pvs = (mbd.hasPropertyValues() ? mbd.getPropertyValues() : null);
+	
+			int resolvedAutowireMode = mbd.getResolvedAutowireMode();
+			if (resolvedAutowireMode == AUTOWIRE_BY_NAME || resolvedAutowireMode == AUTOWIRE_BY_TYPE) {
+				MutablePropertyValues newPvs = new MutablePropertyValues(pvs);
+				// Add property values based on autowire by name if applicable.
+				if (resolvedAutowireMode == AUTOWIRE_BY_NAME) {
+					autowireByName(beanName, mbd, bw, newPvs);
+				}
+				// Add property values based on autowire by type if applicable.
+				if (resolvedAutowireMode == AUTOWIRE_BY_TYPE) {
+					autowireByType(beanName, mbd, bw, newPvs);
+				}
+				pvs = newPvs;
+			}
+	
+			boolean hasInstAwareBpps = hasInstantiationAwareBeanPostProcessors();
+			boolean needsDepCheck = (mbd.getDependencyCheck() != AbstractBeanDefinition.DEPENDENCY_CHECK_NONE);
+	
+			PropertyDescriptor[] filteredPds = null;
+			if (hasInstAwareBpps) {
+				if (pvs == null) {
+					pvs = mbd.getPropertyValues();
+				}
+				for (BeanPostProcessor bp : getBeanPostProcessors()) {
+					if (bp instanceof InstantiationAwareBeanPostProcessor) {
+						InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+						PropertyValues pvsToUse = ibp.postProcessProperties(pvs, bw.getWrappedInstance(), beanName);
+						if (pvsToUse == null) {
+							if (filteredPds == null) {
+								filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
+							}
+							pvsToUse = ibp.postProcessPropertyValues(pvs, filteredPds, bw.getWrappedInstance(), beanName);
+							if (pvsToUse == null) {
+								return;
+							}
+						}
+						pvs = pvsToUse;
+					}
+				}
+			}
+			if (needsDepCheck) {
+				if (filteredPds == null) {
+					filteredPds = filterPropertyDescriptorsForDependencyCheck(bw, mbd.allowCaching);
+				}
+				checkDependencies(beanName, mbd, filteredPds, pvs);
+			}
+	
+			if (pvs != null) {
+				// 应用给定的属性值，将任何运行时引用解析到此bean工厂中的其他bean。必须使用深度复制，因此我们不会永久修改此属性。
+				applyPropertyValues(beanName, mbd, bw, pvs);
+			}
+		}
+
+
+
+###### 6.org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory# applyPropertyValues 装配bean 属性值并装配
+
+	/**
+		 * 	 应用给定的属性值，将任何运行时引用解析到此bean工厂中的其他bean。必须使用深度复制，因此我们不会永久修改此属性。
+		 * Apply the given property values, resolving any runtime references
+		 * to other beans in this bean factory. Must use deep copy, so we
+		 * don't permanently modify this property.
+		 * @param beanName the bean name passed for better exception information
+		 * @param mbd the merged bean definition
+		 * @param bw the BeanWrapper wrapping the target object
+		 * @param pvs the new property values
+		 */
+		protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrapper bw, PropertyValues pvs) {
+			if (pvs.isEmpty()) {
+				return;
+			}
+	
+			if (System.getSecurityManager() != null && bw instanceof BeanWrapperImpl) {
+				((BeanWrapperImpl) bw).setSecurityContext(getAccessControlContext());
+			}
+	
+			MutablePropertyValues mpvs = null;
+			List<PropertyValue> original;
+	
+			if (pvs instanceof MutablePropertyValues) {
+				mpvs = (MutablePropertyValues) pvs;
+				if (mpvs.isConverted()) {
+					// Shortcut: use the pre-converted values as-is.
+					try {
+						bw.setPropertyValues(mpvs);
+						return;
+					}
+					catch (BeansException ex) {
+						throw new BeanCreationException(
+								mbd.getResourceDescription(), beanName, "Error setting property values", ex);
+					}
+				}
+				original = mpvs.getPropertyValueList();
+			}
+			else {
+				original = Arrays.asList(pvs.getPropertyValues());
+			}
+	
+			TypeConverter converter = getCustomTypeConverter();
+			if (converter == null) {
+				converter = bw;
+			}
+			BeanDefinitionValueResolver valueResolver = new BeanDefinitionValueResolver(this, beanName, mbd, converter);
+	
+			// Create a deep copy, resolving any references for values.
+			List<PropertyValue> deepCopy = new ArrayList<>(original.size());
+			boolean resolveNecessary = false;
+			for (PropertyValue pv : original) {
+				if (pv.isConverted()) {
+					deepCopy.add(pv);
+				}
+				else {
+					String propertyName = pv.getName();
+					Object originalValue = pv.getValue();
+					if (originalValue == AutowiredPropertyMarker.INSTANCE) {
+						Method writeMethod = bw.getPropertyDescriptor(propertyName).getWriteMethod();
+						if (writeMethod == null) {
+							throw new IllegalArgumentException("Autowire marker for property without write method: " + pv);
+						}
+						originalValue = new DependencyDescriptor(new MethodParameter(writeMethod, 0), true);
+					}
+					Object resolvedValue = valueResolver.resolveValueIfNecessary(pv, originalValue);
+					Object convertedValue = resolvedValue;
+					boolean convertible = bw.isWritableProperty(propertyName) &&
+							!PropertyAccessorUtils.isNestedOrIndexedProperty(propertyName);
+					if (convertible) {
+						convertedValue = convertForProperty(resolvedValue, propertyName, bw, converter);
+					}
+					// Possibly store converted value in merged bean definition,
+					// in order to avoid re-conversion for every created bean instance.
+					if (resolvedValue == originalValue) {
+						if (convertible) {
+							pv.setConvertedValue(convertedValue);
+						}
+						deepCopy.add(pv);
+					}
+					else if (convertible && originalValue instanceof TypedStringValue &&
+							!((TypedStringValue) originalValue).isDynamic() &&
+							!(convertedValue instanceof Collection || ObjectUtils.isArray(convertedValue))) {
+						pv.setConvertedValue(convertedValue);
+						deepCopy.add(pv);
+					}
+					else {
+						resolveNecessary = true;
+						deepCopy.add(new PropertyValue(pv, convertedValue));
+					}
+				}
+			}
+			if (mpvs != null && !resolveNecessary) {
+				mpvs.setConverted();
+			}
+	
+			// Set our (possibly massaged) deep copy.
+			try {
+				bw.setPropertyValues(new MutablePropertyValues(deepCopy));
+			}
+			catch (BeansException ex) {
+				throw new BeanCreationException(
+						mbd.getResourceDescription(), beanName, "Error setting property values", ex);
+			}
+		}
