@@ -124,5 +124,253 @@ tags: spring 源码
 
 doGetBean 源码如下
 	
+	/**
+		 *	 返回指定bean的实例，该实例可以是共享(单例)的，也可以是独立(多实例 原型 prototype)的。
+		 * Return an instance, which may be shared or independent, of the specified bean.
+		 * @param name the name of the bean to retrieve
+		 * @param requiredType the required type of the bean to retrieve
+		 * @param args arguments to use when creating a bean instance using explicit arguments
+		 * (only applied when creating a new instance as opposed to retrieving an existing one)
+		 * @param typeCheckOnly whether the instance is obtained for a type check,
+		 * not for actual use
+		 * @return an instance of the bean
+		 * @throws BeansException if the bean could not be created
+		 */
+		@SuppressWarnings("unchecked")
+		protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
+				@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
 	
-		
+			// 解析当前beanName 是否是以&开头的 beanFactory对象，如果是就进行处理,否则直接返回beanName
+			final String beanName = transformedBeanName(name);
+			Object bean;
+	
+			// Eagerly check singleton cache for manually registered singletons.
+			// 急切地检查单例缓存中是否有手动注册的单例。
+			// 从单例池中获取实例,第一次是返回为空的
+			Object sharedInstance = getSingleton(beanName);
+			if (sharedInstance != null && args == null) {
+				if (logger.isTraceEnabled()) {
+					if (isSingletonCurrentlyInCreation(beanName)) {
+						logger.trace("Returning eagerly cached instance of singleton bean '" + beanName +
+								"' that is not fully initialized yet - a consequence of a circular reference");
+					}
+					else {
+						logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
+					}
+				}
+				bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
+			}
+	
+			else {
+				// Fail if we're already creating this bean instance:
+				// We're assumably within a circular reference.
+				// 如果我们已经在创建此bean实例，则失败：
+				// 我们在一个循环参考范围内。
+				if (isPrototypeCurrentlyInCreation(beanName)) {
+					throw new BeanCurrentlyInCreationException(beanName);
+				}
+	
+				// Check if bean definition exists in this factory.
+				// 检查此工厂中是否存在bean定义。
+				BeanFactory parentBeanFactory = getParentBeanFactory();
+				if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
+					// Not found -> check parent.
+					String nameToLookup = originalBeanName(name);
+					if (parentBeanFactory instanceof AbstractBeanFactory) {
+						return ((AbstractBeanFactory) parentBeanFactory).doGetBean(
+								nameToLookup, requiredType, args, typeCheckOnly);
+					}
+					else if (args != null) {
+						// Delegation to parent with explicit args.
+						return (T) parentBeanFactory.getBean(nameToLookup, args);
+					}
+					else if (requiredType != null) {
+						// No args -> delegate to standard getBean method.
+						return parentBeanFactory.getBean(nameToLookup, requiredType);
+					}
+					else {
+						return (T) parentBeanFactory.getBean(nameToLookup);
+					}
+				}
+	
+				if (!typeCheckOnly) {
+					markBeanAsCreated(beanName);
+				}
+	
+				try {
+					final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
+					checkMergedBeanDefinition(mbd, beanName, args);
+	
+					// Guarantee initialization of beans that the current bean depends on.
+					// 保证当前bean所依赖的bean的初始化。
+					String[] dependsOn = mbd.getDependsOn();
+					if (dependsOn != null) {
+						for (String dep : dependsOn) {
+							if (isDependent(beanName, dep)) {
+								throw new BeanCreationException(mbd.getResourceDescription(), beanName,
+										"Circular depends-on relationship between '" + beanName + "' and '" + dep + "'");
+							}
+							registerDependentBean(dep, beanName);
+							try {
+								getBean(dep);
+							}
+							catch (NoSuchBeanDefinitionException ex) {
+								throw new BeanCreationException(mbd.getResourceDescription(), beanName,
+										"'" + beanName + "' depends on missing bean '" + dep + "'", ex);
+							}
+						}
+					}
+	
+					// Create bean instance.
+					// 创建bean的 实例
+					if (mbd.isSingleton()) {
+						sharedInstance = getSingleton(beanName, () -> {
+							try {
+								return createBean(beanName, mbd, args);
+							}
+							catch (BeansException ex) {
+								// Explicitly remove instance from singleton cache: It might have been put there
+								// eagerly by the creation process, to allow for circular reference resolution.
+								// Also remove any beans that received a temporary reference to the bean.
+								destroySingleton(beanName);
+								throw ex;
+							}
+						});
+						bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
+					}
+	
+					else if (mbd.isPrototype()) {
+						// It's a prototype -> create a new instance.
+						Object prototypeInstance = null;
+						try {
+							beforePrototypeCreation(beanName);
+							prototypeInstance = createBean(beanName, mbd, args);
+						}
+						finally {
+							afterPrototypeCreation(beanName);
+						}
+						bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
+					}
+	
+					else {
+						String scopeName = mbd.getScope();
+						final Scope scope = this.scopes.get(scopeName);
+						if (scope == null) {
+							throw new IllegalStateException("No Scope registered for scope name '" + scopeName + "'");
+						}
+						try {
+							Object scopedInstance = scope.get(beanName, () -> {
+								beforePrototypeCreation(beanName);
+								try {
+									return createBean(beanName, mbd, args);
+								}
+								finally {
+									afterPrototypeCreation(beanName);
+								}
+							});
+							bean = getObjectForBeanInstance(scopedInstance, name, beanName, mbd);
+						}
+						catch (IllegalStateException ex) {
+							throw new BeanCreationException(beanName,
+									"Scope '" + scopeName + "' is not active for the current thread; consider " +
+									"defining a scoped proxy for this bean if you intend to refer to it from a singleton",
+									ex);
+						}
+					}
+				}
+				catch (BeansException ex) {
+					cleanupAfterBeanCreationFailure(beanName);
+					throw ex;
+				}
+			}
+	
+			// Check if required type matches the type of the actual bean instance.
+			// 检查所需类型是否与实际bean实例的类型匹配。
+			if (requiredType != null && !requiredType.isInstance(bean)) {
+				try {
+					T convertedBean = getTypeConverter().convertIfNecessary(bean, requiredType);
+					if (convertedBean == null) {
+						throw new BeanNotOfRequiredTypeException(name, requiredType, bean.getClass());
+					}
+					return convertedBean;
+				}
+				catch (TypeMismatchException ex) {
+					if (logger.isTraceEnabled()) {
+						logger.trace("Failed to convert bean '" + name + "' to required type '" +
+								ClassUtils.getQualifiedName(requiredType) + "'", ex);
+					}
+					throw new BeanNotOfRequiredTypeException(name, requiredType, bean.getClass());
+				}
+			}
+			return (T) bean;
+		}
+	
+	
+	
+###### 3.org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory# createBean实际操作如下 
+
+	/**
+		 * 	 此类的中心方法：创建bean实例、填充bean实例、应用后处理器等。
+		 * Central method of this class: creates a bean instance,
+		 * populates the bean instance, applies post-processors, etc.
+		 * @see #doCreateBean
+		 */
+		@Override
+		protected Object createBean(String beanName, RootBeanDefinition mbd, @Nullable Object[] args)
+				throws BeanCreationException {
+	
+			if (logger.isTraceEnabled()) {
+				logger.trace("Creating instance of bean '" + beanName + "'");
+			}
+			RootBeanDefinition mbdToUse = mbd;
+	
+			// Make sure bean class is actually resolved at this point, and
+			// clone the bean definition in case of a dynamically resolved Class
+			// which cannot be stored in the shared merged bean definition.
+			// 为指定的bean定义解析bean类，将bean类名解析为类引用（如果需要），并将解析的类存储在bean定义中以供进一步使用。
+			Class<?> resolvedClass = resolveBeanClass(mbd, beanName);
+			if (resolvedClass != null && !mbd.hasBeanClass() && mbd.getBeanClassName() != null) {
+				mbdToUse = new RootBeanDefinition(mbd);
+				mbdToUse.setBeanClass(resolvedClass);
+			}
+	
+			// Prepare method overrides.
+			// 准备方法重写。
+			try {
+				mbdToUse.prepareMethodOverrides();
+			}
+			catch (BeanDefinitionValidationException ex) {
+				throw new BeanDefinitionStoreException(mbdToUse.getResourceDescription(),
+						beanName, "Validation of method overrides failed", ex);
+			}
+	
+			try {
+				// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+				// 给BeanPostProcessors一个返回代理而不是目标bean实例的机会。
+				Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
+				if (bean != null) {
+					return bean;
+				}
+			}
+			catch (Throwable ex) {
+				throw new BeanCreationException(mbdToUse.getResourceDescription(), beanName,
+						"BeanPostProcessor before instantiation of bean failed", ex);
+			}
+	
+			try {
+				Object beanInstance = doCreateBean(beanName, mbdToUse, args);
+				if (logger.isTraceEnabled()) {
+					logger.trace("Finished creating instance of bean '" + beanName + "'");
+				}
+				return beanInstance;
+			}
+			catch (BeanCreationException | ImplicitlyAppearedSingletonException ex) {
+				// A previously detected exception with proper bean creation context already,
+				// or illegal singleton state to be communicated up to DefaultSingletonBeanRegistry.
+				throw ex;
+			}
+			catch (Throwable ex) {
+				throw new BeanCreationException(
+						mbdToUse.getResourceDescription(), beanName, "Unexpected exception during bean creation", ex);
+			}
+		}	
