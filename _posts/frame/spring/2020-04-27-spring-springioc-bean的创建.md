@@ -8,6 +8,10 @@ tags: spring 源码
 
 ##### spring ioc的源码分析
 
+#### a.单例的创建
+
+----
+
 ###### 1.通过org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization 创建Bean 对象的过程之单例的创建,在该方法中实现了，一个实例bean的创建，实例的初始化
 
 	/**
@@ -694,3 +698,17 @@ doGetBean 源码如下
 						mbd.getResourceDescription(), beanName, "Error setting property values", ex);
 			}
 		}
+		
+
+
+#### b.多例的创建
+
+-----
+
+
+#### c.懒加载的创建
+----
+
+
+
+		
