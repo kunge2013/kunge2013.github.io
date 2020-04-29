@@ -8,7 +8,7 @@ tags: spring 源码
 
 ##### spring ioc bean的后置处理
 
-####### 1.springioc 中有两个接口都可以被现实下，分别是 BeanFactoryPostProcessor和BeanPostProcessor
+#####1.springioc 中有两个接口都可以被现实下，分别是 BeanFactoryPostProcessor和BeanPostProcessor
 
 -   1.BeanFactoryPostProcessor和BeanPostProcessor有什么区别呢?
 
