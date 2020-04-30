@@ -8,7 +8,7 @@ tags: spring 源码
 
 ##### spring ioc bean的后置处理
 
-[相关源码](https://github.com/kunge2013/spring-demo.git)
+
 
 ---
 
@@ -247,4 +247,4 @@ org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory
 
 
 
-
+[相关源码](https://github.com/kunge2013/spring-demo.git)

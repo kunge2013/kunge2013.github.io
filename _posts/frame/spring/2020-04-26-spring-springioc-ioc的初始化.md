@@ -8,7 +8,7 @@ tags: spring 源码
 
 ##### spring ioc的源码分析
 
-[相关源码](https://github.com/kunge2013/spring-demo.git)
+
 
 ###### 1.通过ClassPathXmlApplicationContext 创建Bean 对象的过程
 	
@@ -476,3 +476,6 @@ tags: spring 源码
 		// Participate in LiveBeansView MBean, if active.
 		LiveBeansView.registerApplicationContext(this);
 	}
+	
+	
+[相关源码](https://github.com/kunge2013/spring-demo.git)	
