@@ -94,8 +94,8 @@ tags: spring 源码
 -   1.InitDestroyAnnotationBeanPostProcessor后置处理器的作用?
 	InitDestroyAnnotationBeanPostProcessor 后置处理器主要用于，实例化bean后解析 PostConstruct 和 PreDestroy 注解，如果当前的bean 
 	配置了PostConstruct 或 PreDestroy，那么 会通过反射的方式获取到当前bean的方法，然后在执行PostConstruct和PreDestroy对应的方法
-	
-		@Override
+
+	@Override
 			public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
 				LifecycleMetadata metadata = findLifecycleMetadata(beanType);
 				metadata.checkConfigMembers(beanDefinition);
