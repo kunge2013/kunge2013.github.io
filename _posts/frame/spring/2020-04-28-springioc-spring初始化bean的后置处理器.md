@@ -196,8 +196,8 @@ tags: spring 源码
 --- 
 
 -   3.执行, 该后置处理器在org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory # applyMergedBeanDefinitionPostProcessors中调用初始化参数
-
-org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyBeanPostProcessorsBeforeInitialization 调用执行后置处理器,调用位置如下
+org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory
+	#applyBeanPostProcessorsBeforeInitialization 调用执行后置处理器,调用位置如下
 	
 -  a.上层调用栈
 
