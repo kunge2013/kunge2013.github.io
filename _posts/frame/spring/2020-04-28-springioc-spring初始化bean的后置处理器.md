@@ -88,7 +88,7 @@ tags: spring 源码
 	}
 
 	
-##### 2.spring bean 对象注解初始化 后置处理器 org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor
+##### 2.spring bean 对象注解初始化 后置处理器 InitDestroyAnnotationBeanPostProcessor
 
 
 -   1.InitDestroyAnnotationBeanPostProcessor后置处理器的作用?
