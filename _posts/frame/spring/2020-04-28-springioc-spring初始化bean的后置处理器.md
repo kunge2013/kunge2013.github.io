@@ -88,12 +88,13 @@ tags: spring 源码
 	}
 
 	
-##### 2.spring bean 对象注解初始化 后置处理器 org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor
+#####2.spring bean 对象注解初始化 后置处理器 org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor
 
 
 -   1.InitDestroyAnnotationBeanPostProcessor后置处理器的作用?
 	InitDestroyAnnotationBeanPostProcessor 后置处理器主要用于，实例化bean后解析 PostConstruct 和 PreDestroy 注解，如果当前的bean 
 	配置了PostConstruct 或 PreDestroy，那么 会通过反射的方式获取到当前bean的方法，然后在执行PostConstruct和PreDestroy对应的方法
+	
 	
 	@Override
 	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
@@ -194,46 +195,46 @@ tags: spring 源码
 org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyBeanPostProcessorsBeforeInitialization 调用执行后置处理器,调用位置如下
 	
 -  a.上层调用栈
+
+		/**
+			 * 执行后置处理器
+			 */
+			@Override
+			public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
+					throws BeansException {
+		
+				Object result = existingBean;
+				for (BeanPostProcessor processor : getBeanPostProcessors()) {
+					Object current = processor.postProcessBeforeInitialization(result, beanName);
+					if (current == null) {
+						return result;
+					}
+					result = current;
+				}
+				return result;
+			}
+		
+-   b.执行后置处理器并初始化bean的属性值	，初始化代码逻辑如下
 	
-	/**
-		 * 执行后置处理器
+	
+		/**
+		 * 	执行后置处理器
+		 * 	初始化bean的属性
+		 * 
 		 */
 		@Override
-		public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
-				throws BeansException {
-	
-			Object result = existingBean;
-			for (BeanPostProcessor processor : getBeanPostProcessors()) {
-				Object current = processor.postProcessBeforeInitialization(result, beanName);
-				if (current == null) {
-					return result;
-				}
-				result = current;
+		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+			LifecycleMetadata metadata = findLifecycleMetadata(bean.getClass());
+			try {
+				metadata.invokeInitMethods(bean, beanName);
 			}
-			return result;
+			catch (InvocationTargetException ex) {
+				throw new BeanCreationException(beanName, "Invocation of init method failed", ex.getTargetException());
+			}
+			catch (Throwable ex) {
+				throw new BeanCreationException(beanName, "Failed to invoke init method", ex);
+			}
+			return bean;
 		}
-	
--   b.执行后置处理器并初始化bean的属性值	
-	
-	初始化代码逻辑如下
-	/**
-	 * 	执行后置处理器
-	 * 	初始化bean的属性
-	 * 
-	 */
-	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		LifecycleMetadata metadata = findLifecycleMetadata(bean.getClass());
-		try {
-			metadata.invokeInitMethods(bean, beanName);
-		}
-		catch (InvocationTargetException ex) {
-			throw new BeanCreationException(beanName, "Invocation of init method failed", ex.getTargetException());
-		}
-		catch (Throwable ex) {
-			throw new BeanCreationException(beanName, "Failed to invoke init method", ex);
-		}
-		return bean;
-	}
 	
 	
