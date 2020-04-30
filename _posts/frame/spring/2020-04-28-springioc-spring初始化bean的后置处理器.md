@@ -8,6 +8,7 @@ tags: spring 源码
 
 ##### spring ioc bean的后置处理
 
+---
 
 ##### 1.springioc 中有两个接口都可以被现实下，分别是 BeanFactoryPostProcessor和BeanPostProcessor
 
@@ -87,9 +88,11 @@ tags: spring 源码
 		
 	}
 
+---
 	
 ##### 2.spring bean 对象注解初始化 后置处理器 InitDestroyAnnotationBeanPostProcessor
 
+---
 
 -   1.InitDestroyAnnotationBeanPostProcessor后置处理器的作用?
 	InitDestroyAnnotationBeanPostProcessor 后置处理器主要用于，实例化bean后解析 PostConstruct 和 PreDestroy 注解，如果当前的bean 
@@ -163,8 +166,11 @@ tags: spring 源码
 			return (initMethods.isEmpty() && destroyMethods.isEmpty() ? this.emptyLifecycleMetadata :
 					new LifecycleMetadata(clazz, initMethods, destroyMethods));
 		}	
+
 	
-	
+
+
+--- 	
 	
 -   2.初始化参数， 该后置处理器在org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory # applyMergedBeanDefinitionPostProcessors中调用初始化参数
 
@@ -187,6 +193,7 @@ tags: spring 源码
 		}
 
 
+--- 
 
 -   3.执行, 该后置处理器在org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory # applyMergedBeanDefinitionPostProcessors中调用初始化参数
 
