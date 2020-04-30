@@ -115,7 +115,7 @@ tags: spring 源码
 				synchronized (this.lifecycleMetadataCache) {
 					metadata = this.lifecycleMetadataCache.get(clazz);
 					if (metadata == null) {
-						// 获取是由引用了  PostConstruct 或者  PreDestroy的相关注解 ，也就是是否自定义了对bean 的自定义的方法
+				// 获取是由引用了PostConstruct或者  PreDestroy的相关注解 ，也就是是否自定义了对bean 的自定义的方法
 						metadata = buildLifecycleMetadata(clazz);
 						this.lifecycleMetadataCache.put(clazz, metadata);
 					}
