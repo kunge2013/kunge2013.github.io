@@ -373,5 +373,59 @@ org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory
 		return proxyFactory.getProxy(getProxyClassLoader());
 	}
 	
+##### spring ioc 九次执行后置处理器的顺序
+
+-   1.生命周期的九大后置处理器
+第一次调用后置处理器org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#resolveBeforeInstantiation
+调用的是InstantiationAwareBeanPostProcessor --> postProcessBeforeInstantiation方法
+当一个bean在实例化之前，判断这个bean要不要产生一些新的对象，InstantiationAwareBeanPostProcessor的postProcessBeforeInstantiation方法可以返回任何类型，如果返回的对象不为null，就调用beanPostProcessor的postProcessAfterInitialization方法；后面的初始化、属性注入、实例化等方法都不会再调用
+如果返回null，就正常的执行流程
+在spring AOP当中，spring如果判断当前类100%不需要进行增强(判断当前bean是否是advice、pointcut、advisor、aopInfrastructureBean的子类，如果是，无需增强)，会把这个bean放到一个map中，并将value置为false，那么在后面进行增强的时候，会排除这个map中的bean
+
+
+-   2.第二次调用后置处理器，该后置处理器推断使用哪个构造函数来初始化bean对象
+org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#determineConstructorsFromBeanPostProcessors
+
+```
+在推断使用哪一个构造函数的时候，会首先判断当前构造函数是否有@Value和@Autowired注解，如果没有，那就校验当前构造方法对应的bean和传来的beanClass是否一样，如果是同一个，就把当前构造函数赋值给defaultConstructor
+
+在第二次调用后置处理器的时候，会返回当前可用的构造函数，由此来决定，使用哪个构造函数来创建bean
+```
+
+-   3.都三次调用后置处理器
+org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyMergedBeanDefinitionPostProcessors
+调用的是MergedBeanDefinitionPostProcessor --> postProcessMergedBeanDefinition 第三个后置处理器，这个后置处理器，待学习之后，再补充；在该后置处理器执行时，会
+
+
+-   4.第四次调用后置处理器
+org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#getEarlyBeanReference
+SmartInstantiationAwareBeanPostProcessor --> getEarlyBeanReference 第四个后置处理器(把创建的对象 放到earlySingletonObjects，解决循环依赖的)，处理循环依赖问题会用到这个后置处理器
+这里通过后置处理器，暴露出一个ObjectFactory（个人理解是一个bean工厂），可以完成bean的实例化等操作
+
+-   5.第五次调用后置处理器
+org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#populateBean--InstantiationAwareBeanPostProcessor--postProcessAfterInstantiation
+调用的是InstantiationAwareBeanPostProcessor --> postProcessAfterInstantiation 第五个后置处理器(判断是否需要填充属性)
+如果我们需要在程序中自己注入属性，可以利用这个点，在这里返回false，那么spring就不会调用下面这个后置处理器来注入属性
+
+-   6.第六次调用后置处理器
+org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#populateBean--InstantiationAwareBeanPostProcessor--postProcessPropertyValues
+调用的是InstantiationAwareBeanPostProcessor --> postProcessPropertyValues 第六个(处理类的属性值)
+
+-   7.第七次调用后置处理器
+org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyBeanPostProcessorsBeforeInitialization
+调用的是BeanPostProcessor --> postProcessBeforeInitialization bean初始化方法执行之前执行这个方法
+
+-   8.第八次调用后置处理器
+org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyBeanPostProcessorsAfterInitialization
+调用的是BeanPostProcessor --> postProcessAfterInitialization bean初始化之后执行的方法(处理AOP)
+
+-   9.第九次是在销毁bean容器的时候调用的
+在调用ac.close()方法的时候，会调用该后置处理器 org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor#postProcessBeforeDestruction
+
+ 
+
+以上是spring声明周期中需要用到的几个后置处理器，后面再持续更新补充
+
+
 	
 [相关源码](https://github.com/kunge2013/spring-demo.git)
