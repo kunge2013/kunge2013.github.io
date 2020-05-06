@@ -273,95 +273,96 @@ org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory
 
 
 -   b.具体后置处理器是通过 org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator 的 postProcessAfterInitialization(@Nullable Object bean, String beanName)生成
-
-		/**
-		 * Create a proxy with the configured interceptors if the bean is
-		 * identified as one to proxy by the subclass.
-		 * @see #getAdvicesAndAdvisorsForBean
-		 * XXX  生成代理对象
-		 */
-		@Override
-		public Object postProcessAfterInitialization(@Nullable Object bean, String beanName) {
-			if (bean != null) {
-				Object cacheKey = getCacheKey(bean.getClass(), beanName);
-				if (this.earlyProxyReferences.remove(cacheKey) != bean) {
-					return wrapIfNecessary(bean, beanName, cacheKey);
+	
+			/**
+			 * Create a proxy with the configured interceptors if the bean is
+			 * identified as one to proxy by the subclass.
+			 * @see #getAdvicesAndAdvisorsForBean
+			 * XXX  生成代理对象
+			 */
+			@Override
+			public Object postProcessAfterInitialization(@Nullable Object bean, String beanName) {
+				if (bean != null) {
+					Object cacheKey = getCacheKey(bean.getClass(), beanName);
+					if (this.earlyProxyReferences.remove(cacheKey) != bean) {
+						return wrapIfNecessary(bean, beanName, cacheKey);
+					}
 				}
+				return bean;
 			}
-			return bean;
-		}
-	/**
-	 * XXX 生成 Wrap的对象代理
-	 * Wrap the given bean if necessary, i.e. if it is eligible for being proxied.
-	 * @param bean the raw bean instance
-	 * @param beanName the name of the bean
-	 * @param cacheKey the cache key for metadata access
-	 * @return a proxy wrapping the bean, or the raw bean instance as-is
-	 */
-	protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) {
-		if (StringUtils.hasLength(beanName) && this.targetSourcedBeans.contains(beanName)) {
-			return bean;
-		}
-		if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {
-			return bean;
-		}
-		if (isInfrastructureClass(bean.getClass()) || shouldSkip(bean.getClass(), beanName)) {
+		
+		/**
+		 * XXX 生成 Wrap的对象代理
+		 * Wrap the given bean if necessary, i.e. if it is eligible for being proxied.
+		 * @param bean the raw bean instance
+		 * @param beanName the name of the bean
+		 * @param cacheKey the cache key for metadata access
+		 * @return a proxy wrapping the bean, or the raw bean instance as-is
+		 */
+		protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) {
+			if (StringUtils.hasLength(beanName) && this.targetSourcedBeans.contains(beanName)) {
+				return bean;
+			}
+			if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {
+				return bean;
+			}
+			if (isInfrastructureClass(bean.getClass()) || shouldSkip(bean.getClass(), beanName)) {
+				this.advisedBeans.put(cacheKey, Boolean.FALSE);
+				return bean;
+			}
+			// Create proxy if we have advice.
+			Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
+			// 是否需要进行动态代理
+			if (specificInterceptors != DO_NOT_PROXY) {
+				this.advisedBeans.put(cacheKey, Boolean.TRUE);
+				Object proxy = createProxy(
+						bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
+				this.proxyTypes.put(cacheKey, proxy.getClass());
+				return proxy;
+			}
 			this.advisedBeans.put(cacheKey, Boolean.FALSE);
 			return bean;
 		}
-		// Create proxy if we have advice.
-		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
-		// 是否需要进行动态代理
-		if (specificInterceptors != DO_NOT_PROXY) {
-			this.advisedBeans.put(cacheKey, Boolean.TRUE);
-			Object proxy = createProxy(
-					bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
-			this.proxyTypes.put(cacheKey, proxy.getClass());
-			return proxy;
-		}
-		this.advisedBeans.put(cacheKey, Boolean.FALSE);
-		return bean;
-	}
-	/**
-	 * XXX 生成相关AOP代理切面参数
-	 * Create an AOP proxy for the given bean.
-	 * @param beanClass the class of the bean
-	 * @param beanName the name of the bean
-	 * @param specificInterceptors the set of interceptors that is
-	 * specific to this bean (may be empty, but not null)
-	 * @param targetSource the TargetSource for the proxy,
-	 * already pre-configured to access the bean
-	 * @return the AOP proxy for the bean
-	 * @see #buildAdvisors
-	 */
-	protected Object createProxy(Class<?> beanClass, @Nullable String beanName,
-			@Nullable Object[] specificInterceptors, TargetSource targetSource) {
-
-		if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
-			AutoProxyUtils.exposeTargetClass((ConfigurableListableBeanFactory) this.beanFactory, beanName, beanClass);
-		}
-
-		ProxyFactory proxyFactory = new ProxyFactory();
-		proxyFactory.copyFrom(this);
-
-		if (!proxyFactory.isProxyTargetClass()) {
-			if (shouldProxyTargetClass(beanClass, beanName)) {
-				proxyFactory.setProxyTargetClass(true);
+		/**
+		 * XXX 生成相关AOP代理切面参数
+		 * Create an AOP proxy for the given bean.
+		 * @param beanClass the class of the bean
+		 * @param beanName the name of the bean
+		 * @param specificInterceptors the set of interceptors that is
+		 * specific to this bean (may be empty, but not null)
+		 * @param targetSource the TargetSource for the proxy,
+		 * already pre-configured to access the bean
+		 * @return the AOP proxy for the bean
+		 * @see #buildAdvisors
+		 */
+		protected Object createProxy(Class<?> beanClass, @Nullable String beanName,
+				@Nullable Object[] specificInterceptors, TargetSource targetSource) {
+	
+			if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
+				AutoProxyUtils.exposeTargetClass((ConfigurableListableBeanFactory) this.beanFactory, beanName, beanClass);
 			}
-			else {
-				evaluateProxyInterfaces(beanClass, proxyFactory);
+	
+			ProxyFactory proxyFactory = new ProxyFactory();
+			proxyFactory.copyFrom(this);
+	
+			if (!proxyFactory.isProxyTargetClass()) {
+				if (shouldProxyTargetClass(beanClass, beanName)) {
+					proxyFactory.setProxyTargetClass(true);
+				}
+				else {
+					evaluateProxyInterfaces(beanClass, proxyFactory);
+				}
 			}
+			Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
+			proxyFactory.addAdvisors(advisors);
+			proxyFactory.setTargetSource(targetSource);
+			customizeProxyFactory(proxyFactory);
+			proxyFactory.setFrozen(this.freezeProxy);
+			if (advisorsPreFiltered()) {
+				proxyFactory.setPreFiltered(true);
+			}
+			return proxyFactory.getProxy(getProxyClassLoader());
 		}
-		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
-		proxyFactory.addAdvisors(advisors);
-		proxyFactory.setTargetSource(targetSource);
-		customizeProxyFactory(proxyFactory);
-		proxyFactory.setFrozen(this.freezeProxy);
-		if (advisorsPreFiltered()) {
-			proxyFactory.setPreFiltered(true);
-		}
-		return proxyFactory.getProxy(getProxyClassLoader());
-	}
 	
 ---
 	
