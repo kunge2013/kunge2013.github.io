@@ -362,7 +362,7 @@ org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory
 				proxyFactory.setPreFiltered(true);
 			}
 			return proxyFactory.getProxy(getProxyClassLoader());
-		}
+	}
 	
 ---
 	
