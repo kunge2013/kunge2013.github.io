@@ -67,18 +67,16 @@ tags: spring 源码
 
 -   2.装配过程
 
-
-	/**
-		 * @describle 查看当前bean 是否用到了 Scheduled 的相关注解，如果用到了就直接创建新的 task ，并根据表达式生成相关的执行时间
-		 */
-		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName) {
-			if (bean instanceof AopInfrastructureBean || bean instanceof TaskScheduler ||
-					bean instanceof ScheduledExecutorService) {
-				// Ignore AOP infrastructure such as scoped proxies.
-				return bean;
-			}
-	
+		/**
+			 * @describle 查看当前bean 是否用到了 Scheduled 的相关注解，如果用到了就直接创建新的 task ，并根据表达式生成相关的执行时间
+			 */
+			@Override
+			public Object postProcessAfterInitialization(Object bean, String beanName) {
+				if (bean instanceof AopInfrastructureBean || bean instanceof TaskScheduler ||
+						bean instanceof ScheduledExecutorService) {
+					// Ignore AOP infrastructure such as scoped proxies.
+					return bean;
+				}
 			Class<?> targetClass = AopProxyUtils.ultimateTargetClass(bean);
 			if (!this.nonAnnotatedClasses.contains(targetClass) &&
 					AnnotationUtils.isCandidateClass(targetClass, Arrays.asList(Scheduled.class, Schedules.class))) {
