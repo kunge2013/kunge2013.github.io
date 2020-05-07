@@ -251,26 +251,26 @@ org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory
 -   a.spring 动态代理bean 是在第8次后置处理器中生成 , 代码如下
 
 	/**
-			 * XXX 第八次调用后置处理器
-			 *	org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyBeanPostProcessorsAfterInitialization
-			 *	调用的是BeanPostProcessor --> postProcessAfterInitialization bean初始化之后执行的方法(处理AOP)
-			 */
-			@Override
-			public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
-					throws BeansException {
-				Object result = existingBean;
-				for (BeanPostProcessor processor : getBeanPostProcessors()) {
-					/**
-					 * 创建动态代理对象
-					 */
-					Object current = processor.postProcessAfterInitialization(result, beanName); //见 b的代码块
-					if (current == null) {
-						return result;
+				 * XXX 第八次调用后置处理器
+				 *	org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyBeanPostProcessorsAfterInitialization
+				 *	调用的是BeanPostProcessor --> postProcessAfterInitialization bean初始化之后执行的方法(处理AOP)
+				 */
+				@Override
+				public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
+						throws BeansException {
+					Object result = existingBean;
+					for (BeanPostProcessor processor : getBeanPostProcessors()) {
+						/**
+						 * 创建动态代理对象
+						 */
+						Object current = processor.postProcessAfterInitialization(result, beanName); //见 b的代码块
+						if (current == null) {
+							return result;
+						}
+						result = current;
 					}
-					result = current;
+					return result;
 				}
-				return result;
-			}
 
 
 -   b.具体后置处理器是通过 org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator 的 postProcessAfterInitialization(@Nullable Object bean, String beanName)生成
