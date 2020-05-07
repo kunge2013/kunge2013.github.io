@@ -16,9 +16,9 @@ tags: spring 源码
 
 -   c.示例如下
 
-	@Configuration
-	@EnableScheduling
-	public class ScheduleService {
+		@Configuration
+		@EnableScheduling
+		public class ScheduleService {
 	
 		long prefix = System.currentTimeMillis();
 		ScheduledMethodRunnable r;
