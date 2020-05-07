@@ -250,7 +250,8 @@ org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory
 
 -   a.spring 动态代理bean 是在第8次后置处理器中生成 , 代码如下
 
-	/**
+
+				/**
 				 * XXX 第八次调用后置处理器
 				 *	org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory#applyBeanPostProcessorsAfterInitialization
 				 *	调用的是BeanPostProcessor --> postProcessAfterInitialization bean初始化之后执行的方法(处理AOP)
@@ -271,6 +272,7 @@ org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory
 					}
 					return result;
 				}
+
 
 
 -   b.具体后置处理器是通过 org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator 的 postProcessAfterInitialization(@Nullable Object bean, String beanName)生成
