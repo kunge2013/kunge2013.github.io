@@ -65,7 +65,7 @@ tags: spring 源码
 			return result;
 		}
 
--   2.装配过程
+-   2.装配过程 org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor#postProcessAfterInitialization
 
 		/**
 			 * @describle 查看当前bean 是否用到了 Scheduled 的相关注解，如果用到了就直接创建新的 task ，并根据表达式生成相关的执行时间
@@ -113,7 +113,7 @@ tags: spring 源码
 
 
 
--   3.具体装配流程如下代码
+-   3.具体装配流程如下代码 org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor#processScheduled
 
 
 		/**
