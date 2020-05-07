@@ -256,135 +256,135 @@ tags: spring 源码
 -   4.针对org.springframework.scheduling.config.ScheduledTaskRegistrar#afterPropertiesSet() 第三步的过程 中的， registrar( ScheduledTaskRegistrar) 
 	对象实现了InitializingBean的方法，当所有的bean 初始化完毕后会执行一次 afterPropertiesSet  依次调用 scheduleTasks()方法创建定时任务线程池，并初始化任务调度的过程
 
-	@Override
-	public void afterPropertiesSet() {
-		scheduleTasks();
-	}
-	/**
-		 * Schedule all registered tasks against the underlying
-		 * {@linkplain #setTaskScheduler(TaskScheduler) task scheduler}.
-		 *
-		 * @Describle 任务调度线程池初始化,添加任务到线程池中
-		 * 
-		 */
-		@SuppressWarnings("deprecation")
-		protected void scheduleTasks() {
-			if (this.taskScheduler == null) {
-				this.localExecutor = Executors.newSingleThreadScheduledExecutor();
-				this.taskScheduler = new ConcurrentTaskScheduler(this.localExecutor);
-			}
-			if (this.triggerTasks != null) {
-				for (TriggerTask task : this.triggerTasks) {
-					addScheduledTask(scheduleTriggerTask(task));
-				}
-			}
-			if (this.cronTasks != null) {
-				for (CronTask task : this.cronTasks) {
-					addScheduledTask(scheduleCronTask(task));
-				}
-			}
-			if (this.fixedRateTasks != null) {
-				for (IntervalTask task : this.fixedRateTasks) {
-					addScheduledTask(scheduleFixedRateTask(task));
-				}
-			}
-			if (this.fixedDelayTasks != null) {
-				for (IntervalTask task : this.fixedDelayTasks) {
-					addScheduledTask(scheduleFixedDelayTask(task));
-				}
-			}
+		@Override
+		public void afterPropertiesSet() {
+			scheduleTasks();
 		}
+		/**
+			 * Schedule all registered tasks against the underlying
+			 * {@linkplain #setTaskScheduler(TaskScheduler) task scheduler}.
+			 *
+			 * @Describle 任务调度线程池初始化,添加任务到线程池中
+			 * 
+			 */
+			@SuppressWarnings("deprecation")
+			protected void scheduleTasks() {
+				if (this.taskScheduler == null) {
+					this.localExecutor = Executors.newSingleThreadScheduledExecutor();
+					this.taskScheduler = new ConcurrentTaskScheduler(this.localExecutor);
+				}
+				if (this.triggerTasks != null) {
+					for (TriggerTask task : this.triggerTasks) {
+						addScheduledTask(scheduleTriggerTask(task));
+					}
+				}
+				if (this.cronTasks != null) {
+					for (CronTask task : this.cronTasks) {
+						addScheduledTask(scheduleCronTask(task));
+					}
+				}
+				if (this.fixedRateTasks != null) {
+					for (IntervalTask task : this.fixedRateTasks) {
+						addScheduledTask(scheduleFixedRateTask(task));
+					}
+				}
+				if (this.fixedDelayTasks != null) {
+					for (IntervalTask task : this.fixedDelayTasks) {
+						addScheduledTask(scheduleFixedDelayTask(task));
+					}
+				}
+			}
 
 
 -   5.添加任务到线程池中org.springframework.scheduling.config#scheduleTriggerTask()，代码如下
 
 
-	/**
-		 * Schedule the specified trigger task, either right away if possible
-		 * or on initialization of the scheduler.
-		 * @return a handle to the scheduled task, allowing to cancel it
-		 * @since 4.3
-		 */
-		@Nullable
-		public ScheduledTask scheduleTriggerTask(TriggerTask task) {
-			ScheduledTask scheduledTask = this.unresolvedTasks.remove(task);
-			boolean newTask = false;
-			if (scheduledTask == null) {
-				scheduledTask = new ScheduledTask(task);
-				newTask = true;
-			}
-			/**
-			 *@describle 添加任务到线程池
+		/**
+			 * Schedule the specified trigger task, either right away if possible
+			 * or on initialization of the scheduler.
+			 * @return a handle to the scheduled task, allowing to cancel it
+			 * @since 4.3
 			 */
-			if (this.taskScheduler != null) {
-				scheduledTask.future = this.taskScheduler.schedule(task.getRunnable(), task.getTrigger());
+			@Nullable
+			public ScheduledTask scheduleTriggerTask(TriggerTask task) {
+				ScheduledTask scheduledTask = this.unresolvedTasks.remove(task);
+				boolean newTask = false;
+				if (scheduledTask == null) {
+					scheduledTask = new ScheduledTask(task);
+					newTask = true;
+				}
+				/**
+				 *@describle 添加任务到线程池
+				 */
+				if (this.taskScheduler != null) {
+					scheduledTask.future = this.taskScheduler.schedule(task.getRunnable(), task.getTrigger());
+				}
+				else {
+					addTriggerTask(task);
+					this.unresolvedTasks.put(task, scheduledTask);
+				}
+				return (newTask ? scheduledTask : null);
 			}
-			else {
-				addTriggerTask(task);
-				this.unresolvedTasks.put(task, scheduledTask);
-			}
-			return (newTask ? scheduledTask : null);
-		}
 
 
 -   6.由于taskScheduler是一个org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler对象,再第5步的时候 会调用如下方法
 
 
-	@Override
-	@Nullable
-	public ScheduledFuture<?> schedule(Runnable task, Trigger trigger) {
-		ScheduledExecutorService executor = getScheduledExecutor();
-		try {
-			ErrorHandler errorHandler = this.errorHandler;
-			if (errorHandler == null) {
-				errorHandler = TaskUtils.getDefaultErrorHandler(true);
+		@Override
+		@Nullable
+		public ScheduledFuture<?> schedule(Runnable task, Trigger trigger) {
+			ScheduledExecutorService executor = getScheduledExecutor();
+			try {
+				ErrorHandler errorHandler = this.errorHandler;
+				if (errorHandler == null) {
+					errorHandler = TaskUtils.getDefaultErrorHandler(true);
+				}
+				return new ReschedulingRunnable(task, trigger, executor, errorHandler).schedule();
 			}
-			return new ReschedulingRunnable(task, trigger, executor, errorHandler).schedule();
+			catch (RejectedExecutionException ex) {
+				throw new TaskRejectedException("Executor [" + executor + "] did not accept task: " + task, ex);
+			}
 		}
-		catch (RejectedExecutionException ex) {
-			throw new TaskRejectedException("Executor [" + executor + "] did not accept task: " + task, ex);
-		}
-	}
 
 
 -   7.当新建了任务ReschedulingRunnable后任务会循环对象中调用，因此就实现了定时任务的功能，具体核心代码如下，
  this.executor.schedule(this, initialDelay, TimeUnit.MILLISECONDS)->run() {schedule();}
 
 
-	/**
-		 * @descriple 将任务丢到定时执行任务的线程池中，计算下次执行任务的时间, 将任务丢到线程池中,此处一直通过run方法循环调用，达到把任务丢进定时线程池的效果
-		 * 
-		 * @return
-		 */
-		@Nullable
-		public ScheduledFuture<?> schedule() {
-			synchronized (this.triggerContextMonitor) {
-				this.scheduledExecutionTime = this.trigger.nextExecutionTime(this.triggerContext);
-				if (this.scheduledExecutionTime == null) {
-					return null;
-				}
-				long initialDelay = this.scheduledExecutionTime.getTime() - System.currentTimeMillis();
-				// 将任务丢到线程池中,此处一直通过run方法循环调用，达到把任务丢进定时线程池的效果
-				this.currentFuture = this.executor.schedule(this, initialDelay, TimeUnit.MILLISECONDS);
-				return this;
-			}
-		}
-	/**
-		 * @descriple 执行当前本次任务 ， 添加下次执行的时间任务 
-		 */
-		@Override
-		public void run() {
-			Date actualExecutionTime = new Date();
-			super.run();
-			Date completionTime = new Date();
-			synchronized (this.triggerContextMonitor) {
-				Assert.state(this.scheduledExecutionTime != null, "No scheduled execution");
-				this.triggerContext.update(this.scheduledExecutionTime, actualExecutionTime, completionTime);
-				if (!obtainCurrentFuture().isCancelled()) {
-					//TODO  添加下次执行的时间任务 
-					schedule();
+		/**
+			 * @descriple 将任务丢到定时执行任务的线程池中，计算下次执行任务的时间, 将任务丢到线程池中,此处一直通过run方法循环调用，达到把任务丢进定时线程池的效果
+			 * 
+			 * @return
+			 */
+			@Nullable
+			public ScheduledFuture<?> schedule() {
+				synchronized (this.triggerContextMonitor) {
+					this.scheduledExecutionTime = this.trigger.nextExecutionTime(this.triggerContext);
+					if (this.scheduledExecutionTime == null) {
+						return null;
+					}
+					long initialDelay = this.scheduledExecutionTime.getTime() - System.currentTimeMillis();
+					// 将任务丢到线程池中,此处一直通过run方法循环调用，达到把任务丢进定时线程池的效果
+					this.currentFuture = this.executor.schedule(this, initialDelay, TimeUnit.MILLISECONDS);
+					return this;
 				}
 			}
-		}
+		/**
+			 * @descriple 执行当前本次任务 ， 添加下次执行的时间任务 
+			 */
+			@Override
+			public void run() {
+				Date actualExecutionTime = new Date();
+				super.run();
+				Date completionTime = new Date();
+				synchronized (this.triggerContextMonitor) {
+					Assert.state(this.scheduledExecutionTime != null, "No scheduled execution");
+					this.triggerContext.update(this.scheduledExecutionTime, actualExecutionTime, completionTime);
+					if (!obtainCurrentFuture().isCancelled()) {
+						//TODO  添加下次执行的时间任务 
+						schedule();
+					}
+				}
+			}
 		
 [相关源码](https://github.com/kunge2013/spring-demo.git)
