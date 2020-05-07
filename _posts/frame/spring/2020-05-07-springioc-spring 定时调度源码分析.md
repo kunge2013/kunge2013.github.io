@@ -11,7 +11,6 @@ tags: spring 源码
 -   a.启用定时调度 @EnableScheduling
 
 
-
 -   b.配置corn表达式 @Scheduled(cron = "*/10 * * * * *")
 
 
