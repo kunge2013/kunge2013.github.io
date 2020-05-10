@@ -11,8 +11,8 @@ tags: tomcat 源码
 相关代码如下:
 
 
-	public class TomcatServletWebServerFactory extends AbstractServletWebServerFactory
-			implements ConfigurableTomcatWebServerFactory, ResourceLoaderAware {
+		public class TomcatServletWebServerFactory extends AbstractServletWebServerFactory
+				implements ConfigurableTomcatWebServerFactory, ResourceLoaderAware {
 	
 		private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 	
@@ -50,14 +50,14 @@ tags: tomcat 源码
 
 -   2.Connector创建的时候需要构造参数，在connector 实例化的过程中会根据协议确定当前对象采取io模型， 构造方法如下
 
-	/**
-	     * @describle 实例化connector 对象
-	     * @param protocol
-	     */
-	    public Connector(String protocol) {
-	        boolean aprConnector = AprLifecycleListener.isAprAvailable() &&
-	                AprLifecycleListener.getUseAprConnector();
-	
+		/**
+		     * @describle 实例化connector 对象
+		     * @param protocol
+		     */
+		    public Connector(String protocol) {
+		        boolean aprConnector = AprLifecycleListener.isAprAvailable() &&
+		                AprLifecycleListener.getUseAprConnector();
+		
 	        /**
 	         * 默认是 org.apache.coyote.http11.Http11NioProtocol
 	         */
@@ -103,31 +103,31 @@ tags: tomcat 源码
 
 -   a.EPollSelectorImpl默认选择配置，如果系统没有配置 java.nio.channels.spi.SelectorProvider，那么jdk会默认调用provider = sun.nio.ch.DefaultSelectorProvider.create();而DefaultSelectorProvider在不同的操作系统系统会获取不同的Provider代码如下
 
-	 public static SelectorProvider provider() {
-	        synchronized (lock) {
-	            if (provider != null)
-	                return provider;
-	            return AccessController.doPrivileged(
-	                new PrivilegedAction<SelectorProvider>() {
-	                    public SelectorProvider run() {
-	                            if (loadProviderFromProperty())
-	                                return provider;
-	                            if (loadProviderAsService())
-	                                return provider;
-	                            provider = sun.nio.ch.DefaultSelectorProvider.create();
-	                            return provider;
-	                        }
-	                    });
-	        }
-	    }
-	
-	
-	
-	/**
-	 * Creates this platform's default SelectorProvider
-	 */
-	
-	public class DefaultSelectorProvider {
+		 public static SelectorProvider provider() {
+		        synchronized (lock) {
+		            if (provider != null)
+		                return provider;
+		            return AccessController.doPrivileged(
+		                new PrivilegedAction<SelectorProvider>() {
+		                    public SelectorProvider run() {
+		                            if (loadProviderFromProperty())
+		                                return provider;
+		                            if (loadProviderAsService())
+		                                return provider;
+		                            provider = sun.nio.ch.DefaultSelectorProvider.create();
+		                            return provider;
+		                        }
+		                    });
+		        }
+		    }
+		
+		
+		
+		/**
+		 * Creates this platform's default SelectorProvider
+		 */
+		
+		public class DefaultSelectorProvider {
 	
 	    /**
 	     * Prevent instantiation.
