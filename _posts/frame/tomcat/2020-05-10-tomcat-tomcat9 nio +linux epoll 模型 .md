@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "tomcat nio +linux epoll 模型"
+title:  "深入剖析 tomcat nio +linux epoll 模型"
 date:   2020-05-10 00:06:05
 categories: tomcat
 tags: tomcat 源码
@@ -166,7 +166,16 @@ tags: tomcat 源码
 	} 
 
 
--   2.tomcat 默认使用配置使用的是 org.apache.tomcat.util.net.NioEndpoint ，具体初始化创建方法如下
+-   2.tomcat 之nio 事件处理流程,首先看一下时序图
+
+<div align="left">  
+	<img src="https://kunge2013.github.io/images/frame/tomcat/tomcatnio 时序图.png" width="600px"/>
+</div>
+
+
+-   3.代码如下
+
+
 
 
 
