@@ -7,7 +7,7 @@ tags: tomcat 源码
 ---
 
 ##### springboot , tomcat nio +linux epoll 模型
--   1.springboot 默认启动tomcat时候 会从 TomcatServletWebServerFactory 获取默认协议而默认是 org.apache.coyote.http11.Http11NioProtocol
+-   1.springboot 默认启动tomcat时候 会从 TomcatServletWebServerFactory 获取默认协议而是 org.apache.coyote.http11.Http11NioProtocol
 相关代码如下:
 
 
