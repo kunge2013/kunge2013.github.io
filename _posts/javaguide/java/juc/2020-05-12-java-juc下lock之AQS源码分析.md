@@ -104,7 +104,9 @@ tags: java
 		}
 	}
 
+---
 
 ###### 二.ReentrantLock可重入原理分析
 
+-   1.ReentrantLock核心是根据 ReentrantLock.Sync来实现，而 Sync抽象类父类是 AbstractQueuedSynchronizer，Sync的子类有两个分别是 NonfairSync（非公平锁）和 FairSync（公平锁）
 
