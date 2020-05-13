@@ -109,4 +109,23 @@ tags: java
 ###### 二.ReentrantLock可重入原理分析
 
 -   1.ReentrantLock核心是根据 ReentrantLock.Sync来实现，而 Sync抽象类父类是 AbstractQueuedSynchronizer，Sync的子类有两个分别是 NonfairSync（非公平锁）和 FairSync（公平锁）
+ReentrantLock默认无参构造方法是 NonfairSync（非公平锁）具体代码如下、
 
+	
+	    public ReentrantLock() {
+	        sync = new NonfairSync();
+	    }
+	
+	    /**
+	     * Creates an instance of {@code ReentrantLock} with the
+	     * given fairness policy.
+	     *
+	     * @param fair {@code true} if this lock should use a fair ordering policy
+	     */
+	    public ReentrantLock(boolean fair) {
+	        sync = fair ? new FairSync() : new NonfairSync();
+	    }
+
+
+
+-   2.
