@@ -25,12 +25,12 @@ tags: java
 
 -   4.下面一段代码体现可重入，可中断的特性
 
-	package com.kframe;
-	
-	import java.util.concurrent.locks.LockSupport;
-	import java.util.concurrent.locks.ReentrantLock;
-	
-	public class ReentrantLockDemo implements Runnable {
+		package com.kframe;
+		
+		import java.util.concurrent.locks.LockSupport;
+		import java.util.concurrent.locks.ReentrantLock;
+		
+		public class ReentrantLockDemo implements Runnable {
 		
 		// 公平锁
 		private static ReentrantLock lock = new ReentrantLock(true);
