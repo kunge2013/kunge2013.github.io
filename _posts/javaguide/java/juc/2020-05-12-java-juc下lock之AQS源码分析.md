@@ -128,6 +128,12 @@ ReentrantLock默认无参构造方法是 NonfairSync（非公平锁）具体代�
 
 
 
--   2. 
+-   2.ReentrantLock NonfairSync（非公平锁原理） AQS调用时序图 frame\jdk\juc\非公平锁之AQS.png
 
-～～～～～～～～～～～～未完下次补全，待续
+<div align="left">  
+	<img src="https://kunge2013.github.io/images/frame/jdk/juc/非公平锁之AQS.png" width="100%"/>
+</div>
+
+
+-   3.代码如下
+[相关源码](https://github.com/kunge2013/javasource.git)
