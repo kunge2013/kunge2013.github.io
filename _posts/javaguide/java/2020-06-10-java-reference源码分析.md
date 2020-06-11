@@ -368,4 +368,138 @@ Reference是上面列举的几种引用包括Cleaner的共同父类，一些引�
 
 ![reference关系](https://kunge2013.github.io/images/frame/jdk/reference/引用实例生命周期.png)
 
+
+### 重点源码解析
+
+-  1，Reference中的几个关键属性
+
+	 //关联的对象的引用,根据引用类型不同gc针对性处理
+	    private T referent;       
+	    //引用注册的队列,如果有注册队列则回收引用会加入该队列
+	    volatile ReferenceQueue<? super T> queue;
+	
+	    //上面引用队列referenceQueue中保存引用的链表
+	    /*    active:     NULL //未加入队列前next指向null
+	     *    pending:    this
+	     *    Enqueued:   next reference in queue (or this if last)
+	     *    Inactive:   this
+	     */
+	    Reference next;
+	
+	
+	    /* When active:   由gc管理的引用发现链表的下一个引用
+	     *     pending:   pending链表中的下一个元素
+	     *   otherwise:   NULL
+	     */
+	    transient private Reference<T> discovered;  /* used by VM */
+	
+	    /* 
+	     *等待入队列的引用链表，gc往该链表加引用对象，Reference-handler线程消费该链表。
+	     * 它通过discovered连接它的元素 
+	     */     
+	    private static Reference<Object> pending = null;
+	    
+	    
+-   2，ReferenceHandler
+
+		private static class ReferenceHandler extends Thread {
+				...
+		        public void run() {
+		            while (true) {
+		                tryHandlePending(true); //无限循环调用tryHandlePending
+		            }
+		        }
+		    }
+		    static {
+				... jvm启动时以守护线程运行ReferenceHandler
+		        Thread handler = new ReferenceHandler(tg, "Reference Handler");
+		        handler.setPriority(Thread.MAX_PRIORITY);
+		        handler.setDaemon(true);
+		        handler.start();
+		        //注册JavaLangRefAccess匿名实现,堆外内存管理会用到(Bits.reserveMemory)
+		        SharedSecrets.setJavaLangRefAccess(new JavaLangRefAccess() {
+		            @Override
+		            public boolean tryHandlePendingReference() {
+		                return tryHandlePending(false);
+		            }
+		        });
+		    }
+
+	 //消费pending队列
+	    static boolean tryHandlePending(boolean waitForNotify) {
+	        Reference<Object> r;
+	        Cleaner c;
+	        try {
+	            synchronized (lock) {
+	                if (pending != null) {
+	                    r = pending;
+	                    // 'instanceof' might throw OutOfMemoryError sometimes
+	                    // so do this before un-linking 'r' from the 'pending' chain...
+	                    //判断是否为Cleaner实例
+	                    c = r instanceof Cleaner ? (Cleaner) r : null;
+	                   //将r从pending链表移除
+	                    pending = r.discovered;
+	                    r.discovered = null;
+	                } else {
+	                    // The waiting on the lock may cause an OutOfMemoryError
+	                    // because it may try to allocate exception objects.
+	                    //如果pending没有元素可消费则等待通知
+	                    if (waitForNotify) {
+	                        lock.wait();
+	                    }
+	                    // retry if waited
+	                    return waitForNotify;
+	                }
+	            }
+	        } catch (OutOfMemoryError x) {
+	            //释放cpu资源
+	            Thread.yield();
+	            // retry
+	            return true;
+	        } catch (InterruptedException x) {
+	            // retry
+	            return true;
+	        }
+	
+	        //调用Cleaner清理逻辑(可参考前面的7，Cleaner段落)
+	        if (c != null) {
+	            c.clean();
+	            return true;
+	        }
+	        //如果当前引用实例有注册引用队列则将其加入引用队列
+	        ReferenceQueue<? super Object> q = r.queue;
+	        if (q != ReferenceQueue.NULL) q.enqueue(r);
+	        return true;
+	    }
+ 
+ 
+### 总结
+
+	​ jvm中引用有好几种类型的实现，gc针对这几种不同类型的引用有着不同的回收机制，同时它们也有着各自的应用场景, 比如SoftReference可以用来做高速缓存, WeakReference也可以用来做一些普通缓存(WeakHashMap), 而PhantomReference则用在一些特殊场景，比如Cleaner就是一个很好的应用场景，它可以用来回收堆外内存。与此同时，SoftReference, WeakReference, PhantomReference这几种弱类型引用还可以与引用队列结合使用，使得可以在关联引用回收之后可以做一些额外处理，甚至于Finalizer(收尾机制)都可以在对象回收过程中改变对象的生命周期。
+	
+	参考链接：
+	
+	https://www.ibm.com/developerworks/cn/java/j-fv/index.html
+	
+	https://www.infoq.cn/article/jvm-source-code-analysis-finalreference
+	
+	https://www.ibm.com/developerworks/cn/java/j-lo-langref/index.html
+	
+	https://www.cnblogs.com/duanxz/p/10275778.html
+	
+	《深入理解java虚拟机》
+	
+	https://blog.csdn.net/mazhimazh/article/details/19752475
+	
+	https://www.tuicool.com/articles/AZ7Fvqb
+	
+	https://blog.csdn.net/aitangyong/article/details/39455229
+	
+	https://www.cnblogs.com/duanxz/p/6089485.html
+	
+	https://www.throwable.club/2019/02/16/java-reference/#Reference的状态集合
+	
+	http://imushan.com/2018/08/19/java/language/JDK%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-Reference/
+	
+
  
