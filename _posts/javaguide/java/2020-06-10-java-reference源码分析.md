@@ -475,31 +475,31 @@ Reference是上面列举的几种引用包括Cleaner的共同父类，一些引�
  
 ### 总结
 
-	​ jvm中引用有好几种类型的实现，gc针对这几种不同类型的引用有着不同的回收机制，同时它们也有着各自的应用场景, 比如SoftReference可以用来做高速缓存, WeakReference也可以用来做一些普通缓存(WeakHashMap), 而PhantomReference则用在一些特殊场景，比如Cleaner就是一个很好的应用场景，它可以用来回收堆外内存。与此同时，SoftReference, WeakReference, PhantomReference这几种弱类型引用还可以与引用队列结合使用，使得可以在关联引用回收之后可以做一些额外处理，甚至于Finalizer(收尾机制)都可以在对象回收过程中改变对象的生命周期。
-	
-	参考链接：
-	
-	https://www.ibm.com/developerworks/cn/java/j-fv/index.html
-	
-	https://www.infoq.cn/article/jvm-source-code-analysis-finalreference
-	
-	https://www.ibm.com/developerworks/cn/java/j-lo-langref/index.html
-	
-	https://www.cnblogs.com/duanxz/p/10275778.html
-	
-	《深入理解java虚拟机》
-	
-	https://blog.csdn.net/mazhimazh/article/details/19752475
-	
-	https://www.tuicool.com/articles/AZ7Fvqb
-	
-	https://blog.csdn.net/aitangyong/article/details/39455229
-	
-	https://www.cnblogs.com/duanxz/p/6089485.html
-	
-	https://www.throwable.club/2019/02/16/java-reference/#Reference的状态集合
-	
-	http://imushan.com/2018/08/19/java/language/JDK%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-Reference/
-	
+​ jvm中引用有好几种类型的实现，gc针对这几种不同类型的引用有着不同的回收机制，同时它们也有着各自的应用场景, 比如SoftReference可以用来做高速缓存, WeakReference也可以用来做一些普通缓存(WeakHashMap), 而PhantomReference则用在一些特殊场景，比如Cleaner就是一个很好的应用场景，它可以用来回收堆外内存。与此同时，SoftReference, WeakReference, PhantomReference这几种弱类型引用还可以与引用队列结合使用，使得可以在关联引用回收之后可以做一些额外处理，甚至于Finalizer(收尾机制)都可以在对象回收过程中改变对象的生命周期。
+
+参考链接：
+
+https://www.ibm.com/developerworks/cn/java/j-fv/index.html
+
+https://www.infoq.cn/article/jvm-source-code-analysis-finalreference
+
+https://www.ibm.com/developerworks/cn/java/j-lo-langref/index.html
+
+https://www.cnblogs.com/duanxz/p/10275778.html
+
+《深入理解java虚拟机》
+
+https://blog.csdn.net/mazhimazh/article/details/19752475
+
+https://www.tuicool.com/articles/AZ7Fvqb
+
+https://blog.csdn.net/aitangyong/article/details/39455229
+
+https://www.cnblogs.com/duanxz/p/6089485.html
+
+https://www.throwable.club/2019/02/16/java-reference/#Reference的状态集合
+
+http://imushan.com/2018/08/19/java/language/JDK%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB-Reference/
+
 
  
