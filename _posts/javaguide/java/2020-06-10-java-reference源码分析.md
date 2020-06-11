@@ -425,53 +425,53 @@ Reference是上面列举的几种引用包括Cleaner的共同父类，一些引�
 		        });
 		    }
 
-	 //消费pending队列
-	    static boolean tryHandlePending(boolean waitForNotify) {
-	        Reference<Object> r;
-	        Cleaner c;
-	        try {
-	            synchronized (lock) {
-	                if (pending != null) {
-	                    r = pending;
-	                    // 'instanceof' might throw OutOfMemoryError sometimes
-	                    // so do this before un-linking 'r' from the 'pending' chain...
-	                    //判断是否为Cleaner实例
-	                    c = r instanceof Cleaner ? (Cleaner) r : null;
-	                   //将r从pending链表移除
-	                    pending = r.discovered;
-	                    r.discovered = null;
-	                } else {
-	                    // The waiting on the lock may cause an OutOfMemoryError
-	                    // because it may try to allocate exception objects.
-	                    //如果pending没有元素可消费则等待通知
-	                    if (waitForNotify) {
-	                        lock.wait();
-	                    }
-	                    // retry if waited
-	                    return waitForNotify;
-	                }
-	            }
-	        } catch (OutOfMemoryError x) {
-	            //释放cpu资源
-	            Thread.yield();
-	            // retry
-	            return true;
-	        } catch (InterruptedException x) {
-	            // retry
-	            return true;
-	        }
-	
-	        //调用Cleaner清理逻辑(可参考前面的7，Cleaner段落)
-	        if (c != null) {
-	            c.clean();
-	            return true;
-	        }
-	        //如果当前引用实例有注册引用队列则将其加入引用队列
-	        ReferenceQueue<? super Object> q = r.queue;
-	        if (q != ReferenceQueue.NULL) q.enqueue(r);
-	        return true;
-	    }
- 
+		 //消费pending队列
+		    static boolean tryHandlePending(boolean waitForNotify) {
+		        Reference<Object> r;
+		        Cleaner c;
+		        try {
+		            synchronized (lock) {
+		                if (pending != null) {
+		                    r = pending;
+		                    // 'instanceof' might throw OutOfMemoryError sometimes
+		                    // so do this before un-linking 'r' from the 'pending' chain...
+		                    //判断是否为Cleaner实例
+		                    c = r instanceof Cleaner ? (Cleaner) r : null;
+		                   //将r从pending链表移除
+		                    pending = r.discovered;
+		                    r.discovered = null;
+		                } else {
+		                    // The waiting on the lock may cause an OutOfMemoryError
+		                    // because it may try to allocate exception objects.
+		                    //如果pending没有元素可消费则等待通知
+		                    if (waitForNotify) {
+		                        lock.wait();
+		                    }
+		                    // retry if waited
+		                    return waitForNotify;
+		                }
+		            }
+		        } catch (OutOfMemoryError x) {
+		            //释放cpu资源
+		            Thread.yield();
+		            // retry
+		            return true;
+		        } catch (InterruptedException x) {
+		            // retry
+		            return true;
+		        }
+		
+		        //调用Cleaner清理逻辑(可参考前面的7，Cleaner段落)
+		        if (c != null) {
+		            c.clean();
+		            return true;
+		        }
+		        //如果当前引用实例有注册引用队列则将其加入引用队列
+		        ReferenceQueue<? super Object> q = r.queue;
+		        if (q != ReferenceQueue.NULL) q.enqueue(r);
+		        return true;
+		    }
+	 
  
 ### 总结
 
