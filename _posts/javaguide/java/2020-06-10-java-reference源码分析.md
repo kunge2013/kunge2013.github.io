@@ -91,3 +91,282 @@ FinalReference访问权限为package，并且只有一个子类Finalizer，同�
 另外还有两个附加线程用于消费Finalizer链表以及队列:
 Runtime.runFinalization()会调用runFinalization()用于消费Finalizer队列，而java.lang.Shutdown则会在jvm退出的时候(jvm关闭钩子)调用runAllFinalizers()用于消费Finalizer链表。
 
+
+## 3, SoftReference
+
+系统将要发生内存溢出(oom)之前，会回收软引用的对象，如果回收后还没有足够的内存，抛出内存溢出异常；
+
+使用SoftReference类，将要软引用的对象最为参数传入；
+
+构造方法传入ReferenceQueue队列的时候，如果引用的对象被回收，则将其加入该队列。
+
+	public SoftReference(T referent);	//根据传入的引用创建软引用					
+	public SoftReference(T referent, ReferenceQueue<? super T> q); //根据传入的引用和注册队列创建软引用
+
+使用示例：
+
+	   ReferenceQueue<String> referenceQueue = new ReferenceQueue<>();
+	        SoftReference<String> softReference = new SoftReference<>("abc", referenceQueue);
+	        System.gc();
+	        System.out.println(softReference.get());
+	        Reference<? extends String> reference = referenceQueue.poll();
+	        System.out.println(reference);
+	      
+运行结果如下：
+
+
+	abc
+	null
+
+软引用可用来实现内存敏感的高速缓存
+
+## 4, WeakReference
+
+WeakReference与SoftReference类似，区别在于WeakReference的生命周期更短，一旦发生GC就会被回收，不过由于gc的线程优先级比较低，所以WeakReference不会很快被GC发现并回收。
+
+使用WeakReference类，将要弱引用的对象最为参数传入；
+
+构造方法传入ReferenceQueue队列的时候，如果引用的对象被回收，则将其加入该队列。
+
+	WeakReference(T referent);			//根据传入的引用创建弱引用
+	WeakReference(T referent, ReferenceQueue<? super T> q); //根据传入的引用和注册队列创建弱引用
+
+使用示例:
+
+	public class WeakReferenceTest {
+	    public static void main(String[] args) {
+	        ReferenceQueue<String> rq = new ReferenceQueue<>();
+	        //这里必须用new String构建字符串，而不能直接传入字面常量字符串
+	        Reference<String> r = new WeakReference<>(new String("java"), rq);
+	        Reference rf;
+	        //一次System.gc()并不一定会回收A，所以要多试几次
+	        while((rf=rq.poll()) == null) {
+	            System.gc();
+	        }
+	        System.out.println(rf);
+	        if (rf != null) {
+	            //引用指向的对象已经被回收，存入引入队列的是弱引用本身,所以这里最终返回null
+	            System.out.println(rf.get());
+	        }
+	    }
+	}
+
+
+运行结果：
+
+	java.lang.ref.WeakReference@5a07e868
+	null
+
+## 5, PhantomReference
+
+虚引用是引用中最弱的引用类型，有些形同虚设的意味。不同于软引用和弱引用，虚引用不会影响对象的生命周期，如果一个对象仅持有虚引用，那么它就相当于无引用指向，不可达，被gc扫描到就会被回收，虚引用无法通过get()方法来获取目标对象的强引用从而使用目标对象，虚引用中get()方法永远返回null。
+
+​ 虚引用必须和引用队列(ReferenceQueue)联合使用，当gc回收一个被虚引用指向的对象时，会将虚引用加入相关联的引用队列中。虚引用主要用于追踪对象gc回收的活动，通过查看引用队列中是否包含对象所对应的虚引用来判断它是否即将被回收。
+
+​ 虚引用的一个应用场景是用来追踪gc回收对应对象的活动。
+	
+	public PhantomReference(T referent, ReferenceQueue<? super T> q) // 创建弱引用
+
+示例：
+
+	public class PhantomReferenceTest {
+	
+	    public static void main(String[] args) {
+	        ReferenceQueue<String> rq = new ReferenceQueue<>();
+	        PhantomReference<String> reference = new PhantomReference<>(new String("cord"), rq);
+	        System.out.println(reference.get());
+	        System.gc();
+	        System.runFinalization();
+	        System.out.println(rq.poll() == reference);
+	    }
+	}
+	
+运行结果：
+	
+	null
+	true
+
+
+## 6, ReferenceQueue
+
+ReferenceQueue内部数据结构是一个链表，链表里的元素是加入进去的Reference实例，然后通过wait和notifyAll与对象锁实现生产者和消费者，通过这种方式模拟一个队列。
+
+ReferenceQueue是使用wati()和notifyAll()实现生产者和消费者模式的一个具体场景。
+
+ReferenceQueue重点源码解析：
+
+-  NULL和ENQUEUED
+
+	    static ReferenceQueue<Object> NULL = new Null<>();
+	    static ReferenceQueue<Object> ENQUEUED = new Null<>();
+
+这两个静态属性主要用于标识加入引用队列的引用的状态，NULL标识该引用已被当前队列移除过，ENQUEUED标识该引用已加入当前队列。
+
+-  enqueue(Reference<? extends T> r)
+
+	 boolean enqueue(Reference<? extends T> r) { /* Called only by Reference class */
+	        synchronized (lock) {
+	            //检查该引用是否曾从当前队列移除过或者已经加入当前队列了，如果有则直接返回
+	            ReferenceQueue<?> queue = r.queue;
+	            if ((queue == NULL) || (queue == ENQUEUED)) {
+	                return false;
+	            }
+	            assert queue == this;
+	            r.queue = ENQUEUED;//将引用关联的队列统一标识为ENQUEUED
+	            r.next = (head == null) ? r : head;//当前引用指向head
+	            head = r; //将head指向当前引用(链表新增节点采用头插法)
+	            queueLength++; //更新链表长度
+	            if (r instanceof FinalReference) {
+	                sun.misc.VM.addFinalRefCount(1); //
+	            }
+	            lock.notifyAll(); //通知消费端
+	            return true;
+	        }
+	    }
+	    
+-   remove(long timeout)
+
+remove尝试移除队列中的头部元素，如果队列为空则一直等待直至达到指定的超时时间。
+
+	 public Reference<? extends T> remove(long timeout)
+	        throws IllegalArgumentException, InterruptedException
+	    {
+	        if (timeout < 0) {
+	            throw new IllegalArgumentException("Negative timeout value");
+	        }
+	        synchronized (lock) {
+	            Reference<? extends T> r = reallyPoll();
+	            if (r != null) return r; //如果成功移除则直接返回
+	            long start = (timeout == 0) ? 0 : System.nanoTime();
+	            for (;;) {
+	                lock.wait(timeout); //释放当前线程锁，等待notify通知唤醒
+	                r = reallyPoll();
+	                if (r != null) return r;
+	                if (timeout != 0) {   //如果超时时间不为0则校验超时
+	                    long end = System.nanoTime();
+	                    timeout -= (end - start) / 1000_000;
+	                    if (timeout <= 0) return null;  //如果剩余时间小于0则返回
+	                    start = end;
+	                }
+	            }
+	        }
+	    }
+
+## 7，Cleaner
+
+​ Cleaner是PhantomReference的一个子类实现，提供了比finalization(收尾机制)更轻量级和健壮的实现，因为Cleaner中的清理逻辑是由Reference.ReferenceHandler 直接调用的，而且由于是虚引用的子类，它完全不会影响指向的对象的生命周期。
+
+​ 一个Cleaner实例记录了一个对象的引用，以及一个包含了清理逻辑的Runnable实例。当Cleaner指向的引用被gc回收后，Reference.ReferenceHandler会不断消费引用队列中的元素，当元素为Cleaner类型的时候就会调用其clean()方法。
+
+​ Cleaner不是用来替代finalization的，只有在清理逻辑足够轻量和直接的时候才适合使用Cleaner，繁琐耗时的清理逻辑将有可能导致ReferenceHandler线程阻塞从而耽误其它的清理任务。
+
+重点源码解析：
+
+	public class Cleaner extends PhantomReference<Object>
+	{
+	    //一个统一的空队列，用于虚引用构造方法，Cleaner的trunk会被直接调用不需要通过队列
+	    private static final ReferenceQueue<Object> dummyQueue = new ReferenceQueue<>();
+	
+	    //Cleaner内部为双向链表,防止虚引用本身比它们引用的对象先被gc回收,此为头节点
+	    static private Cleaner first = null;
+	
+	    //添加节点
+	    private static synchronized Cleaner add(Cleaner cl) {
+	        if (first != null) {    //头插法加入节点
+	            cl.next = first;
+	            first.prev = cl;
+	        }
+	        first = cl;
+	        return cl;
+	    }
+	    //移除节点
+	    private static synchronized boolean remove(Cleaner cl) {
+	
+	        //指向自己说明已经被移除
+	        if (cl.next == cl)
+	            return false;
+	
+	        //移除头部节点
+	        if (first == cl) {
+	            if (cl.next != null)
+	                first = cl.next;
+	            else
+	                first = cl.prev;
+	        }
+	        if (cl.next != null)//下一个节点指向前一个节点
+	            cl.next.prev = cl.prev;
+	        if (cl.prev != null)//前一个节点指向下一个节点
+	            cl.prev.next = cl.next;
+	
+	        //自己指向自己标识已被移除
+	        cl.next = cl;
+	        cl.prev = cl;
+	        return true;
+	
+	    }
+	
+	    //清理逻辑runnable实现
+	    private final Runnable thunk;
+	
+	    ...
+	
+	    //调用清理逻辑
+	    public void clean() {
+	        if (!remove(this))
+	            return;
+	        try {
+	            thunk.run();
+	        } catch (final Throwable x) {
+	            ...
+	        }
+	    }
+	}
+
+
+Cleaner可以用来实现对堆外内存进行管理，DirectByteBuffer就是通过Cleaner实现堆外内存回收的:
+
+	    DirectByteBuffer(int cap) { //构造方法中创建引用对象相关联的Cleaner对象                 
+	        ...
+	        cleaner = Cleaner.create(this, new Deallocator(base, size, cap));
+	        att = null;
+	    }
+	    
+	    private static class Deallocator implements Runnable {
+	        ...
+	        public void run() { //内存回收的逻辑(具体实现参看源码此处不展开)
+	        ...
+	        }
+	
+	    }     
+  
+ 
+## 8, Reference
+
+Reference是上面列举的几种引用包括Cleaner的共同父类，一些引用的通用处理逻辑均在这里面实现。
+
+### 引用实例的几个状态
+ 
+-  Active
+
+当处于Active状态，gc会特殊处理引用实例，一旦gc检测到其可达性发生变化，gc就会更改其状态。此时分两种情况，如果该引用实例创建时有注册引用队列，则会进入pending状态，否则会进入inactive状态。新创建的引用实例为Active。
+
+
+
+-  Pending
+
+当前为pending-Reference列表中的一个元素，等待被ReferenceHandler线程消费并加入其注册的引用队列。如果该引用实例未注册引用队列，则永远不会处理这个状态。
+
+-  Enqueued
+
+该引用实例创建时有注册引用队列并且当前处于入队列状态，属于该引用队列中的一个元素。当该引用实例从其注册引用队列中移除后其状态变为Inactive。如果该引用实例未注册引用队列，则永远不会处理这个状态。
+
+-  Inactive
+
+当处于Inactive状态，无需任何处理，一旦变成Inactive状态则其状态永远不会再发生改变。
+
+
+整体迁移流程图如下：
+
+![reference关系](https://kunge2013.github.io/images/frame/jdk/reference/引用实例生命周期.png)
+
+ 
