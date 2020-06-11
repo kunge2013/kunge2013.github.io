@@ -54,7 +54,7 @@ tags: java
 		        }
 		    }
 	
-		/初始化的时候启动FinalizerThread(守护线程)
+		//初始化的时候启动FinalizerThread(守护线程)
 		    static {
 		        ThreadGroup tg = Thread.currentThread().getThreadGroup();
 		        for (ThreadGroup tgn = tg;
