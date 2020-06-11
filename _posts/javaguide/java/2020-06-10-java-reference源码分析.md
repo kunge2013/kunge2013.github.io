@@ -16,3 +16,5 @@ tags: java
 |弱引用	|WeakReference|一旦被gc扫描到则会被回收|
 |虚引用	|PhantomReference|不会影响对象的生命周期，形同于无，任何时候都可能被gc回收|
 |	|FinalReference|用于收尾机制(finalization)|
+
+![reference关系](https://kunge2013.github.io/images/frame/jdk/reference/reference.png)
