@@ -36,35 +36,35 @@ tags: java
 ### 2.1, Finalizer
 
 -  FinalizerThread
-
-	  //消费ReferenceQueue并执行对应元素对象的finalize()方法
-	    private static class FinalizerThread extends Thread {
-	        ......
-	        public void run() {
-	            ......
-	            final JavaLangAccess jla = SharedSecrets.getJavaLangAccess();
-	            running = true;
-	            for (;;) {
-	                try {
-	                    Finalizer f = (Finalizer)queue.remove();
-	                    f.runFinalizer(jla);
-	                } catch (InterruptedException x) {
-	                }
-	            }
-	        }
-	    }
-
-	/初始化的时候启动FinalizerThread(守护线程)
-	    static {
-	        ThreadGroup tg = Thread.currentThread().getThreadGroup();
-	        for (ThreadGroup tgn = tg;
-	             tgn != null;
-	             tg = tgn, tgn = tg.getParent());
-	        Thread finalizer = new FinalizerThread(tg);
-	        finalizer.setPriority(Thread.MAX_PRIORITY - 2);
-	        finalizer.setDaemon(true);
-	        finalizer.start();
-	    }
+	
+		  //消费ReferenceQueue并执行对应元素对象的finalize()方法
+		    private static class FinalizerThread extends Thread {
+		        ......
+		        public void run() {
+		            ......
+		            final JavaLangAccess jla = SharedSecrets.getJavaLangAccess();
+		            running = true;
+		            for (;;) {
+		                try {
+		                    Finalizer f = (Finalizer)queue.remove();
+		                    f.runFinalizer(jla);
+		                } catch (InterruptedException x) {
+		                }
+		            }
+		        }
+		    }
+	
+		/初始化的时候启动FinalizerThread(守护线程)
+		    static {
+		        ThreadGroup tg = Thread.currentThread().getThreadGroup();
+		        for (ThreadGroup tgn = tg;
+		             tgn != null;
+		             tg = tgn, tgn = tg.getParent());
+		        Thread finalizer = new FinalizerThread(tg);
+		        finalizer.setPriority(Thread.MAX_PRIORITY - 2);
+		        finalizer.setDaemon(true);
+		        finalizer.start();
+		    }
 -   add
 	在jvm启动的时候就会启动一个守护线程去消费引用队列，并调用引用队列指向对象的finalize()方法。
 	jvm在注册finalize()方法被覆写的对象的时候会创建一个Finalizer对象，并且将该对象加入一个双向链表中：
