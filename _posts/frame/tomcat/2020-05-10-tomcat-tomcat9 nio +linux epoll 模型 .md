@@ -169,7 +169,7 @@ tags: tomcat 源码
 -   2.tomcat 之nio 事件处理流程,首先看一下时序图
 
 <div align="left">  
-	<img src="https://kunge2013.github.io/images/frame/tomcat/tomcatnio 时序图.png" width="100%"/>
+	<img src="https://kunge2013.go123.live/images/frame/tomcat/tomcatnio 时序图.png" width="100%"/>
 </div>
 
 

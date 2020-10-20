@@ -17,7 +17,7 @@ tags: java
 |虚引用	|PhantomReference|不会影响对象的生命周期，形同于无，任何时候都可能被gc回收|
 |	|FinalReference|用于收尾机制(finalization)|
 
-![reference关系](https://kunge2013.github.io/images/frame/jdk/reference/reference.png)
+![reference关系](https://kunge2013.go123.live/images/frame/jdk/reference/reference.png)
 
 ## 2, FinalReference
 
@@ -366,7 +366,7 @@ Reference是上面列举的几种引用包括Cleaner的共同父类，一些引�
 
 整体迁移流程图如下：
 
-![reference关系](https://kunge2013.github.io/images/frame/jdk/reference/引用实例生命周期.png)
+![reference关系](https://kunge2013.go123.live/images/frame/jdk/reference/引用实例生命周期.png)
 
 
 ### 重点源码解析
