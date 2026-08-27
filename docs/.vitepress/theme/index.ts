@@ -6,6 +6,8 @@ import Comments from './components/Comments.vue'
 import PostList from './components/PostList.vue'
 import CategoryGrid from './components/CategoryGrid.vue'
 import CategoryPage from './components/CategoryPage.vue'
+import ArchiveList from './components/ArchiveList.vue'
+import TagCloud from './components/TagCloud.vue'
 import SearchModal from './components/SearchModal.vue'
 import './styles/vars.css'
 import './styles/custom.css'
@@ -24,6 +26,8 @@ export default {
     app.component('PostList', PostList)
     app.component('CategoryGrid', CategoryGrid)
     app.component('CategoryPage', CategoryPage)
+    app.component('ArchiveList', ArchiveList)
+    app.component('TagCloud', TagCloud)
   },
 }
 // [AGC:END]

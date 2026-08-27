@@ -325,7 +325,93 @@ CI 会在部署前运行此脚本，本地先跑可以提前发现问题。
   - `config.ts` 从 JSON 派生导航菜单
   - `theme/components/CategoryGrid.vue` 从 JSON 派生首页分类卡片
   - `theme/components/CategoryPage.vue` 从 JSON 派生分类列表
+  - `theme/components/ArchiveList.vue` 从 JSON 派生归档页（按年份分组）
+  - `theme/components/TagCloud.vue` 从 JSON 派生标签云和过滤列表
   - `theme/components/SearchModal.vue` 从 JSON 派生搜索结果
+
+## 归档页与标签页
+
+### 归档页（`/archives`）
+
+**作用**：按时间倒序展示所有文章，按年份自动分组。
+
+**使用方法**：访问 `https://kunge2013.github.io/archives` 即可，**无需任何配置**。组件 `ArchiveList.vue` 会自动从 `posts-data.json` 读取所有文章，按年份分组展示：
+
+- 顶部统计：总文章数
+- 按年份倒序分组（2026 → 2025 → ...）
+- 每年标题旁显示该年文章数
+- 每条文章：标题 + 分类标签 + 日期，hover 显示描述和标签
+- `sticky: true` 的文章自动置顶（同年内）
+
+**置顶效果**：
+
+```yaml
+---
+sticky: true
+---
+```
+
+### 标签页（`/tags`）
+
+**作用**：以标签云形式展示所有标签，点击标签过滤文章。
+
+**使用方法**：访问 `https://kunge2013.github.io/tags` 即可，**无需任何配置**。组件 `TagCloud.vue` 会自动从所有文章的 `tags` 字段聚合标签：
+
+- 顶部统计：总标签数
+- 标签云区域：每个标签显示名称 + 文章数，按出现次数倒序
+- 点击标签过滤：下方列表只显示带该标签的文章
+- 再次点击同一标签或点「全部」取消过滤
+- 「全部」chip 始终在第一位
+
+**新增标签的流程**：
+
+直接在文章 frontmatter 的 `tags` 数组里写新标签，下次 `npm run dev` 自动出现在标签页：
+
+```yaml
+tags: [JavaScript, 异步, Promise, async]   # 任意标签都行，不需要预先注册
+```
+
+### 组件引用方式（自定义页面）
+
+如果想在其他 markdown 页面里引用这两个组件：
+
+```markdown
+---
+title: 我的自定义页面
+layout: page
+---
+
+# 我的自定义页面
+
+<ArchiveList />
+```
+
+或在 Vue 组件里：
+
+```vue
+<script setup>
+import ArchiveList from './theme/components/ArchiveList.vue'
+import TagCloud from './theme/components/TagCloud.vue'
+</script>
+
+<template>
+  <ArchiveList />
+  <TagCloud />
+</template>
+```
+
+### 已注册的全局组件列表
+
+在 `docs/.vitepress/theme/index.ts` 的 `enhanceApp` 里全局注册，**markdown 直接用**无需 import：
+
+| 组件 | 用途 | 用法 |
+|------|------|------|
+| `<ArchiveList />` | 归档列表（按年份分组） | 任意 markdown 页面 |
+| `<TagCloud />` | 标签云 + 过滤列表 | 任意 markdown 页面 |
+| `<PostList />` | 当前分类下的文章列表 | 分类首页 `index.md` |
+| `<CategoryGrid />` | 首页分类卡片网格 | 首页或自定义页 |
+| `<CategoryPage />` | 分类列表页 | 分类列表页 |
+| `<Comments />` | 评论区（Giscus） | 文章页底部 |
 
 ## 参考上文「新增文章」）。
 -[minifog]( https://a.minifog.org.cn)

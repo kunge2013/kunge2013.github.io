@@ -11,6 +11,6 @@ layout: page
 
 > All posts listed by publication date, newest first. New posts appear here automatically.
 
-*No posts yet — write your first one!*
+<ArchiveList />
 
 <!-- [AGC:END] -->

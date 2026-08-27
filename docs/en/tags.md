@@ -11,6 +11,6 @@ layout: page
 
 > Browse all posts organized by tags. New tags appear automatically as you add posts.
 
-*No posts yet — write your first one!*
+<TagCloud />
 
 <!-- [AGC:END] -->
