@@ -1,0 +1,19 @@
+/* [AGC:FILE] tool=Cc author=fangkun date=2026-08-27 */
+/* [AGC:START] tool=Cc author=fangkun */
+
+:root {
+  --vp-c-brand-1: #3eaf7c;
+  --vp-c-brand-2: #4abf8a;
+  --vp-c-brand-3: #56c996;
+  --vp-c-brand-soft: rgba(62, 175, 124, 0.14);
+  --vp-home-hero-name-color: var(--vp-c-brand-1);
+}
+
+.dark {
+  --vp-c-brand-1: #56c996;
+  --vp-c-brand-2: #4abf8a;
+  --vp-c-brand-3: #3eaf7c;
+  --vp-c-brand-soft: rgba(86, 201, 150, 0.16);
+}
+
+/* [AGC:END] */

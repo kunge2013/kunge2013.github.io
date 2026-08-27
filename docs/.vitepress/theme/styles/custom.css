@@ -1,0 +1,215 @@
+/* [AGC:FILE] tool=Cc author=fangkun date=2026-08-27 */
+/* [AGC:START] tool=Cc author=fangkun */
+
+/* ---- 分类卡片区域 ---- */
+
+.category-section {
+  margin: 48px 0;
+}
+
+.sec-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--vp-c-divider);
+}
+
+.sec-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: var(--vp-c-text-1);
+}
+
+.sec-sub {
+  font-size: 14px;
+  color: var(--vp-c-text-2);
+  margin: 0;
+}
+
+/* ---- 卡片网格 ---- */
+
+.card-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.card-grid li {
+  margin: 0;
+}
+
+/* ---- 卡片样式 ---- */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  border-color: var(--card-color, var(--vp-c-brand-1));
+}
+
+/* ---- 卡片顶部图片区域 ---- */
+
+.card-media {
+  height: 140px;
+  background: linear-gradient(135deg, var(--card-color, var(--vp-c-brand-1)) 0%, color-mix(in srgb, var(--card-color, var(--vp-c-brand-1)) 70%, #000) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-media::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.2) 0%, transparent 50%);
+}
+
+.card-icon {
+  font-size: 48px;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.2));
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ---- 卡片内容 ---- */
+
+.card-body {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-body .tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+  margin-bottom: 12px;
+  width: fit-content;
+  font-weight: 500;
+}
+
+.card-body h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  color: var(--vp-c-text-1);
+  line-height: 1.4;
+  transition: color 0.2s;
+}
+
+.card:hover .card-body h3 {
+  color: var(--card-color, var(--vp-c-brand-1));
+}
+
+.card-body p {
+  font-size: 13px;
+  color: var(--vp-c-text-2);
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+  flex: 1;
+}
+
+.card-body .meta {
+  font-size: 12px;
+  color: var(--vp-c-text-3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-body .meta::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--card-color, var(--vp-c-brand-1));
+  display: inline-block;
+}
+
+/* ---- 响应式 ---- */
+
+@media (max-width: 768px) {
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .sec-title {
+    font-size: 24px;
+  }
+}
+
+/* ---- 水波纹点击效果 ---- */
+
+.card:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s, opacity 0.6s;
+  opacity: 0;
+}
+
+.card:active::after {
+  width: 300px;
+  height: 300px;
+  opacity: 1;
+  transition: 0s;
+}
+
+/* ---- 隐藏默认 VitePress 搜索按钮 ---- */
+
+.VPNavBarSearch {
+  display: none !important;
+}
+
+/* ---- 搜索按钮间距 ---- */
+
+.search-wrapper {
+  margin-left: 16px;
+  display: flex;
+  align-items: center;
+}
+
+/* [AGC:END] */

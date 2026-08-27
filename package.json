@@ -1,0 +1,23 @@
+{
+  "name": "kunge2013-blog",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate-posts": "node scripts/generate-posts-data.mjs",
+    "predev": "npm run generate-posts",
+    "dev": "vitepress dev docs",
+    "prebuild": "npm run generate-posts",
+    "build": "vitepress build docs",
+    "preview": "vitepress preview docs",
+    "new-post": "bash scripts/new-post.sh",
+    "validate": "bash scripts/validate-frontmatter.sh"
+  },
+  "dependencies": {
+    "vitepress": "^1.6.3",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

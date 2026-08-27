@@ -1,0 +1,9 @@
+# [AGC:FILE] tool=Cc author=fangkun date=2026-08-27
+node_modules/
+docs/.vitepress/cache/
+docs/.vitepress/dist/
+.DS_Store
+*.log
+docs/.vitepress/data/posts-data.json
+.obsidian/
+/posts/
