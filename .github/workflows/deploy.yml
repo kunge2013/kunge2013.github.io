@@ -1,44 +1,66 @@
-ame: Deploy to GitHub Pages
+# [AGC:FILE] tool=Cc author=fangkun date=2026-08-27
+# [AGC:START] tool=Cc author=fangkun
 
-  on:
-    push:
-      branches: [main]
-    workflow_dispatch:
+name: Deploy to GitHub Pages
 
-  permissions:
-    contents: read
-    pages: write
-    id-token: write
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
 
-  concurrency:
-    group: pages
-    cancel-in-progress: false
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
-  jobs:
-    validate:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-        - name: Validate frontmatter
-          run: bash scripts/validate-frontmatter.sh
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
-    build-and-deploy:
-      needs: validate
-      runs-on: ubuntu-latest
-      environment:
-        name: github-pages
-        url: ${{ steps.deployment.outputs.page_url }}
-      steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-node@v4
-          with:
-            node-version: '20'
-            cache: 'npm'
-        - run: npm ci
-        - run: npm run build
-        - uses: actions/configure-pages@v4
-        - uses: actions/upload-pages-artifact@v3
-          with:
-            path: docs/.vitepress/dist
-        - id: deployment
-          uses: actions/deploy-pages@v4
+jobs:
+  # Job 1: 校验 frontmatter 格式
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate frontmatter
+        run: bash scripts/validate-frontmatter.sh
+
+  # Job 2: 构建并部署
+  build-and-deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/.vitepress/dist
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+# [AGC:END]
