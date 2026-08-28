@@ -64,7 +64,6 @@ const labels = computed(() => ({
           {{ prevPost.title }}
         </span>
       </a>
-      <div v-else class="post-nav-card post-nav-spacer"></div>
 
       <a v-if="nextPost" :href="nextPost.url" class="post-nav-card post-nav-next">
         <span class="post-nav-label">{{ labels.next }}</span>
@@ -73,7 +72,6 @@ const labels = computed(() => ({
           <span class="post-nav-arrow" v-html="labels.arrow"></span>
         </span>
       </a>
-      <div v-else class="post-nav-card post-nav-spacer"></div>
     </div>
   </div>
 </template>
@@ -94,8 +92,11 @@ const labels = computed(() => ({
   justify-content: space-between;
 }
 
+.post-nav-inner:has(:only-child) {
+  justify-content: flex-end;
+}
+
 .post-nav-card {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -105,6 +106,7 @@ const labels = computed(() => ({
   text-decoration: none;
   color: inherit;
   transition: all 0.2s;
+  flex: 1;
 }
 
 .post-nav-card:hover {
@@ -151,15 +153,13 @@ const labels = computed(() => ({
   color: var(--vp-c-text-3);
 }
 
-.post-nav-spacer {
-  flex: 1;
-  border: 1px solid transparent;
-  border-radius: 8px;
-}
-
 @media (max-width: 640px) {
   .post-nav-inner {
     flex-direction: column;
+  }
+
+  .post-nav-inner:has(:only-child) {
+    justify-content: flex-end;
   }
 
   .post-nav-next {
