@@ -17,62 +17,62 @@
     "javascript": {
       "tag": "编程语言",
       "desc": "ES2026+、异步编程、Promise、async/await、模块化",
-      "color": "#f0db4f",
-      "icon": "🟨"
+      "color": "#1a1a1a",
+      "icon": "JS"
     },
     "typescript": {
       "tag": "编程语言",
       "desc": "类型系统、泛型、工程实践、类型体操",
-      "color": "#3178c6",
-      "icon": "🟦"
+      "color": "#1a1a1a",
+      "icon": "TS"
     },
     "python": {
       "tag": "编程语言",
       "desc": "语法技巧、数据处理、自动化脚本、爬虫",
-      "color": "#3776ab",
-      "icon": "🐍"
+      "color": "#1a1a1a",
+      "icon": "PY"
     },
     "react": {
       "tag": "前端框架",
       "desc": "Hooks、状态管理、性能优化、生态工具",
-      "color": "#61dafb",
-      "icon": "⚛️"
+      "color": "#1a1a1a",
+      "icon": "Re"
     },
     "vue": {
       "tag": "前端框架",
       "desc": "组合式 API、响应式原理、Vue 生态、VitePress",
-      "color": "#42b883",
-      "icon": "💚"
+      "color": "#1a1a1a",
+      "icon": "Vu"
     },
     "spring": {
       "tag": "后端框架",
       "desc": "Spring Boot、IoC、AOP、微服务架构",
-      "color": "#6db33f",
-      "icon": "🌱"
+      "color": "#1a1a1a",
+      "icon": "Sp"
     },
     "system-design": {
       "tag": "架构设计",
       "desc": "分布式系统、高可用、CAP 定理、微服务",
-      "color": "#e95420",
-      "icon": "🏗️"
+      "color": "#1a1a1a",
+      "icon": "SD"
     },
     "design-patterns": {
       "tag": "架构设计",
       "desc": "GoF 23 种模式、SOLID 原则、实战应用",
-      "color": "#9b59b6",
-      "icon": "🧩"
+      "color": "#1a1a1a",
+      "icon": "DP"
     },
     "pi-agent": {
       "tag": "AI 技术",
       "desc": "PI Agent 架构设计、开发实践与应用案例",
-      "color": "#0066cc",
-      "icon": "🧠"
+      "color": "#1a1a1a",
+      "icon": "PI"
     },
     "testing": {
       "tag": "测试",
       "desc": "测试分类、测试文章、自动扫描系统验证",
-      "color": "#ff9800",
-      "icon": "🧪"
+      "color": "#1a1a1a",
+      "icon": "TE"
     }
   },
   "dependencies": {

@@ -23,8 +23,8 @@ const categories = computed(() => {
     const style = styleConfig[id] || {
       tag: '技术',
       desc: '',
-      color: '#6c757d',
-      icon: '📁',
+      color: '#1a1a1a',
+      icon: '',
     }
     const count = (zhPosts[id] || []).length + (enPosts[id] || []).length
     const meta = count > 0 ? `${count} 篇文章` : '暂无文章'
@@ -51,9 +51,9 @@ const categories = computed(() => {
 
     <ul class="card-grid">
       <li v-for="cat in categories" :key="cat.id">
-        <a class="card" :href="cat.url" :style="{ '--card-color': cat.color }">
+        <a class="card" :href="cat.url">
           <div class="card-media">
-            <div class="card-icon">{{ cat.icon }}</div>
+            <div class="card-icon-text">{{ cat.icon }}</div>
           </div>
           <div class="card-body">
             <span class="tag">{{ cat.tag }}</span>
@@ -86,6 +86,7 @@ const categories = computed(() => {
   font-weight: 700;
   margin: 0 0 8px 0;
   color: var(--vp-c-text-1);
+  font-family: var(--vp-font-family-serif);
 }
 
 .sec-sub {
@@ -111,9 +112,9 @@ const categories = computed(() => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--vp-c-bg-soft);
+  background: var(--vp-c-bg);
   border: 1px solid var(--vp-c-divider);
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
@@ -123,13 +124,13 @@ const categories = computed(() => {
 
 .card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-  border-color: var(--card-color, var(--vp-c-brand-1));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border-color: var(--vp-c-text-3);
 }
 
 .card-media {
-  height: 140px;
-  background: linear-gradient(135deg, var(--card-color, var(--vp-c-brand-1)) 0%, color-mix(in srgb, var(--card-color, var(--vp-c-brand-1)) 70%, #000) 100%);
+  height: 120px;
+  background: var(--vp-c-bg-soft);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -137,25 +138,12 @@ const categories = computed(() => {
   overflow: hidden;
 }
 
-.card-media::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 30% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
-}
-
-.card-icon {
-  font-size: 48px;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+.card-icon-text {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--vp-c-text-2);
+  font-family: var(--vp-font-family-serif);
+  letter-spacing: 0.05em;
 }
 
 .card-body {
@@ -170,8 +158,8 @@ const categories = computed(() => {
   font-size: 11px;
   padding: 3px 10px;
   border-radius: 12px;
-  background: var(--vp-c-brand-soft);
-  color: var(--vp-c-brand-1);
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
   margin-bottom: 12px;
   width: fit-content;
   font-weight: 500;
@@ -184,10 +172,11 @@ const categories = computed(() => {
   color: var(--vp-c-text-1);
   line-height: 1.4;
   transition: color 0.2s;
+  font-family: var(--vp-font-family-serif);
 }
 
 .card:hover .card-body h3 {
-  color: var(--card-color, var(--vp-c-brand-1));
+  color: var(--vp-c-brand-1);
 }
 
 .card-body p {
@@ -211,7 +200,7 @@ const categories = computed(() => {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--card-color, var(--vp-c-brand-1));
+  background: var(--vp-c-brand-1);
   display: inline-block;
 }
 
