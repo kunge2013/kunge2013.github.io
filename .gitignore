@@ -5,5 +5,4 @@ docs/.vitepress/dist/
 .DS_Store
 *.log
 docs/.vitepress/data/posts-data.json
-.obsidian/
 /posts/
