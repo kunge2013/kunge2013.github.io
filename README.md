@@ -743,14 +743,14 @@ import TagCloud from './theme/components/TagCloud.vue'
 
 #### 修改内容
 
-| 文件 | 修改类型 | 说明 |
-|------|----------|------|
-| `docs/posts/pi-agent/index.md` | 新增 | 分类首页 |
-| `docs/posts/pi-agent/what-is-pi.md` | 新增 | 文章：1.什么是PI |
-| `docs/posts/pi-agent/pi-quickstart.md` | 新增 | 文章：开始入门 |
-| `package.json` | 修改 | 添加分类样式配置（categoryStyles） |
-| `scripts/generate-posts-data.mjs` | 修改 | 读取 package.json 中的样式配置 |
-| `.claude/skills/createCategory/assets/category-index.md` | 修改 | 修复模板（添加 layout 和 PostList 组件） |
+| 文件                                                       | 修改类型 | 说明                            |
+| -------------------------------------------------------- | ---- | ----------------------------- |
+| `docs/posts/pi-agent/index.md`                           | 新增   | 分类首页                          |
+| `docs/posts/pi-agent/what-is-pi.md`                      | 新增   | 文章：1.什么是PI                    |
+| `docs/posts/pi-agent/pi-quickstart.md`                   | 新增   | 文章：开始入门                       |
+| `package.json`                                           | 修改   | 添加分类样式配置（categoryStyles）      |
+| `scripts/generate-posts-data.mjs`                        | 修改   | 读取 package.json 中的样式配置        |
+| `.claude/skills/createCategory/assets/category-index.md` | 修改   | 修复模板（添加 layout 和 PostList 组件） |
 
 #### 分类样式配置重构
 
