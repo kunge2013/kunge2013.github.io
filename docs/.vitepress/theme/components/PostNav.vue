@@ -15,7 +15,10 @@ const currentCategory = computed(() => {
   return match ? match[1] : ''
 })
 
-const currentUrl = computed(() => route.path.replace(/\.html$/, '').replace(/\/$/, ''))
+const currentUrl = computed(() => {
+  const path = route.path.replace(/\.html$/, '').replace(/\/$/, '')
+  return decodeURIComponent(path)
+})
 
 const sortedPosts = computed(() => {
   const source = isEn.value ? enPosts : zhPosts
