@@ -18,13 +18,13 @@ date: 2026-08-28
 
 对话变长后，消息总量会逼近模型的上下文窗口。pi 的压缩（compaction）会让 LLM 把较早的对话总结成一条摘要条目，之后只带摘要 + 最近消息继续。触发方式有三种：手动 `/compact`、接近阈值自动压缩（threshold）、上下文溢出后恢复（overflow）。
 
-```text
-上下文过长 / 用户执行 /compact
- ├─ session_before_compact   ← 闸门：可取消 / 可提供自定义摘要
- │    ├─ { cancel: true }                  → 中止压缩
- │    ├─ { compaction: CompactionResult }  → 用扩展摘要替代 LLM 压缩（省一次大调用）
- │    └─ 默认 → LLM 生成摘要
- └─ session_compact          ← 压缩已落盘（只读通知）
+```mermaid
+flowchart TD
+    C(["/compact 或自动压缩<br/>manual / threshold / overflow"]) --> BC{{"session_before_compact<br/>闸门"}}
+    BC -->|"cancel: true"| X(["中止压缩<br/>对话历史不变"])
+    BC -->|"返回 compaction"| SC["session_compact<br/>摘要写入会话树"]
+    BC -->|"默认"| LLM["LLM 生成摘要"]
+    LLM --> SC
 ```
 
 ## session_before_compact：取消压缩或接管摘要
@@ -123,13 +123,13 @@ rm ~/.pi-hellopi/BLOCK_COMPACT
 
 pi 的会话是一棵树：`/fork` 分叉后，每个分支有自己的对话。用 `/tree` 回退到旧分支节点时，岔路口之后**当前分支**的对话需要被总结成摘要带入新分支，否则模型不知道"另一条线发生过什么"。
 
-```text
-用户在 /tree 中选择一个分支节点
- ├─ session_before_tree    ← 闸门：可取消 / 可直接提供摘要 / 可改摘要指令
- │    ├─ { cancel: true }                → 中止导航
- │    ├─ { summary: { summary } }         → 跳过 LLM，直接用扩展摘要
- │    └─ 默认 → LLM 生成摘要
- └─ session_tree           ← 导航完成，会话已切到目标分支（只读）
+```mermaid
+flowchart TD
+    T(["/tree 选择分支节点"]) --> BT{{"session_before_tree<br/>闸门"}}
+    BT -->|"cancel"| X(["中止导航"])
+    BT -->|"返回 summary + label"| ST["session_tree<br/>切换到目标分支"]
+    BT -->|"默认"| LLM["LLM 生成分支摘要"]
+    LLM --> ST
 ```
 
 ## session_before_tree：取消导航或接管摘要

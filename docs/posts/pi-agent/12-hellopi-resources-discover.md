@@ -22,12 +22,13 @@ Pi 启动时会加载内置的 skills、slash command 提示词和主题。默�
 
 `resources_discover` 就是 pi 向扩展询问"你还有没有额外的资源目录"的事件。它在**扩展加载后、会话初始化阶段**触发，早于 `session_start`：
 
-```text
-pi 启动
- ├─ 加载扩展
- ├─ resources_discover   ← 在这里：收集额外资源路径（可返回）
- ├─ 加载 skills/prompts/themes（内置目录 + 扩展返回的目录）
- └─ session_start
+```mermaid
+flowchart TD
+    A(["pi 启动 / 重载扩展"]) --> B["加载扩展"]
+    B --> C["resources_discover<br/>reason=startup / reload"]
+    C --> D["扩展返回 skillPaths / promptPaths / themePaths"]
+    D --> E["加载 skills / prompts / themes<br/>（内置目录 + 扩展返回目录）"]
+    E --> F["session_start"]
 ```
 
 - `reason: "startup"`：pi 首次启动；

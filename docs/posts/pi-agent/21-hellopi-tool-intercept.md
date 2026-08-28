@@ -14,11 +14,16 @@ date: 2026-08-28
 
 工具生命周期里有两个"能改变结果"的事件，分别卡在执行的前后：
 
-```text
-模型决定调用工具
- ├─ tool_call               ← 入站闸门：可 block 阻止执行，可原地改 input 修补参数
- ├─ tool_execution_start …（只读观测，见第 17 篇）
- └─ tool_result             ← 出站过滤：结果进入上下文前，可改 content / isError / details
+```mermaid
+flowchart TD
+    D(["模型决定调用工具"]) --> TC{{"tool_call<br/>入站闸门"}}
+    TC -->|"block: true + reason"| X(["工具不执行<br/>原因反馈给模型"])
+    TC -->|"原地改 event.input"| P["参数修补后执行"]
+    TC -->|"放行"| EX["工具执行<br/>tool_execution_start / update / end（只读，见第 17 篇）"]
+    P --> EX
+    EX --> TR{{"tool_result<br/>出站过滤"}}
+    TR -->|"返回 content / isError / details"| R(["模型看到改写后的结果"])
+    TR -->|"不返回"| R
 ```
 
 与[第 17 篇](./17-hellopi-tool-execution)的只读观测事件不同，这两个事件是扩展做**安全管控**的核心位置：入站防破坏，出站防泄密。

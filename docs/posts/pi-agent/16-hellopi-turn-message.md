@@ -14,17 +14,20 @@ date: 2026-08-28
 
 进入 agent 循环后，活动按"轮次"组织：一个轮次 = 一次模型响应 + 它触发的工具调用。轮次内部有消息的生命周期（开始 → 流式更新 → 定稿）。本篇讲 5 个事件：`turn_start` / `turn_end` 和 `message_start` / `message_update` / `message_end`。
 
-```text
-agent_start
- ├─ turn_start (#0)
- │   ├─ message_start (assistant)
- │   │   ├─ message_update …（token 级，高频）
- │   │   └─ message_end
- │   ├─ 工具执行（详见后续两篇）
- │   ├─ message_start (toolResult) → message_end   结果回灌
- │   └─ turn_end (#0)
- ├─ turn_start (#1) … 模型看到工具结果后再次响应
- └─ agent_end
+```mermaid
+flowchart TD
+    AS(["agent_start"]) --> T0["turn_start #0"]
+    T0 --> M1["message_start (assistant)"]
+    M1 --> M2["message_update × N<br/>token 级流式（需节流）"]
+    M2 --> M3["message_end (assistant)<br/>可替换消息"]
+    M3 --> TOOL{{"调用工具？"}}
+    TOOL -->|"是"| T["工具执行<br/>tool_call / tool_execution_* / tool_result"]
+    T --> MR["message_start → end (toolResult)<br/>结果回灌"]
+    MR --> TE["turn_end"]
+    TOOL -->|"否"| TE
+    TE -->|"模型继续思考"| T1["turn_start #1 …"]
+    T1 --> AE(["agent_end"])
+    TE -->|"任务完成"| AE
 ```
 
 ## turn_start / turn_end：轮次的边界

@@ -14,13 +14,13 @@ date: 2026-08-28
 
 模型决定调用工具后，工具的"执行过程"由三个只读事件刻画：开始、流式中间结果、结束。它们与[工具拦截事件](./21-hellopi-tool-intercept)（`tool_call` / `tool_result`，能阻止/改写）不同——**这三个事件只负责观测，不能干预执行**。
 
-```text
-模型决定调用工具
- ├─ tool_call                 ← 闸门：可 block / 改参数（见第 21 篇）
- ├─ tool_execution_start      ← 工具真正开始跑（计时起点）
- │   ├─ tool_execution_update ← 流式中间结果（bash 实时输出，高频）
- │   └─ tool_execution_end    ← 执行完成（成功/失败都触发）
- └─ tool_result               ← 结果入上下文前可改写（见第 21 篇）
+```mermaid
+flowchart TD
+    D(["模型决定调用工具"]) --> TC["tool_call<br/>闸门：block / 改参数（见第 21 篇）"]
+    TC --> TES["tool_execution_start<br/>记录开始时间（计时起点）"]
+    TES --> TEU["tool_execution_update<br/>流式中间结果（高频，节流）"]
+    TEU --> TEE["tool_execution_end<br/>计算耗时 / isError（成功失败都触发）"]
+    TEE --> TR["tool_result<br/>结果入上下文前可改写（见第 21 篇）"]
 ```
 
 并行工具模式下的时序：start 按 assistant 源顺序预检发出；update 可能在多个工具间交错；end 按工具**完成顺序**发出。因此关联同一次调用必须靠 `toolCallId`，不能靠事件先后顺序。

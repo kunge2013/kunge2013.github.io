@@ -23,12 +23,12 @@ pi 里有两条完全不同的命令执行路径，对应不同事件：
 
 `user_bash` 只在用户于输入框直接敲 shell 命令时触发。`!cmd` 的结果会进入 LLM 上下文，`!!cmd`（双感叹号）只在本地执行、结果不进上下文。
 
-```text
-用户输入 !ls -la（!! 表示结果不进上下文）
- └─ user_bash             ← 可审计 / 可接管 / 可换执行后端
-      ├─ { result: BashResult }        → 扩展直接给结果，不开 shell
-      ├─ { operations: BashOperations }→ 自定义执行后端（SSH/容器/沙箱）
-      └─ 不返回                         → pi 默认本地 shell 执行
+```mermaid
+flowchart TD
+    U(["用户输入 !cmd（!! 结果不进上下文）"]) --> UB{{"user_bash"}}
+    UB -->|"返回 result"| R(["扩展直接给结果<br/>不开 shell（内置快捷命令）"])
+    UB -->|"返回 operations"| O(["自定义执行后端<br/>SSH / 容器 / 沙箱"])
+    UB -->|"不返回"| L(["pi 默认本地 shell 执行"])
 ```
 
 ## 字段与返回值

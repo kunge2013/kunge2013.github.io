@@ -16,10 +16,13 @@ date: 2026-08-28
 
 `context` 在**每次 LLM 调用之前**触发（每个轮次至少一次），携带即将发送给模型的完整消息数组。它位于消息定稿之后、HTTP 请求发出之前：
 
-```text
-turn_start
- └─ context                 ← 在这里：最后一次改写消息（可返回 { messages }）
-     └─ before_provider_request → HTTP 请求 → after_provider_response
+```mermaid
+flowchart TD
+    TS(["turn_start"]) --> CTX["context<br/>深拷贝 messages，可返回替换"]
+    CTX --> BPR["before_provider_request"]
+    BPR --> HTTP[["HTTP 请求"]]
+    HTTP --> APR["after_provider_response"]
+    APR --> MSG["流式 message_update … message_end"]
 ```
 
 与其他改写点的分工：

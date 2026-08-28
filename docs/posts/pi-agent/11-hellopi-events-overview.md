@@ -98,37 +98,61 @@ export default function (pi: ExtensionAPI) {
 
 demo 覆盖的 29 个事件在 pi 生命周期中的位置如下（箭头表示先后，标注"可返回"的事件能改变流程）：
 
-```text
-扩展加载
- ├─ resources_discover              收集额外资源路径（可返回路径）
- └─ session_start                   会话启动（startup/new/resume/fork/reload）
+**主链路：一次用户提交经过的事件**（菱形为可改变流程的闸门）
 
- 用户提交输入
- ├─ input                           最早拦截点：handled / transform / continue（可返回）
- ├─ before_agent_start              改系统提示词 / 注入消息（可返回）
- ├─ agent_start                     一次 agent 循环开始
- │   └─ 每个轮次：
- │      turn_start
- │      ├─ context                  LLM 调用前改消息：脱敏/裁剪/注入（可返回）
- │      ├─ before_provider_request  HTTP 请求发出前（可替换 payload）
- │      ├─ after_provider_response  响应头到达（状态码/限流头）
- │      ├─ message_start/update/end assistant 流式消息（end 可替换消息）
- │      ├─ tool_call                工具执行前闸门：block / 改 input（可返回）
- │      ├─ tool_execution_start/update/end   工具执行过程（只读观测）
- │      ├─ tool_result              结果入上下文前：改写 content（可返回）
- │      └─ turn_end
- ├─ agent_end                       循环结束（messages/usage 统计）
-
- 会话操作（任意时刻）
- ├─ session_before_switch / session_before_fork    可取消
- ├─ session_before_compact → session_compact       压缩前后
- ├─ session_before_tree → session_tree             /tree 导航前后（可取消/接管摘要）
- └─ session_shutdown              退出/重载/切换时清理
-
- 其他（任意时刻）
- ├─ model_select / thinking_level_select           模型、思考级别切换
- └─ user_bash                   用户 ! / !! 命令（可接管/远程执行）
+```mermaid
+flowchart TD
+    A(["pi 启动 / 加载扩展"]) --> B["resources_discover<br/>收集额外 skills/prompts/themes 路径"]
+    B --> C["session_start<br/>初始化扩展状态"]
+    C --> D{{"用户提交输入"}}
+    D --> E["input<br/>最早拦截点"]
+    E -->|"handled"| Z(["扩展接管<br/>agent 不启动"])
+    E -->|"continue / transform"| F["before_agent_start<br/>改系统提示词 / 注入消息"]
+    F --> G["agent_start"]
+    G --> H["turn_start"]
+    H --> I["context<br/>改消息：脱敏 / 裁剪 / 注入"]
+    I --> J["before_provider_request<br/>可替换 payload"]
+    J --> K[["HTTP 请求"]]
+    K --> L["after_provider_response<br/>状态码 / 限流头"]
+    L --> M["message_start → update（流式）→ end<br/>end 可替换消息"]
+    M --> N{{"模型要调用工具？"}}
+    N -->|"是"| O["tool_call<br/>闸门：block / 改 input"]
+    O -->|"block"| P(["工具不执行<br/>原因反馈给模型"])
+    O -->|"放行"| Q["tool_execution_start → update → end<br/>只读观测"]
+    Q --> R["tool_result<br/>改写 content / isError"]
+    R --> S["turn_end"]
+    N -->|"否"| S
+    S -->|"还有工具调用"| H
+    S -->|"本轮完成"| T["agent_end<br/>messages / usage 统计"]
+    T --> D
 ```
+
+**会话操作链路：切换、分叉、压缩、树导航、退出**（任意时刻可触发）
+
+```mermaid
+flowchart TD
+    New(["/new 或 /resume"]) --> SW{{"session_before_switch"}}
+    SW -->|"cancel: true"| X1(["中止切换"])
+    SW -->|"放行"| SD1["session_shutdown（旧）"]
+    SD1 --> SS1["session_start<br/>reason=new / resume"]
+
+    Fork(["/fork 或 /clone"]) --> FK{{"session_before_fork"}}
+    FK -->|"cancel"| X2(["中止分叉"])
+    FK -->|"放行"| SD2["session_shutdown（旧）"]
+    SD2 --> SS2["session_start<br/>reason=fork"]
+
+    Compact(["/compact 或自动压缩"]) --> BC{{"session_before_compact"}}
+    BC -->|"cancel"| X3(["中止压缩"])
+    BC -->|"返回 compaction / 默认 LLM 摘要"| SC["session_compact"]
+
+    Tree(["/tree 导航"]) --> BT{{"session_before_tree"}}
+    BT -->|"cancel"| X4(["中止导航"])
+    BT -->|"返回 summary / 默认 LLM 摘要"| ST["session_tree"]
+
+    Quit(["退出 pi / 重载扩展"]) --> SDQ["session_shutdown<br/>reason=quit / reload"]
+```
+
+此外还有两个任意时刻触发的独立事件：`model_select` / `thinking_level_select`（模型与思考级别切换的通知）和 `user_bash`（用户 `!` / `!!` 命令，可接管/远程执行）。
 
 记忆要点：
 

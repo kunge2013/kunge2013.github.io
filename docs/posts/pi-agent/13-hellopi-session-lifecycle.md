@@ -16,22 +16,21 @@ date: 2026-08-28
 
 ## 事件在生命周期中的位置
 
-```text
-pi 启动
- └─ session_start(reason="startup")
+```mermaid
+flowchart TD
+    Boot(["pi 启动"]) --> S1["session_start<br/>reason=startup"]
 
- 用户执行 /new 或 /resume
- ├─ session_before_switch   ← 闸门：返回 { cancel: true } 可中止
- ├─ session_shutdown(reason="new"/"resume")   旧运行时拆除
- └─ session_start(reason="new"/"resume", previousSessionFile)
+    New(["/new 或 /resume"]) --> SW{{"session_before_switch<br/>闸门"}}
+    SW -->|"cancel: true"| X1(["中止切换<br/>当前会话不变"])
+    SW -->|"放行"| SD1["session_shutdown<br/>旧运行时拆除"]
+    SD1 --> S2["session_start<br/>reason=new / resume"]
 
- 用户执行 /fork 或 /clone
- ├─ session_before_fork     ← 闸门：可取消 / 可跳过对话恢复
- ├─ session_shutdown(reason="fork")
- └─ session_start(reason="fork", previousSessionFile)
+    Fork(["/fork 或 /clone"]) --> FK{{"session_before_fork<br/>闸门"}}
+    FK -->|"cancel"| X2(["中止分叉"])
+    FK -->|"放行"| SD2["session_shutdown"]
+    SD2 --> S3["session_start<br/>reason=fork"]
 
- 退出 pi / 重载扩展
- └─ session_shutdown(reason="quit"/"reload")
+    Quit(["退出 pi / 重载扩展"]) --> SD3["session_shutdown<br/>reason=quit / reload"]
 ```
 
 关键认知：**会话切换 = 旧扩展实例 shutdown + 新扩展实例 start**。扩展的内存状态（模块级变量）在这个过程中会重置，所以需要跨会话保留的东西必须在 `session_shutdown` 落盘、在 `session_start` 恢复。

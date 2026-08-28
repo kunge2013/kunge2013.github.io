@@ -14,14 +14,16 @@ date: 2026-08-28
 
 用户按下回车后，pi 内部依次经过四个事件才进入"模型说话、工具干活"的轮次循环。本篇讲这四个事件：`input`（输入闸门）、`before_agent_start`（最后改系统提示词的机会）、`agent_start` / `agent_end`（一次 agent 运行的起止）。
 
-```text
-用户回车提交输入
- ├─ input                   ← 最早拦截点：handled / transform / continue
- ├─ （未 handled 时）skill/template 扩展
- ├─ before_agent_start      ← 改系统提示词 / 注入消息
- ├─ agent_start             ← 一次 agent 循环开始
- │   └─ turn_start … turn_end（可能多轮，见后续篇章）
- └─ agent_end               ← 循环结束，本轮全部消息落定
+```mermaid
+flowchart TD
+    U(["用户回车提交输入"]) --> IN["input<br/>看到原始文本"]
+    IN -->|"handled"| H(["扩展接管<br/>agent 不启动、不耗 token"])
+    IN -->|"transform"| TF["改写 text 后继续"]
+    IN -->|"continue"| BAS["before_agent_start<br/>改系统提示词 / 注入消息"]
+    TF --> BAS
+    BAS --> AS["agent_start"]
+    AS --> LOOP["turn 循环（可能多轮，见第 16/17 篇）"]
+    LOOP --> AE["agent_end<br/>本轮消息落定 / usage 统计"]
 ```
 
 ## input：扩展拦截用户输入的最早位置
