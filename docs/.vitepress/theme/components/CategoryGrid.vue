@@ -2,7 +2,10 @@
 <!-- [AGC:START] tool=Cc author=fangkun -->
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useData } from 'vitepress'
 import { zhPosts, enPosts, categoryLabels, categoryStyles } from '../../data/posts'
+
+const { lang } = useData()
 
 interface CategoryStyle {
   tag: string
@@ -12,6 +15,8 @@ interface CategoryStyle {
 }
 
 const styleConfig: Record<string, CategoryStyle> = categoryStyles
+
+const isEn = computed(() => lang.value === 'en-US')
 
 const categories = computed(() => {
   const allIds = new Set([
@@ -26,7 +31,9 @@ const categories = computed(() => {
       color: '#1a1a1a',
       icon: '',
     }
-    const count = (zhPosts[id] || []).length + (enPosts[id] || []).length
+    const count = isEn.value
+      ? (enPosts[id] || []).length
+      : (zhPosts[id] || []).length
     const meta = count > 0 ? `${count} 篇文章` : '暂无文章'
 
     return {
