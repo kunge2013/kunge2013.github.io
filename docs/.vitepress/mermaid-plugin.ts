@@ -15,7 +15,9 @@ export default function mermaidPlugin(md: MarkdownIt) {
     if (lang === 'mermaid') {
       const code = token.content
       const escaped = md.utils.escapeHtml(code)
-      return `<pre class="mermaid">${escaped}</pre>\n`
+      // v-pre：VitePress 会把 markdown 里的原生 HTML 当 Vue 模板编译，
+      // mermaid 的菱形语法 {{ ... }} 会被当成 Vue 插值吞掉，必须跳过编译
+      return `<pre class="mermaid" v-pre>${escaped}</pre>\n`
     }
 
     return defaultFence(tokens, idx, options, env, self)
