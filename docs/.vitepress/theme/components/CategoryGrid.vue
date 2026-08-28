@@ -59,8 +59,8 @@ const categories = computed(() => {
     <ul class="card-grid">
       <li v-for="cat in categories" :key="cat.id">
         <a class="card" :href="cat.url">
-          <div class="card-media">
-            <div class="card-icon-text">{{ cat.icon }}</div>
+          <div class="card-media" :style="{ background: cat.color }">
+            <div class="card-icon-text" :style="{ color: '#fff' }">{{ cat.icon }}</div>
           </div>
           <div class="card-body">
             <span class="tag">{{ cat.tag }}</span>
