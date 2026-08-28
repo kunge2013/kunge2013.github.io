@@ -18,9 +18,9 @@ date: 2026-08-28
 flowchart TD
     CTX(["context：消息定稿"]) --> BPR["before_provider_request<br/>payload 构建完成"]
     BPR -->|"返回对象 → 替换 payload"| HTTP[["HTTP 请求发出"]]
-    HTTP --> APR["after_provider_response<br/>响应头到达，body 尚未消费"]
+    HTTP --> APR["after_provider_response<br/>响应头到达"]
     APR -->|"读 status / headers"| OBS["限流监控 / 错误落盘"]
-    APR --> BODY["流式消费 body<br/>message_update … message_end"]
+    APR --> BODY["流式消费 body<br/>message_update → end"]
 ```
 
 ## before_provider_request：请求上线前的最后一站

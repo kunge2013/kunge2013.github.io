@@ -9,9 +9,22 @@ import { onMounted, watch } from 'vue'
 import { useRoute } from 'vitepress'
 import mermaid from 'mermaid'
 
+// 固定字体栈：mermaid 的文本测量节点挂在 body 下，而渲染标签在 foreignObject 内、
+// 会继承 .vp-doc 的字体。两侧字体不一致时，CJK 全角字被按偏窄宽度测量，
+// 节点框偏小 → 浏览器在框内二次换行 → 末行被裁切。固定同一字体栈让测量与渲染一致。
+const MERMAID_FONT =
+  '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif'
+
 mermaid.initialize({
   startOnLoad: false,
   theme: 'default',
+  themeVariables: {
+    fontFamily: MERMAID_FONT,
+  },
+  flowchart: {
+    htmlLabels: true,
+    useMaxWidth: true,
+  },
 })
 
 const route = useRoute()
@@ -58,6 +71,9 @@ watch(() => route.path, () => {
 .mermaid-diagram svg {
   max-width: 100%;
   height: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue",
+    Helvetica, Arial, sans-serif;
 }
 </style>
 <!-- [AGC:END] -->

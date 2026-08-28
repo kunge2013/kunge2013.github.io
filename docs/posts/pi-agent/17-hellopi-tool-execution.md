@@ -16,11 +16,11 @@ date: 2026-08-28
 
 ```mermaid
 flowchart TD
-    D(["模型决定调用工具"]) --> TC["tool_call<br/>闸门：block / 改参数（见第 21 篇）"]
-    TC --> TES["tool_execution_start<br/>记录开始时间（计时起点）"]
-    TES --> TEU["tool_execution_update<br/>流式中间结果（高频，节流）"]
-    TEU --> TEE["tool_execution_end<br/>计算耗时 / isError（成功失败都触发）"]
-    TEE --> TR["tool_result<br/>结果入上下文前可改写（见第 21 篇）"]
+    D(["模型决定调用工具"]) --> TC["tool_call 闸门<br/>block / 改参数"]
+    TC --> TES["tool_execution_start<br/>记录开始时间"]
+    TES --> TEU["tool_execution_update<br/>流式中间结果"]
+    TEU --> TEE["tool_execution_end<br/>耗时 / isError"]
+    TEE --> TR["tool_result<br/>结果可改写"]
 ```
 
 并行工具模式下的时序：start 按 assistant 源顺序预检发出；update 可能在多个工具间交错；end 按工具**完成顺序**发出。因此关联同一次调用必须靠 `toolCallId`，不能靠事件先后顺序。

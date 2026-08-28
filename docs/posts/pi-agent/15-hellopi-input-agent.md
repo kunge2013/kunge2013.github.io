@@ -17,13 +17,13 @@ date: 2026-08-28
 ```mermaid
 flowchart TD
     U(["用户回车提交输入"]) --> IN["input<br/>看到原始文本"]
-    IN -->|"handled"| H(["扩展接管<br/>agent 不启动、不耗 token"])
+    IN -->|"handled"| H(["扩展接管<br/>agent 不启动"])
     IN -->|"transform"| TF["改写 text 后继续"]
-    IN -->|"continue"| BAS["before_agent_start<br/>改系统提示词 / 注入消息"]
+    IN -->|"continue"| BAS["before_agent_start<br/>改提示词 / 注入消息"]
     TF --> BAS
     BAS --> AS["agent_start"]
-    AS --> LOOP["turn 循环（可能多轮，见第 16/17 篇）"]
-    LOOP --> AE["agent_end<br/>本轮消息落定 / usage 统计"]
+    AS --> LOOP["turn 循环<br/>可能多轮"]
+    LOOP --> AE["agent_end<br/>消息落定 / usage"]
 ```
 
 ## input：扩展拦截用户输入的最早位置

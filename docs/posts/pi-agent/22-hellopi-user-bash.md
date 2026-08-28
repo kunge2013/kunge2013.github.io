@@ -25,10 +25,10 @@ pi 里有两条完全不同的命令执行路径，对应不同事件：
 
 ```mermaid
 flowchart TD
-    U(["用户输入 !cmd（!! 结果不进上下文）"]) --> UB{{"user_bash"}}
-    UB -->|"返回 result"| R(["扩展直接给结果<br/>不开 shell（内置快捷命令）"])
+    U(["用户输入 !cmd<br/>!! 结果不进上下文"]) --> UB{{"user_bash"}}
+    UB -->|"返回 result"| R(["扩展直接给结果<br/>不开 shell"])
     UB -->|"返回 operations"| O(["自定义执行后端<br/>SSH / 容器 / 沙箱"])
-    UB -->|"不返回"| L(["pi 默认本地 shell 执行"])
+    UB -->|"不返回"| L(["pi 默认本地 shell"])
 ```
 
 ## 字段与返回值

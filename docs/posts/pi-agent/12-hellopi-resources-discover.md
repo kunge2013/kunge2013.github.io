@@ -26,8 +26,8 @@ Pi 启动时会加载内置的 skills、slash command 提示词和主题。默�
 flowchart TD
     A(["pi 启动 / 重载扩展"]) --> B["加载扩展"]
     B --> C["resources_discover<br/>reason=startup / reload"]
-    C --> D["扩展返回 skillPaths / promptPaths / themePaths"]
-    D --> E["加载 skills / prompts / themes<br/>（内置目录 + 扩展返回目录）"]
+    C --> D["扩展返回资源路径<br/>skills / prompts / themes"]
+    D --> E["加载资源目录<br/>内置 + 扩展返回"]
     E --> F["session_start"]
 ```
 

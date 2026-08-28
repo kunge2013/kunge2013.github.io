@@ -18,11 +18,11 @@ date: 2026-08-28
 
 ```mermaid
 flowchart TD
-    TS(["turn_start"]) --> CTX["context<br/>深拷贝 messages，可返回替换"]
+    TS(["turn_start"]) --> CTX["context<br/>深拷贝 messages"]
     CTX --> BPR["before_provider_request"]
     BPR --> HTTP[["HTTP 请求"]]
     HTTP --> APR["after_provider_response"]
-    APR --> MSG["流式 message_update … message_end"]
+    APR --> MSG["流式 message_update → end"]
 ```
 
 与其他改写点的分工：

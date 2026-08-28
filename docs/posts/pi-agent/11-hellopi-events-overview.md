@@ -102,28 +102,28 @@ demo 覆盖的 29 个事件在 pi 生命周期中的位置如下（箭头表示�
 
 ```mermaid
 flowchart TD
-    A(["pi 启动 / 加载扩展"]) --> B["resources_discover<br/>收集额外 skills/prompts/themes 路径"]
+    A(["pi 启动 / 加载扩展"]) --> B["resources_discover<br/>收集额外资源路径"]
     B --> C["session_start<br/>初始化扩展状态"]
     C --> D{{"用户提交输入"}}
     D --> E["input<br/>最早拦截点"]
     E -->|"handled"| Z(["扩展接管<br/>agent 不启动"])
-    E -->|"continue / transform"| F["before_agent_start<br/>改系统提示词 / 注入消息"]
+    E -->|"continue / transform"| F["before_agent_start<br/>改提示词 / 注入消息"]
     F --> G["agent_start"]
     G --> H["turn_start"]
-    H --> I["context<br/>改消息：脱敏 / 裁剪 / 注入"]
+    H --> I["context<br/>脱敏 / 裁剪 / 注入"]
     I --> J["before_provider_request<br/>可替换 payload"]
     J --> K[["HTTP 请求"]]
     K --> L["after_provider_response<br/>状态码 / 限流头"]
-    L --> M["message_start → update（流式）→ end<br/>end 可替换消息"]
-    M --> N{{"模型要调用工具？"}}
-    N -->|"是"| O["tool_call<br/>闸门：block / 改 input"]
-    O -->|"block"| P(["工具不执行<br/>原因反馈给模型"])
-    O -->|"放行"| Q["tool_execution_start → update → end<br/>只读观测"]
-    Q --> R["tool_result<br/>改写 content / isError"]
+    L --> M["message_start / update / end<br/>end 可替换消息"]
+    M --> N{{"调用工具？"}}
+    N -->|"是"| O["tool_call<br/>block / 改 input"]
+    O -->|"block"| P(["工具不执行<br/>原因反馈模型"])
+    O -->|"放行"| Q["tool_execution_start / update / end<br/>只读观测"]
+    Q --> R["tool_result<br/>改写结果"]
     R --> S["turn_end"]
     N -->|"否"| S
-    S -->|"还有工具调用"| H
-    S -->|"本轮完成"| T["agent_end<br/>messages / usage 统计"]
+    S -->|"还有工具"| H
+    S -->|"本轮完成"| T["agent_end<br/>messages / usage"]
     T --> D
 ```
 

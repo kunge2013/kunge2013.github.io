@@ -17,12 +17,12 @@ date: 2026-08-28
 ```mermaid
 flowchart TD
     D(["模型决定调用工具"]) --> TC{{"tool_call<br/>入站闸门"}}
-    TC -->|"block: true + reason"| X(["工具不执行<br/>原因反馈给模型"])
-    TC -->|"原地改 event.input"| P["参数修补后执行"]
-    TC -->|"放行"| EX["工具执行<br/>tool_execution_start / update / end（只读，见第 17 篇）"]
+    TC -->|"block: true + reason"| X(["工具不执行<br/>原因反馈模型"])
+    TC -->|"原地改 input"| P["参数修补后执行"]
+    TC -->|"放行"| EX["工具执行（只读）<br/>tool_execution_*"]
     P --> EX
     EX --> TR{{"tool_result<br/>出站过滤"}}
-    TR -->|"返回 content / isError / details"| R(["模型看到改写后的结果"])
+    TR -->|"返回 content / isError"| R(["模型看到改写结果"])
     TR -->|"不返回"| R
 ```
 

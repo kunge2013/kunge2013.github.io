@@ -18,11 +18,11 @@ date: 2026-08-28
 flowchart TD
     AS(["agent_start"]) --> T0["turn_start #0"]
     T0 --> M1["message_start (assistant)"]
-    M1 --> M2["message_update × N<br/>token 级流式（需节流）"]
+    M1 --> M2["message_update × N<br/>token 级流式"]
     M2 --> M3["message_end (assistant)<br/>可替换消息"]
     M3 --> TOOL{{"调用工具？"}}
-    TOOL -->|"是"| T["工具执行<br/>tool_call / tool_execution_* / tool_result"]
-    T --> MR["message_start → end (toolResult)<br/>结果回灌"]
+    TOOL -->|"是"| T["工具执行<br/>tool_call / exec / result"]
+    T --> MR["toolResult 结果回灌"]
     MR --> TE["turn_end"]
     TOOL -->|"否"| TE
     TE -->|"模型继续思考"| T1["turn_start #1 …"]
