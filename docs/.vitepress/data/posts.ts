@@ -17,8 +17,16 @@ export interface CategoryPosts {
   [category: string]: Post[]
 }
 
+export interface CategoryStyle {
+  tag: string
+  desc: string
+  color: string
+  icon: string
+}
+
 export const zhPosts: CategoryPosts = generatedData.zhPosts
 export const enPosts: CategoryPosts = generatedData.enPosts
 export const categoryLabels: Record<string, string> = generatedData.categoryLabels
 export const enCategoryLabels: Record<string, string> = generatedData.enCategoryLabels
+export const categoryStyles: Record<string, CategoryStyle> = generatedData.categoryStyles || {}
 // [AGC:END]

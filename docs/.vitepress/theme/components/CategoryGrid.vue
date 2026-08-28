@@ -2,7 +2,7 @@
 <!-- [AGC:START] tool=Cc author=fangkun -->
 <script setup lang="ts">
 import { computed } from 'vue'
-import { zhPosts, enPosts, categoryLabels } from '../../data/posts'
+import { zhPosts, enPosts, categoryLabels, categoryStyles } from '../../data/posts'
 
 interface CategoryStyle {
   tag: string
@@ -11,17 +11,7 @@ interface CategoryStyle {
   icon: string
 }
 
-const styleConfig: Record<string, CategoryStyle> = {
-  javascript: { tag: '编程语言', desc: 'ES2026+、异步编程、Promise、async/await、模块化', color: '#f0db4f', icon: '🟨' },
-  typescript: { tag: '编程语言', desc: '类型系统、泛型、工程实践、类型体操', color: '#3178c6', icon: '🟦' },
-  python: { tag: '编程语言', desc: '语法技巧、数据处理、自动化脚本、爬虫', color: '#3776ab', icon: '🐍' },
-  react: { tag: '前端框架', desc: 'Hooks、状态管理、性能优化、生态工具', color: '#61dafb', icon: '️' },
-  vue: { tag: '前端框架', desc: '组合式 API、响应式原理、Vue 生态、VitePress', color: '#42b883', icon: '' },
-  spring: { tag: '后端框架', desc: 'Spring Boot、IoC、AOP、微服务架构', color: '#6db33f', icon: '🌱' },
-  'system-design': { tag: '架构设计', desc: '分布式系统、高可用、CAP 定理、微服务', color: '#e95420', icon: '🏗️' },
-  'design-patterns': { tag: '架构设计', desc: 'GoF 23 种模式、SOLID 原则、实战应用', color: '#9b59b6', icon: '' },
-  testing: { tag: '测试', desc: '测试分类、测试文章、自动扫描系统验证', color: '#ff9800', icon: '🧪' },
-}
+const styleConfig: Record<string, CategoryStyle> = categoryStyles
 
 const categories = computed(() => {
   const allIds = new Set([

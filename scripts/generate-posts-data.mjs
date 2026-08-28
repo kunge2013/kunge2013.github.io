@@ -11,6 +11,7 @@ const DOCS = join(ROOT, 'docs')
 const POSTS_DIR = join(DOCS, 'posts')
 const EN_POSTS_DIR = join(DOCS, 'en', 'posts')
 const OUTPUT = join(DOCS, '.vitepress', 'data', 'posts-data.json')
+const PACKAGE_JSON = join(ROOT, 'package.json')
 
 function parseFrontmatter(content) {
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/)
@@ -167,11 +168,19 @@ function buildCategoryLabels(labels, isEn) {
 const categoryLabels = buildCategoryLabels({ ...enLabels, ...zhLabels }, false)
 const enCategoryLabels = buildCategoryLabels({ ...zhLabels, ...enLabels }, true)
 
+// 读取 package.json 中的分类样式配置
+let categoryStyles = {}
+if (existsSync(PACKAGE_JSON)) {
+  const pkg = JSON.parse(readFileSync(PACKAGE_JSON, 'utf-8'))
+  categoryStyles = pkg.categoryStyles || {}
+}
+
 const output = {
   zhPosts,
   enPosts,
   categoryLabels,
   enCategoryLabels,
+  categoryStyles,
 }
 writeFileSync(OUTPUT, JSON.stringify(output, null, 2), 'utf-8')
 

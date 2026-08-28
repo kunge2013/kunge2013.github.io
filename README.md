@@ -225,7 +225,7 @@ cp templates/new-post.md docs/posts/my-category/first-post.md
 - ✅ 分类页面 `/categories`
 - ✅ 全文搜索结果
 
-如果想让首页卡片显示自定义颜色和图标，编辑 `docs/.vitepress/theme/components/CategoryGrid.vue` 的 `styleConfig`，**这一步是可选的**，不配置也会用默认灰色样式显示。
+如果想让首页卡片显示自定义颜色和图标，编辑 `package.json` 中的 `categoryStyles` 字段，**这一步是可选的**，不配置也会用默认灰色样式显示。
 
 ### 删除分类
 
@@ -307,6 +307,326 @@ npm run validate
 ```
 
 CI 会在部署前运行此脚本，本地先跑可以提前发现问题。
+
+## AI 辅助写作（Claude Code Skills）
+
+本项目配置了 6 个 Claude Code Skills，用于加速内容创建和管理流程。
+
+### Skill 列表
+
+| Skill | 触发词 | 功能 |
+|-------|--------|------|
+| `createCategory` | "新增分类"、"创建分类"、"添加分类" | 创建分类目录和首页 |
+| `createPost` | "写文章"、"新建文章"、"发布文章" | 在指定分类下创建文章 |
+| `archive` | "归档"、"置顶文章"、"查看文章列表" | 管理归档页面和文章置顶 |
+| `scan` | "扫描"、"刷新数据"、"重新生成" | 手动触发文章扫描和数据更新 |
+| `deploy` | "部署"、"发布"、"打包" | 构建并部署到 GitHub Pages |
+| `autoScanSystem` | "文章不显示"、"扫描问题"、"调试" | 诊断扫描系统问题 |
+
+### 使用流程
+
+#### 场景 1：创建新分类
+
+```bash
+# 在 Claude Code 中输入：
+帮我创建一个"系统设计"分类，描述是"分布式系统、高可用架构等设计话题"
+
+# Claude 会自动：
+# 1. 创建 docs/posts/system-design/ 目录
+# 2. 生成 index.md 分类首页
+# 3. 填入 title 和 description
+```
+
+#### 场景 2：创建新文章
+
+```bash
+# 在 Claude Code 中输入：
+在 javascript 分类下写一篇关于 Promise 的文章，标题是"JavaScript 异步编程详解"
+
+# Claude 会自动：
+# 1. 检查分类是否存在
+# 2. 生成文章文件 docs/posts/javascript/javascript-async-await.md
+# 3. 填入 title、description、category、date 等字段
+# 4. 默认 draft: true（草稿状态）
+```
+
+#### 场景 3：发布文章
+
+```bash
+# 1. 编辑文章，将 draft: true 改为 draft: false
+# 2. 在 Claude Code 中输入：
+帮我部署一下
+
+# Claude 会自动：
+# 1. 运行 npm run validate 校验
+# 2. 运行 npm run build 构建
+# 3. 提示 git 提交和推送命令
+```
+
+#### 场景 4：调试问题
+
+```bash
+# 如果文章不显示，在 Claude Code 中输入：
+我的文章为什么不显示？
+
+# Claude 会自动：
+# 1. 检查 draft 状态
+# 2. 检查 category 字段
+# 3. 运行 npm run generate-posts 重新扫描
+# 4. 查看 posts-data.json 确认数据
+```
+
+### Skill 文件位置
+
+所有 skill 定义位于 `.claude/skills/` 目录：
+
+```
+.claude/skills/
+├── createCategory/          # 创建分类
+│   ├── SKILL.md
+│   └── assets/
+│       └── category-index.md
+├── createPost/              # 创建文章
+│   ├── SKILL.md
+│   └── assets/
+│       └── new-post.md
+├── archive/                 # 归档管理
+│   └── SKILL.md
+├── scan/                    # 手动扫描
+│   └── SKILL.md
+├── deploy/                  # 部署发布
+│   └── SKILL.md
+└── autoScanSystem/          # 扫描系统原理
+    ├── SKILL.md
+    └── references/
+        ├── data-structure.md
+        └── troubleshooting.md
+```
+
+### 使用前提
+
+1. **安装 Claude Code**：参考 [Claude Code 官方文档](https://docs.anthropic.com/en/docs/claude-code)
+2. **进入项目目录**：`cd D:\github.io\kunge2013.github.io`
+3. **启动 Claude Code**：在终端输入 `claude`
+4. **自然语言交互**：直接说出需求，Claude 会自动触发相应 skill
+
+### 完整使用流程（端到端）
+
+下面演示从创建分类到最终部署的完整流程：
+
+#### 场景：从零开始创建新分类并发布第一篇文章
+
+```bash
+# ========== 步骤 1：创建分类 ==========
+用户：帮我创建一个"Go 语言"分类
+
+Claude：好的，我来帮你创建 Go 语言分类。请提供：
+- 分类显示名（中文）：？
+- 分类目录名（英文 slug）：？（默认：go）
+- 分类描述：？
+
+用户：显示名"Go 语言"，slug 用 go，描述是"Go 语言开发相关技术"
+
+Claude：✅ 已创建分类 `go`
+- 目录：docs/posts/go/
+- 首页：docs/posts/go/index.md
+- 标题：Go 语言
+- 描述：Go 语言开发相关技术
+
+# ========== 步骤 2：创建文章 ==========
+用户：在这个分类下写一篇关于 Go 并发的文章
+
+Claude：好的，请提供文章信息：
+- 标题：？
+- 描述（一句话摘要）：？
+- 分类：go
+- 标签：（可选）
+- 草稿状态：（默认 true）
+
+用户：标题"Go 并发编程详解"，描述"深入理解 goroutine 和 channel"，标签 [Go, 并发, goroutine]
+
+Claude：✅ 已创建文章
+- 文件：docs/posts/go/go-concurrency.md
+- 标题：Go 并发编程详解
+- 分类：go
+- 状态：草稿（draft: true）
+
+# ========== 步骤 3：编辑文章内容 ==========
+用户用编辑器打开文章，编写正文内容：
+- docs/posts/go/go-concurrency.md
+- 保留 frontmatter，修改正文
+
+# ========== 步骤 4：扫描数据 ==========
+用户：重新扫描一下数据
+
+Claude：好的，正在扫描...
+✅ 扫描完成
+- 中文分类：go, javascript, react...
+- 中文文章：18 篇
+- 英文文章：3 篇
+
+注意：文章 `go-concurrency.md` 是草稿状态，不会显示在网站上。
+
+# ========== 步骤 5：发布文章 ==========
+用户将文章的 draft: true 改为 draft: false
+
+用户：扫描一下，确认文章已发布
+
+Claude：✅ 扫描完成
+- 文章 "Go 并发编程详解" 已出现在数据中
+- 可在 http://localhost:5173/posts/go/go-concurrency 查看
+
+# ========== 步骤 6：本地预览 ==========
+用户：启动开发服务器
+
+Claude：
+bash
+npm run dev
+
+# VitePress 开发服务器启动
+# Local: http://localhost:5173/
+
+用户在浏览器中预览：
+- 首页分类卡片：看到"Go 语言"
+- 分类页面：看到"Go 语言"分类
+- 文章页面：看到新文章
+- 归档页面：文章出现在 2026 年
+
+# ========== 步骤 7：置顶文章（可选）==========
+用户：把这篇文章置顶
+
+Claude：好的，正在设置置顶...
+✅ 已将 `sticky: true` 添加到文章 frontmatter
+
+效果：
+- 归档页面：文章显示 📌 图标，排在同年份最前
+- 分类页面：文章在分类内置顶
+
+# ========== 步骤 8：部署发布 ==========
+用户：帮我部署一下
+
+Claude：好的，开始部署流程：
+
+1. 校验 frontmatter...
+bash
+npm run validate
+✅ 校验通过
+
+2. 构建网站...
+bash
+npm run build
+✅ 构建完成，输出目录：docs/.vitepress/dist
+
+3. Git 提交和推送...
+bash
+git add .
+git commit -m "feat: add Go language category and concurrency article"
+git push origin main
+
+✅ 已推送到 main 分支
+GitHub Actions 将自动构建并部署到 GitHub Pages
+预计 2-3 分钟后网站更新：https://<username>.github.io/<repo>/
+
+# ========== 步骤 9：验证部署 ==========
+用户：部署成功了吗？
+
+Claude：检查 GitHub Actions 状态...
+✅ 部署成功！
+- 工作流：Deploy to GitHub Pages
+- 状态：Success
+- 访问地址：https://<username>.github.io/<repo>/
+
+# ========== 完成 ==========
+```
+
+#### 流程图
+
+```mermaid
+flowchart TD
+    A["1. 创建分类\ncreateCategory skill\n创建 docs/posts/<slug>/index.md"]
+    B["2. 创建文章\ncreatePost skill\n创建 docs/posts/<slug>/<article>.md"]
+    C["3. 编辑内容\n手动编写文章正文"]
+    D["4. 扫描数据\nscan skill\n运行 npm run generate-posts"]
+    E{"draft: true?\n（草稿状态？）"}
+    F["5. 发布文章\n将 draft: true 改为 false"]
+    G["6. 本地预览\nnpm run dev\n浏览器查看效果"]
+    H{"需要置顶？"}
+    I["7. 置顶文章\n设置 sticky: true"]
+    J["8. 部署发布\ndeploy skill\ngit add → commit → push"]
+    K{"部署成功？"}
+    L["✅ 完成\n网站已更新"]
+    M["🔧 排查问题\nautoScanSystem skill"]
+
+    A --> B --> C --> D
+    D --> E
+    E -->|是| F
+    E -->|否| G
+    F --> G
+    G --> H
+    H -->|是| I
+    H -->|否| J
+    I --> J
+    J --> K
+    K -->|是| L
+    K -->|否| M
+    M -.->|修复后重试| D
+```
+
+#### 常用命令速查
+
+```bash
+# 开发流程
+npm run dev              # 启动开发服务器
+npm run build            # 构建生产版本
+npm run preview          # 预览构建结果
+
+# 数据管理
+npm run generate-posts   # 重新扫描文章数据
+npm run validate         # 校验 frontmatter 格式
+
+# Git 流程
+git add .
+git commit -m "feat: add new article"
+git push origin main     # 触发自动部署
+```
+
+#### 故障排查
+
+```bash
+# 问题：文章不显示
+用户：我的文章为什么不显示？
+
+Claude：让我帮你排查...
+1. 检查 draft 状态：draft: true 的文章不会显示
+2. 检查 category 字段：必须与目录名一致
+3. 运行 npm run generate-posts 重新扫描
+4. 查看 posts-data.json 确认数据
+
+# 问题：构建失败
+用户：构建失败了
+
+Claude：检查错误信息...
+1. 运行 npm run validate 校验 frontmatter
+2. 检查 Markdown 语法
+3. 查看构建日志定位问题
+```
+
+### 示例对话
+
+**用户**：帮我创建一个 React 分类
+
+**Claude**：好的，我来帮你创建 React 分类。请提供：
+- 分类显示名（中文）：？
+- 分类目录名（英文 slug）：？（默认：react）
+- 分类描述：？
+
+**用户**：显示名"React"，slug 用 react，描述是"React 框架相关技术"
+
+**Claude**：好的，正在创建...
+✅ 已创建目录 `docs/posts/react/`
+✅ 已生成分类首页 `docs/posts/react/index.md`
+
+现在你可以使用 `createPost` skill 在该分类下创建文章了。
 
 ## 自动扫描原理
 
@@ -404,17 +724,99 @@ import TagCloud from './theme/components/TagCloud.vue'
 
 在 `docs/.vitepress/theme/index.ts` 的 `enhanceApp` 里全局注册，**markdown 直接用**无需 import：
 
-| 组件 | 用途 | 用法 |
-|------|------|------|
-| `<ArchiveList />` | 归档列表（按年份分组） | 任意 markdown 页面 |
-| `<TagCloud />` | 标签云 + 过滤列表 | 任意 markdown 页面 |
-| `<PostList />` | 当前分类下的文章列表 | 分类首页 `index.md` |
-| `<CategoryGrid />` | 首页分类卡片网格 | 首页或自定义页 |
-| `<CategoryPage />` | 分类列表页 | 分类列表页 |
-| `<Comments />` | 评论区（Giscus） | 文章页底部 |
+| 组件                 | 用途          | 用法              |
+| ------------------ | ----------- | --------------- |
+| `<ArchiveList />`  | 归档列表（按年份分组） | 任意 markdown 页面  |
+| `<TagCloud />`     | 标签云 + 过滤列表  | 任意 markdown 页面  |
+| `<PostList />`     | 当前分类下的文章列表  | 分类首页 `index.md` |
+| `<CategoryGrid />` | 首页分类卡片网格    | 首页或自定义页         |
+| `<CategoryPage />` | 分类列表页       | 分类列表页           |
+| `<Comments />`     | 评论区（Giscus） | 文章页底部           |
 
 ## 参考上文「新增文章」）。
 -[minifog]( https://a.minifog.org.cn)
+## 2026-08-28 更新记录
+
+### 新增分类：PI Agent
+
+本次新增了 `pi-agent` 分类，并修复了分类首页模板。
+
+#### 修改内容
+
+| 文件 | 修改类型 | 说明 |
+|------|----------|------|
+| `docs/posts/pi-agent/index.md` | 新增 | 分类首页 |
+| `docs/posts/pi-agent/what-is-pi.md` | 新增 | 文章：1.什么是PI |
+| `docs/posts/pi-agent/pi-quickstart.md` | 新增 | 文章：开始入门 |
+| `package.json` | 修改 | 添加分类样式配置（categoryStyles） |
+| `scripts/generate-posts-data.mjs` | 修改 | 读取 package.json 中的样式配置 |
+| `.claude/skills/createCategory/assets/category-index.md` | 修改 | 修复模板（添加 layout 和 PostList 组件） |
+
+#### 分类样式配置重构
+
+将样式配置从 `CategoryGrid.vue` 抽取到 `package.json` 中的 `categoryStyles` 字段，打包时自动合并到 `posts-data.json`：
+
+```json
+{
+  "categoryStyles": {
+    "pi-agent": {
+      "tag": "AI 技术",
+      "desc": "PI Agent 架构设计、开发实践与应用案例",
+      "color": "#0066cc",
+      "icon": "🧠"
+    }
+  }
+}
+```
+
+#### 分类首页配置要点
+
+分类首页 `index.md` **必须包含**以下配置才能正确显示文章列表：
+
+```yaml
+---
+title: 分类名称
+description: 分类描述
+lang: zh
+layout: page    # 必须！让 VitePress 使用页面布局
+---
+
+# 分类名称
+
+<PostList />    <!-- 必须！文章列表组件 -->
+```
+
+> **注意**：`layout: page` 和 `<PostList />` 缺一不可，否则分类页面不会显示文章列表。
+
+### 如何为新分类配置样式
+
+1. 打开 `package.json`
+2. 在 `categoryStyles` 对象中添加新分类的样式配置：
+
+```json
+{
+  "categoryStyles": {
+    "your-category": {
+      "tag": "分类标签",
+      "desc": "分类描述",
+      "color": "#0066cc",
+      "icon": "🧠"
+    }
+  }
+}
+```
+
+| 字段 | 说明 |
+|------|------|
+| `tag` | 卡片上显示的小标签（如：编程语言、前端框架、AI 技术） |
+| `desc` | 卡片下方显示的描述 |
+| `color` | 主题色（十六进制颜色值） |
+| `icon` | 图标（emoji） |
+
+3. 保存文件，运行 `npm run dev` 或 `npm run build` 即可看到效果
+
+> 如果不配置样式，分类卡片会使用默认灰色样式显示。
+
 ## License
 
 MIT
