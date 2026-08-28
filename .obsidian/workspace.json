@@ -205,6 +205,7 @@
   },
   "active": "6caee2b9cd0f8472",
   "lastOpenFiles": [
+    "docs/en/posts/pi-agent/1.Pi Coding Agent-快速开始.md",
     "docs/en/posts/pi-agent/1.Pi Coding Agent.md.tmp.23384.f96299d2b22b",
     "docs/en/posts/pi-agent/index.md",
     "docs/en/posts/pi-agent/1.Pi Coding Agent.md",
@@ -230,7 +231,6 @@
     "scripts/generate-posts-data.mjs.tmp.23384.242b1fdffd79",
     "scripts/generate-posts-data.mjs.tmp.23384.dff0c6c25421",
     "package.json.tmp.23384.58b5417a14ac",
-    "README.md.tmp.23384.9cbac6515866",
     "docs/posts/design-patterns/index.md",
     "templates/new-post.md",
     "docs/en/about.md",
