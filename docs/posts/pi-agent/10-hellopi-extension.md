@@ -32,7 +32,7 @@ date: 2026-08-28
 ```json
 {
   "extensions": [
-    "D:/github.io/pi-pkg/src/extensions/hellopi.ts"
+    "D:/github.io/pi-pkg/src/extensions/hellopi/index.ts"
   ]
 }
 ```
@@ -210,11 +210,11 @@ export default function (pi: ExtensionAPI) {
 
 ## 完整源码
 
-完整源码包含 29 个事件的监听和说明，详见：
+完整源码按"一个事件一个包"拆成 29 个目录（入口为 `hellopi/index.ts`），详见：
 
-- 开发仓库：[pi-pkg/src/extensions/hellopi.ts](https://github.com/kunge2013/pi-pkg/blob/main/src/extensions/hellopi.ts)
-- 博客源码：[hellopi.ts](https://github.com/kunge2013/kunge2013.github.io/blob/main/docs/posts/pi-agent/hellopi.ts)
-- 全局安装：`~/.pi/agent/extensions/hellopi.ts`，或在 settings.json 的 `extensions` 中引用源码路径
+- 开发仓库：[pi-pkg/src/extensions/hellopi/](https://github.com/kunge2013/pi-pkg/tree/main/src/extensions/hellopi)
+- 逐事件讲解：[hellopi 事件包实战系列](./11-hellopi-events-overview)（12 篇，覆盖全部 29 个事件的触发时机、字段、返回值与测试步骤）
+- 全局安装：`~/.pi/agent/extensions/hellopi/index.ts`，或在 settings.json 的 `extensions` 中引用源码路径
 
 ## 相关文档
 
