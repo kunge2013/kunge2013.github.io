@@ -10,14 +10,9 @@ const YELLOW = "\x1b[33m";
 const GREEN = "\x1b[32m";
 const BLUE = "\x1b[34m";
 
-// 事件说明映射表
+// 事件说明映射表（基于 pi-coding-agent 0.74.2 事件集合）
 const EVENT_INFO: Record<string, { when: string; how: string; usecase: string }> = {
-  // 启动与资源
-  project_trust: {
-    when: "pi 启动时，判断是否信任项目前触发",
-    how: "返回 { trusted: 'yes' | 'no' | 'undecided', remember: true }",
-    usecase: "自定义项目信任决策、自动化信任流程",
-  },
+  // 资源发现
   resources_discover: {
     when: "session_start 之后，加载 skills/prompts/themes 时触发",
     how: "返回 { skillPaths, promptPaths, themePaths } 添加额外资源路径",
@@ -29,11 +24,6 @@ const EVENT_INFO: Record<string, { when: string; how: string; usecase: string }>
     when: "会话启动/加载/重载时触发（startup/new/resume/fork/reload）",
     how: "可读取 ctx.sessionManager，初始化扩展状态",
     usecase: "恢复扩展状态、通知用户、启动后台任务",
-  },
-  session_info_changed: {
-    when: "通过 /name 或 pi.setSessionName() 设置会话名称时触发",
-    how: "读取 event.name 获取新名称",
-    usecase: "同步会话名称到外部系统、更新状态栏",
   },
   session_before_switch: {
     when: "/new 或 /resume 切换会话之前触发",
@@ -47,18 +37,13 @@ const EVENT_INFO: Record<string, { when: string; how: string; usecase: string }>
   },
   session_before_compact: {
     when: "压缩会话之前触发（/compact 或自动压缩）",
-    how: "返回 { cancel: true } 取消，或 { compaction: { summary, ... } } 自定义摘要",
+    how: "读取 event.preparation、event.branchEntries；返回结果可取消或自定义摘要",
     usecase: "自定义压缩摘要、阻止压缩、添加压缩前检查",
   },
   session_compact: {
     when: "压缩成功完成后触发",
-    how: "读取 event.compactionEntry 获取压缩结果",
+    how: "读取 event.compactionEntry 和 event.fromExtension",
     usecase: "记录压缩历史、通知用户压缩完成",
-  },
-  session_compact_failed: {
-    when: "压缩失败时触发",
-    how: "读取 event.errorMessage 和 event.aborted",
-    usecase: "错误恢复、通知用户、触发备用压缩策略",
   },
   session_before_tree: {
     when: "/tree 导航之前触发",
@@ -96,23 +81,6 @@ const EVENT_INFO: Record<string, { when: string; how: string; usecase: string }>
     when: "agent 循环结束时触发（可能还有自动重试）",
     how: "读取 event.messages 获取本轮消息",
     usecase: "统计使用量、记录结束时间、触发后续处理",
-  },
-  agent_settled: {
-    when: "agent 完全稳定后触发（无重试/压缩/后续消息）",
-    how: "只读通知，此时 ctx.isIdle() 为 true",
-    usecase: "确认任务完成、发送通知、触发 CI/CD",
-  },
-
-  // UI 提示事件
-  ui_prompt_start: {
-    when: "扩展 UI 对话框显示时触发（select/confirm/input/editor/custom）",
-    how: "只读通知",
-    usecase: "状态集成报告'等待用户'、记录等待时间",
-  },
-  ui_prompt_end: {
-    when: "扩展 UI 对话框关闭时触发",
-    how: "只读通知",
-    usecase: "计算用户响应时间、记录交互历史",
   },
 
   // 轮次事件
@@ -169,11 +137,6 @@ const EVENT_INFO: Record<string, { when: string; how: string; usecase: string }>
   },
 
   // 提供者请求事件
-  before_provider_headers: {
-    when: "HTTP headers 组装完成后触发",
-    how: "直接修改 event.headers（设为 null 可删除）",
-    usecase: "添加追踪 headers、注入认证信息、删除敏感 headers",
-  },
   before_provider_request: {
     when: "payload 构建完成后、请求发送之前触发",
     how: "返回替换的 payload，或 undefined 保持不变",
@@ -252,15 +215,14 @@ function printEventOverview() {
   console.log(`${TAG} ${CYAN}事件概览:${RESET}`);
 
   const categories: Record<string, string[]> = {
-    "启动与资源": ["project_trust", "resources_discover"],
-    "会话事件": ["session_start", "session_info_changed", "session_before_switch", "session_before_fork", "session_before_compact", "session_compact", "session_compact_failed", "session_before_tree", "session_tree", "session_shutdown"],
-    "Agent 事件": ["input", "before_agent_start", "agent_start", "agent_end", "agent_settled"],
-    "UI 提示": ["ui_prompt_start", "ui_prompt_end"],
+    "资源发现": ["resources_discover"],
+    "会话事件": ["session_start", "session_before_switch", "session_before_fork", "session_before_compact", "session_compact", "session_before_tree", "session_tree", "session_shutdown"],
+    "Agent 事件": ["input", "before_agent_start", "agent_start", "agent_end"],
     "轮次事件": ["turn_start", "turn_end"],
     "消息事件": ["message_start", "message_update", "message_end"],
     "工具执行": ["tool_execution_start", "tool_execution_update", "tool_execution_end"],
     "Context": ["context"],
-    "提供者请求": ["before_provider_headers", "before_provider_request", "after_provider_response"],
+    "提供者请求": ["before_provider_request", "after_provider_response"],
     "模型事件": ["model_select", "thinking_level_select"],
     "工具事件": ["tool_call", "tool_result"],
     "用户 Bash": ["user_bash"],
@@ -284,12 +246,7 @@ export default function (pi: ExtensionAPI) {
   // 启动时输出事件概览
   printEventOverview();
 
-  // ============ 启动与资源事件 ============
-
-  pi.on("project_trust", async (event) => {
-    log("project_trust", { cwd: event.cwd });
-    return { trusted: "undecided" };
-  });
+  // ============ 资源发现事件 ============
 
   pi.on("resources_discover", async (event) => {
     log("resources_discover", { cwd: event.cwd, reason: event.reason });
@@ -302,10 +259,6 @@ export default function (pi: ExtensionAPI) {
     log("session_start", { reason: event.reason, previousSessionFile: event.previousSessionFile });
   });
 
-  pi.on("session_info_changed", async (event) => {
-    log("session_info_changed", { name: event.name });
-  });
-
   pi.on("session_before_switch", async (event) => {
     log("session_before_switch", { reason: event.reason, targetSessionFile: event.targetSessionFile });
   });
@@ -315,19 +268,18 @@ export default function (pi: ExtensionAPI) {
   });
 
   pi.on("session_before_compact", async (event) => {
-    log("session_before_compact", { reason: event.reason, willRetry: event.willRetry });
+    log("session_before_compact", {
+      branchEntries: event.branchEntries?.length,
+      hasCustomInstructions: event.customInstructions !== undefined,
+    });
   });
 
   pi.on("session_compact", async (event) => {
-    log("session_compact", { fromExtension: event.fromExtension, reason: event.reason });
-  });
-
-  pi.on("session_compact_failed", async (event) => {
-    log("session_compact_failed", { reason: event.reason, aborted: event.aborted });
+    log("session_compact", { fromExtension: event.fromExtension });
   });
 
   pi.on("session_before_tree", async (event) => {
-    log("session_before_tree");
+    log("session_before_tree", { targetId: event.preparation?.targetId });
   });
 
   pi.on("session_tree", async (event) => {
@@ -354,20 +306,6 @@ export default function (pi: ExtensionAPI) {
 
   pi.on("agent_end", async (event) => {
     log("agent_end", { messageCount: event.messages?.length });
-  });
-
-  pi.on("agent_settled", async () => {
-    log("agent_settled");
-  });
-
-  // ============ UI 提示事件 ============
-
-  pi.on("ui_prompt_start", async (event) => {
-    log("ui_prompt_start", { kind: event.kind, title: event.title });
-  });
-
-  pi.on("ui_prompt_end", async (event) => {
-    log("ui_prompt_end", { kind: event.kind });
   });
 
   // ============ 轮次事件 ============
@@ -415,10 +353,6 @@ export default function (pi: ExtensionAPI) {
   });
 
   // ============ 提供者请求事件 ============
-
-  pi.on("before_provider_headers", async (event) => {
-    log("before_provider_headers", { headerKeys: Object.keys(event.headers || {}) });
-  });
 
   pi.on("before_provider_request", async (event) => {
     log("before_provider_request", { hasPayload: !!event.payload });

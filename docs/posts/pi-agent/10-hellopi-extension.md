@@ -21,11 +21,23 @@ date: 2026-08-28
 
 ## 安装位置
 
-将 `hellopi.ts` 放到全局扩展目录，所有项目自动加载：
+方式一：放到全局扩展目录，所有项目自动加载：
 
 ```bash
 ~/.pi/agent/extensions/hellopi.ts
 ```
+
+方式二：在插件开发仓库（如 `pi-pkg`）中维护源码，在 `~/.pi/agent/settings.json` 中通过 `extensions` 字段引用：
+
+```json
+{
+  "extensions": [
+    "D:/github.io/pi-pkg/src/extensions/hellopi.ts"
+  ]
+}
+```
+
+> 基于 pi-coding-agent 0.74.2 的事件集合，共监听 29 个生命周期事件。
 
 ## 完整代码
 
@@ -40,14 +52,9 @@ const YELLOW = "\x1b[33m";
 const GREEN = "\x1b[32m";
 const BLUE = "\x1b[34m";
 
-// 事件说明映射表
+// 事件说明映射表（基于 pi-coding-agent 0.74.2 事件集合）
 const EVENT_INFO: Record<string, { when: string; how: string; usecase: string }> = {
-  // 启动与资源
-  project_trust: {
-    when: "pi 启动时，判断是否信任项目前触发",
-    how: "返回 { trusted: 'yes' | 'no' | 'undecided', remember: true }",
-    usecase: "自定义项目信任决策、自动化信任流程",
-  },
+  // 资源发现
   resources_discover: {
     when: "session_start 之后，加载 skills/prompts/themes 时触发",
     how: "返回 { skillPaths, promptPaths, themePaths } 添加额外资源路径",
@@ -163,13 +170,16 @@ export default function (pi: ExtensionAPI) {
 
 ```
 [hellopi] === hellopi 扩展已加载 ===
-[hellopi] 监听 36 个生命周期事件
+[hellopi] 监听 29 个生命周期事件
 
 [hellopi] 事件概览:
-     project_trust - 自定义项目信任决策、自动化信任流程
-     resources_discover - 动态加载外部 skills、自定义主题、注入提示词
-     session_start - 恢复扩展状态、通知用户、启动后台任务
-     tool_call - 权限门控、危险命令拦截、参数验证、路径保护
+     资源发现:
+       resources_discover - 动态加载外部 skills、自定义主题、注入提示词
+     会话事件:
+       session_start - 恢复扩展状态、通知用户、启动后台任务
+       ...
+     工具事件:
+       tool_call - 权限门控、危险命令拦截、参数验证、路径保护
      ...
 
 ────────────────────────────────────────────────────────────────────────────────
@@ -189,21 +199,22 @@ export default function (pi: ExtensionAPI) {
 
 | 事件 | 触发时机 | 返回值 | 典型场景 |
 |------|----------|--------|----------|
-| `project_trust` | 启动时判断项目信任 | `{ trusted: 'yes' \| 'no' }` | 自动化信任流程 |
+| `resources_discover` | 加载 skills/prompts/themes 时 | `{ skillPaths, promptPaths, themePaths }` | 动态加载外部资源 |
 | `session_start` | 会话启动/恢复 | 无 | 初始化状态、启动后台任务 |
 | `input` | 用户输入后 | `{ action: 'transform' \| 'handled' \| 'continue' }` | 输入预处理、命令路由 |
 | `before_agent_start` | agent 循环前 | `{ message, systemPrompt }` | 注入上下文、修改系统提示词 |
 | `tool_call` | 工具执行前 | `{ block: true, reason }` | 权限门控、危险命令拦截 |
 | `tool_result` | 工具执行后 | `{ content, details, isError }` | 结果过滤、敏感信息脱敏 |
+| `context` | 每次 LLM 调用前 | `{ messages }` | 过滤敏感信息、注入上下文 |
 | `session_shutdown` | 会话结束 | 无 | 清理资源、保存状态 |
-| `agent_settled` | agent 完全稳定 | 无 | 任务完成通知、触发 CI/CD |
 
 ## 完整源码
 
-完整源码包含 36 个事件的监听和说明，详见：
+完整源码包含 29 个事件的监听和说明，详见：
 
+- 开发仓库：[pi-pkg/src/extensions/hellopi.ts](https://github.com/kunge2013/pi-pkg/blob/main/src/extensions/hellopi.ts)
 - 博客源码：[hellopi.ts](https://github.com/kunge2013/kunge2013.github.io/blob/main/docs/posts/pi-agent/hellopi.ts)
-- 全局安装：`~/.pi/agent/extensions/hellopi.ts`
+- 全局安装：`~/.pi/agent/extensions/hellopi.ts`，或在 settings.json 的 `extensions` 中引用源码路径
 
 ## 相关文档
 
