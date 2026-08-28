@@ -9,6 +9,7 @@ import CategoryPage from './components/CategoryPage.vue'
 import ArchiveList from './components/ArchiveList.vue'
 import TagCloud from './components/TagCloud.vue'
 import SearchModal from './components/SearchModal.vue'
+import MermaidAutoRender from './components/MermaidAutoRender.vue'
 import './styles/vars.css'
 import './styles/custom.css'
 
@@ -19,6 +20,7 @@ export default {
   Layout() {
     return h(DefaultTheme.Layout, null, {
       'nav-bar-content-after': () => h('div', { class: 'search-wrapper' }, [h(SearchModal)]),
+      'layout-bottom': () => h(MermaidAutoRender),
     })
   },
   enhanceApp({ app }) {

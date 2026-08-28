@@ -226,4 +226,25 @@ a:hover {
   opacity: 0.8;
 }
 
+/* ---- Mermaid 流程图 ---- */
+
+.mermaid-diagram {
+  margin: 1.5em 0;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+  padding: 1em;
+  background: var(--vp-c-bg-soft);
+  border-radius: 8px;
+}
+
+.mermaid-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.dark .mermaid-diagram {
+  background: var(--vp-c-bg-soft);
+}
+
 /* [AGC:END] */

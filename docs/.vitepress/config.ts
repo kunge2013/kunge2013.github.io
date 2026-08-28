@@ -4,6 +4,7 @@ import { defineConfig } from 'vitepress'
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
+import mermaidPlugin from './mermaid-plugin'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -96,6 +97,12 @@ export default defineConfig({
           text: 'Edit this page on GitHub',
         },
       },
+    },
+  },
+
+  markdown: {
+    config: (md) => {
+      md.use(mermaidPlugin)
     },
   },
 
