@@ -65,7 +65,7 @@
     "pi-agent": {
       "tag": "AI 技术",
       "desc": "PI Agent 架构设计、开发实践与应用案例",
-      "color": "#1a1a1a",
+      "color": "#8585c5",
       "icon": "PI"
     },
     "testing": {
