@@ -1,3 +1,13 @@
+---
+title: AI 编程 Agent 深度对比：Pi vs Claude Code vs Codex vs DeepSeek vs Harness
+description: 全面对比 2026 年主流 AI 编程 Agent 的设计理念、核心功能、优缺点与适用场景，涵盖 Terminal-Bench 基准测试、成本分析、功能矩阵和选型建议
+tags: [Pi Agent, Claude Code, Codex, DeepSeek, Harness, AI 编程, Agent 对比]
+category: pi-agent
+lang: zh
+draft: false
+date: 2026-08-29
+---
+
 # AI 编程 Agent 深度对比：Pi vs Claude Code vs Codex vs DeepSeek vs Harness
 
 > 更新日期：2026-08-29
