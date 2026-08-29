@@ -73,6 +73,12 @@
       "desc": "测试分类、测试文章、自动扫描系统验证",
       "color": "#1a1a1a",
       "icon": "TE"
+    },
+    "agentic-design-patterns": {
+      "tag": "AI 技术",
+      "desc": "《Agentic Design Patterns》中文翻译 - Antonio Gulli 著，21 章 + 7 附录",
+      "color": "#2e6ea6",
+      "icon": "AD"
     }
   },
   "dependencies": {
