@@ -48,6 +48,10 @@ jiti 转译时带 `sourceMaps: "inline"` + `sourceFileName = 原 .ts 路径`，V
 
 ## 启动调试
 
+IDEA 调试配置截图：
+
+![调试配置](./images/debug-setting.png)
+
 VS Code JavaScript Debug Terminal（PowerShell）：
 
 ```powershell
