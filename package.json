@@ -79,6 +79,12 @@
       "desc": "《Agentic Design Patterns》中文翻译 - Antonio Gulli 著，21 章 + 7 附录",
       "color": "#1a1a1a",
       "icon": "AD"
+    },
+    "feynman-technique": {
+      "tag": "学习方法",
+      "desc": "费曼学习法、以教代学、知识管理与高效学习",
+      "color": "#2ecc71",
+      "icon": "FL"
     }
   },
   "dependencies": {
