@@ -1,0 +1,58 @@
+{
+  "技术": {
+    "name": "技术",
+    "source": "user",
+    "count": 0,
+    "createdAt": 1788059102169,
+    "lastUsedAt": 1788059102169
+  },
+  "编程": {
+    "name": "编程",
+    "source": "user",
+    "count": 0,
+    "createdAt": 1788059102169,
+    "lastUsedAt": 1788059102169
+  },
+  "读书": {
+    "name": "读书",
+    "source": "user",
+    "count": 0,
+    "createdAt": 1788059102169,
+    "lastUsedAt": 1788059102169
+  },
+  "项目": {
+    "name": "项目",
+    "source": "user",
+    "count": 0,
+    "createdAt": 1788059102169,
+    "lastUsedAt": 1788059102169
+  },
+  "想法": {
+    "name": "想法",
+    "source": "user",
+    "count": 0,
+    "createdAt": 1788059102169,
+    "lastUsedAt": 1788059102169
+  },
+  "学习": {
+    "name": "学习",
+    "source": "user",
+    "count": 0,
+    "createdAt": 1788059102169,
+    "lastUsedAt": 1788059102169
+  },
+  "工作": {
+    "name": "工作",
+    "source": "user",
+    "count": 0,
+    "createdAt": 1788059102169,
+    "lastUsedAt": 1788059102169
+  },
+  "笔记": {
+    "name": "笔记",
+    "source": "user",
+    "count": 0,
+    "createdAt": 1788059102169,
+    "lastUsedAt": 1788059102169
+  }
+}

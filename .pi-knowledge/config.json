@@ -1,0 +1,33 @@
+{
+  "host": "127.0.0.1",
+  "port": 3847,
+  "embedding": {
+    "defaultModel": "openai",
+    "localModel": "Xenova/all-MiniLM-L6-v2",
+    "openai": {
+      "apiKey": "sk-sp-0c1d8c21f313401fb275393c75ac14ce",
+      "model": "text-embedding-3-small"
+    }
+  },
+  "llm": {
+    "preference": "api",
+    "openai": {
+      "apiKey": "sk-sp-0c1d8c21f313401fb275393c75ac14ce",
+      "model": "gpt-4o-mini"
+    }
+  },
+  "index": {
+    "batchSize": 10,
+    "batchInterval": 10,
+    "saveDelay": 30,
+    "largeFileThreshold": 5000
+  },
+  "search": {
+    "defaultTopK": 10,
+    "defaultThreshold": 0.7
+  },
+  "logging": {
+    "level": "info",
+    "dir": "logs"
+  }
+}

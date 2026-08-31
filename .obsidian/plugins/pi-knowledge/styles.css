@@ -1,0 +1,22 @@
+/* pi-knowledge styles */
+.pi-knowledge.sidebar { display: flex; flex-direction: column; height: 100%; padding: 12px; overflow-y: auto; }
+.pi-knowledge-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--background-modifier-border); }
+.pi-knowledge-header h4 { margin: 0; font-size: 14px; }
+.pi-knowledge-search { margin-bottom: 16px; }
+.pi-knowledge-search-input { width: 100%; padding: 8px 12px; border: 1px solid var(--background-modifier-border); border-radius: 6px; background: var(--background-primary); margin-bottom: 8px; }
+.pi-knowledge-results { flex: 1; overflow-y: auto; margin-bottom: 16px; }
+.pi-knowledge-result-item { padding: 10px; margin-bottom: 8px; border: 1px solid var(--background-modifier-border); border-radius: 6px; cursor: pointer; }
+.pi-knowledge-result-item:hover { background: var(--background-modifier-hover); }
+.pi-knowledge-result-title { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.pi-knowledge-result-title .score { font-size: 11px; color: var(--text-muted); background: var(--background-modifier-border); padding: 2px 6px; border-radius: 4px; }
+.pi-knowledge-result-content { font-size: 12px; color: var(--text-muted); margin: 0 0 8px 0; }
+.pi-knowledge-result-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.pi-knowledge-tag { display: inline-block; padding: 2px 6px; font-size: 11px; border-radius: 4px; }
+.pi-knowledge-tag.user-tag { background: var(--interactive-accent); color: var(--text-on-accent); }
+.pi-knowledge-tag.ai-tag { background: var(--color-purple); color: white; }
+.pi-knowledge-empty { text-align: center; color: var(--text-muted); font-size: 12px; padding: 20px 0; }
+.pi-knowledge-tag-cloud { margin-bottom: 16px; }
+.pi-knowledge-tag-cloud h5 { font-size: 13px; margin: 0 0 8px 0; }
+.pi-knowledge-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.pi-knowledge-status { padding: 10px; background: var(--background-secondary); border-radius: 6px; font-size: 12px; }
+.pi-knowledge-status p { margin: 4px 0; color: var(--text-muted); }

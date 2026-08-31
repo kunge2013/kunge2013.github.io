@@ -4,39 +4,24 @@
     "type": "split",
     "children": [
       {
-        "id": "f4b6397da80450c3",
+        "id": "e6031fe9f717718b",
         "type": "tabs",
         "children": [
           {
-            "id": "d0c6b6237b969ba4",
+            "id": "8d941683a40dfa65",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/posts/pi-agent/index.md",
+                "file": "docs/posts/feynman-technique/index.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
               "title": "index"
             }
-          },
-          {
-            "id": "6caee2b9cd0f8472",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/posts/pi-agent/1.Pi Coding Agent-快速开始.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "1.Pi Coding Agent-快速开始"
-            }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -114,13 +99,13 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "README.md",
+                "file": "未命名.base",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
                 "showSearch": false,
                 "searchQuery": "",
-                "backlinkCollapsed": false,
+                "backlinkCollapsed": true,
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
@@ -133,7 +118,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -176,7 +160,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "README.md",
+                "file": "docs/posts/feynman-technique/index.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -184,13 +168,23 @@
               "icon": "lucide-list",
               "title": "大纲"
             }
+          },
+          {
+            "id": "ea17d9ccb0d16428",
+            "type": "leaf",
+            "state": {
+              "type": "pi-knowledge-sidebar",
+              "state": {},
+              "icon": "search",
+              "title": "pi-knowledge"
+            }
           }
-        ]
+        ],
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -200,50 +194,58 @@
       "daily-notes:打开/创建今天的日记": false,
       "templates:插入模板": false,
       "command-palette:打开命令面板": false,
-      "bases:新建数据库": false
+      "bases:新建数据库": false,
+      "pi-knowledge:pi-knowledge": false,
+      "hearth:打开 Hearth 主页": false
     }
   },
-  "active": "6caee2b9cd0f8472",
+  "active": "8d941683a40dfa65",
   "lastOpenFiles": [
-    "docs/3.png",
-    "docs/en/posts/pi-agent/1.Pi Coding Agent-快速开始.md",
-    "docs/en/posts/pi-agent/1.Pi Coding Agent.md.tmp.23384.f96299d2b22b",
-    "docs/en/posts/pi-agent/index.md",
-    "docs/en/posts/pi-agent/1.Pi Coding Agent.md",
-    "docs/posts/pi-agent/1.Pi Coding Agent-快速开始.md",
-    "docs/posts/pi-agent/index.md",
-    "docs/posts/pi-agent/1.Pi Coding Agent.md.tmp.20268.3f86bf2d1ce4",
-    "docs/posts/pi-agent/pi-quickstart.md",
-    "docs/en/posts/pi-agent",
-    "docs/posts/pi-agent/what-is-pi.md",
-    "docs/posts/javascript/index.md",
-    "README.md",
-    "package.json.tmp.23384.acaaaa1b0329",
-    "docs/2.png",
-    "templates/category-index.md",
-    "docs/posts/system-design/index.md",
-    "docs/posts/testing/index.md",
-    "docs/public/未确认 745234.crdownload",
-    "docs/public/favicon.png",
-    "docs/1.png",
-    "docs/posts/testing/test-article.md",
-    "README.md.tmp.23384.11af1516f2be",
-    "README.md.tmp.23384.f3e4ffaa2274",
-    "scripts/generate-posts-data.mjs.tmp.23384.242b1fdffd79",
-    "scripts/generate-posts-data.mjs.tmp.23384.dff0c6c25421",
-    "package.json.tmp.23384.58b5417a14ac",
+    "docs/posts/feynman-technique/feynman-skill-guide.md.tmp.22384.e28544ba1641",
+    "docs/posts/feynman-technique/feynman-skill-guide.md.tmp.22384.8b9946a86e6d",
+    "docs/posts/feynman-technique/feynman-skill-guide.md",
+    "docs/posts/feynman-technique/feynman-skill-guide.md.tmp.22384.3efa9fa453a0",
+    "docs/posts/feynman-technique/guide.md.tmp.22384.82a1f1d4bcba",
+    "docs/posts/feynman-technique/guide.md.tmp.22384.23b953ea74b4",
     "docs/posts/design-patterns/index.md",
-    "templates/new-post.md",
-    "docs/en/about.md",
-    "docs/en/archives.md",
-    "docs/en/index.md",
-    "docs/posts/ai/pi/index.md",
+    "docs/posts/agentic-design-patterns/index.md",
+    "docs/posts/feynman-technique/index.md",
+    "docs/posts/feynman-technique/guide.md",
+    "posts/javascript/promise-async-await.md",
+    "notes/ml-chinese.md",
+    "templates/category-index.md",
+    "docs/posts/pi-agent/9-custom-ui.md",
+    "notes",
     "CLAUDE.md",
-    "docs/posts/golang/goroutines-basics.md",
-    "docs/posts/golang/index.md",
-    "docs/posts/golang/test-article.md",
-    "docs/posts/spring/index.md",
-    "docs/posts/typescript/index.md",
-    "docs/4.png"
+    "README.md",
+    "docs/posts/pi-agent/10-hellopi-extension.md",
+    "docs/posts/pi-agent/1.Pi Coding Agent-快速开始.md",
+    "未命名.base",
+    "docs/posts/pi-agent/index.md",
+    "docs/posts/pi-agent/5-events.md",
+    "mermaid-check3.mjs.tmp.29656.b4acf81dfbbe",
+    "vue-mustache-test.mjs.tmp.3596.9100e089d90a",
+    "vue-mustache-test.mjs",
+    "mermaid-check3.mjs",
+    "docs/4.png",
+    "docs/posts/pi-agent/22-hellopi-user-bash.md",
+    "docs/posts/pi-agent/21-hellopi-tool-intercept.md",
+    "docs/posts/pi-agent/20-hellopi-model.md",
+    "docs/posts/pi-agent/19-hellopi-provider.md",
+    "docs/posts/pi-agent/18-hellopi-context.md",
+    "docs/posts/pi-agent/17-hellopi-tool-execution.md",
+    "docs/posts/pi-agent/16-hellopi-turn-message.md",
+    "docs/posts/pi-agent/15-hellopi-input-agent.md",
+    "docs/posts/pi-agent/14-hellopi-session-compact-tree.md",
+    "docs/posts/pi-agent/13-hellopi-session-lifecycle.md",
+    "docs/3.png",
+    "docs/2.png",
+    "node_modules/non-layered-tidy-tree-layout/screenshots/1.png",
+    "node_modules/@zenuml/core/dist/vite.svg",
+    "node_modules/highlight.js/styles/pojoaque.jpg",
+    "node_modules/highlight.js/styles/brown-papersq.png",
+    "node_modules/cytoscape-fcose/node_modules/layout-base/layout-schema.png",
+    "node_modules/cytoscape-fcose/demo/incrementalConstraints.gif",
+    "node_modules/cytoscape-fcose/demo/demo.gif"
   ]
 }
