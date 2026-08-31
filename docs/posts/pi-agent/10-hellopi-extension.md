@@ -197,16 +197,16 @@ export default function (pi: ExtensionAPI) {
 
 ## 核心事件速查表
 
-| 事件 | 触发时机 | 返回值 | 典型场景 |
-|------|----------|--------|----------|
-| `resources_discover` | 加载 skills/prompts/themes 时 | `{ skillPaths, promptPaths, themePaths }` | 动态加载外部资源 |
-| `session_start` | 会话启动/恢复 | 无 | 初始化状态、启动后台任务 |
-| `input` | 用户输入后 | `{ action: 'transform' \| 'handled' \| 'continue' }` | 输入预处理、命令路由 |
-| `before_agent_start` | agent 循环前 | `{ message, systemPrompt }` | 注入上下文、修改系统提示词 |
-| `tool_call` | 工具执行前 | `{ block: true, reason }` | 权限门控、危险命令拦截 |
-| `tool_result` | 工具执行后 | `{ content, details, isError }` | 结果过滤、敏感信息脱敏 |
-| `context` | 每次 LLM 调用前 | `{ messages }` | 过滤敏感信息、注入上下文 |
-| `session_shutdown` | 会话结束 | 无 | 清理资源、保存状态 |
+| 事件                   | 触发时机                       | 返回值                                                  | 典型场景          |
+| -------------------- | -------------------------- | ---------------------------------------------------- | ------------- |
+| `resources_discover` | 加载 skills/prompts/themes 时 | `{ skillPaths, promptPaths, themePaths }`            | 动态加载外部资源      |
+| `session_start`      | 会话启动/恢复                    | 无                                                    | 初始化状态、启动后台任务  |
+| `input`              | 用户输入后                      | `{ action: 'transform' \| 'handled' \| 'continue' }` | 输入预处理、命令路由    |
+| `before_agent_start` | agent 循环前                  | `{ message, systemPrompt }`                          | 注入上下文、修改系统提示词 |
+| `tool_call`          | 工具执行前                      | `{ block: true, reason }`                            | 权限门控、危险命令拦截   |
+| `tool_result`        | 工具执行后                      | `{ content, details, isError }`                      | 结果过滤、敏感信息脱敏   |
+| `context`            | 每次 LLM 调用前                 | `{ messages }`                                       | 过滤敏感信息、注入上下文  |
+| `session_shutdown`   | 会话结束                       | 无                                                    | 清理资源、保存状态     |
 
 ## 完整源码
 
