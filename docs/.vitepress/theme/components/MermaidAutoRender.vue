@@ -385,9 +385,9 @@ watch(() => route.path, () => {
   padding: 12px 16px;
   font-size: 13px;
   line-height: 1.7;
-  color: var(--vp-c-text-1);
-  background: transparent;
-  border: 1px solid transparent;
+  color: var(--mermaid-code-color);
+  background: var(--mermaid-code-bg);
+  border: 1px solid var(--mermaid-code-border);
   border-radius: 6px;
   outline: none;
   resize: vertical;
@@ -402,16 +402,16 @@ watch(() => route.path, () => {
 }
 
 .mermaid-code-editor.has-error {
-  border-color: #e53935;
-  background: rgba(229, 57, 53, 0.04);
+  border-color: var(--mermaid-error-border);
+  background: var(--mermaid-error-bg);
 }
 
 .mermaid-error-msg {
   margin-top: 8px;
   padding: 8px 12px;
   font-size: 12px;
-  color: #e53935;
-  background: rgba(229, 57, 53, 0.08);
+  color: var(--mermaid-error-color);
+  background: var(--mermaid-error-bg);
   border-radius: 6px;
   line-height: 1.5;
 }
@@ -425,7 +425,7 @@ watch(() => route.path, () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e8f3ff;
+  background: var(--mermaid-modal-bg);
   animation: mFadeIn 0.2s ease;
 }
 
@@ -472,8 +472,8 @@ watch(() => route.path, () => {
   height: 44px;
   border-radius: 50%;
   border: none;
-  background: rgba(0,0,0,0.08);
-  color: #333;
+  background: var(--mermaid-close-bg);
+  color: var(--mermaid-close-color);
   font-size: 24px;
   cursor: pointer;
   display: flex;
@@ -484,7 +484,7 @@ watch(() => route.path, () => {
 }
 
 .mermaid-close-btn:hover {
-  background: rgba(0,0,0,0.15);
+  background: var(--mermaid-close-hover-bg);
   transform: scale(1.1);
 }
 

@@ -22,6 +22,18 @@
 
   /* 首页标题颜色 */
   --vp-home-hero-name-color: var(--vp-c-brand-1);
+
+  /* ---- Mermaid 组件主题变量（亮色） ---- */
+  --mermaid-modal-bg: #e8f3ff;
+  --mermaid-close-bg: rgba(0, 0, 0, 0.06);
+  --mermaid-close-color: #444;
+  --mermaid-close-hover-bg: rgba(0, 0, 0, 0.12);
+  --mermaid-error-color: #e53935;
+  --mermaid-error-bg: rgba(229, 57, 53, 0.06);
+  --mermaid-error-border: #e53935;
+  --mermaid-code-bg: var(--vp-code-bg);
+  --mermaid-code-color: var(--vp-c-text-1);
+  --mermaid-code-border: var(--vp-c-divider);
 }
 
 .dark {
@@ -34,6 +46,18 @@
   --vp-c-text-1: #ffffff;
   --vp-c-text-2: #b0b0b0;
   --vp-c-text-3: #777777;
+
+  /* ---- Mermaid 组件主题变量（暗色） ---- */
+  --mermaid-modal-bg: #1a1e2e;
+  --mermaid-close-bg: rgba(255, 255, 255, 0.1);
+  --mermaid-close-color: #ddd;
+  --mermaid-close-hover-bg: rgba(255, 255, 255, 0.2);
+  --mermaid-error-color: #ff6b6b;
+  --mermaid-error-bg: rgba(255, 107, 107, 0.1);
+  --mermaid-error-border: #ff6b6b;
+  --mermaid-code-bg: #1e2030;
+  --mermaid-code-color: #e0e0e0;
+  --mermaid-code-border: #3a3f5c;
 }
 
 /* 标题使用衬线字体 */
