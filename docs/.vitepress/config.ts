@@ -37,11 +37,25 @@ function buildCategoryNav(prefix: string, labelsKey: 'categoryLabels' | 'enCateg
 
 export default defineConfig({
   head: [
-    ['link', { rel: 'icon', type: 'image/png', href: '/favicon.png' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon-light.svg', id: 'favicon-light' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon-dark.svg', id: 'favicon-dark', media: '(prefers-color-scheme: dark)' }],
     ['meta', { name: 'theme-color', content: '#3eaf7c' }],
     ['meta', { name: 'og:type', content: 'website' }],
     ['meta', { name: 'og:locale', content: 'zh-CN' }],
     ['meta', { name: 'og:site_name', content: 'Kunge2013\'s Blog' }],
+    ['script', {}, `
+(function() {
+  var darkLink = document.getElementById('favicon-dark');
+  if (!darkLink) return;
+  function update() {
+    var isDark = document.documentElement.classList.contains('dark');
+    darkLink.setAttribute('media', isDark ? 'all' : '(prefers-color-scheme: dark)');
+  }
+  update();
+  var observer = new MutationObserver(update);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+})();
+    `],
   ],
 
   locales: {
