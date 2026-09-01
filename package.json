@@ -85,6 +85,12 @@
       "desc": "费曼学习法、以教代学、知识管理与高效学习",
       "color": "#2ecc71",
       "icon": "FL"
+    },
+    "maven": {
+      "tag": "构建工具",
+      "desc": "项目构建、依赖管理、生命周期、插件开发",
+      "color": "#c71a36",
+      "icon": "MV"
     }
   },
   "dependencies": {
