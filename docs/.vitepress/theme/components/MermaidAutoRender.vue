@@ -328,6 +328,31 @@ watch(() => route.path, () => {
   justify-content: center;
   cursor: pointer;
   min-height: 120px;
+  position: relative;
+}
+
+.mermaid-chart-view::after {
+  content: '🔍';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.mermaid-chart-view:hover::after {
+  opacity: 1;
 }
 
 .mermaid-chart-view svg {
