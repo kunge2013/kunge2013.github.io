@@ -326,33 +326,8 @@ watch(() => route.path, () => {
   overflow-x: auto;
   display: flex;
   justify-content: center;
-  cursor: pointer;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='10' cy='10' r='7' fill='none' stroke='%23333' stroke-width='2'/%3E%3Cline x1='15' y1='15' x2='21' y2='21' stroke='%23333' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='7' y1='10' x2='13' y2='10' stroke='%23333' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='10' y1='7' x2='10' y2='13' stroke='%23333' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 12 12, pointer;
   min-height: 120px;
-  position: relative;
-}
-
-.mermaid-chart-view::after {
-  content: '🔍';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 24px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.mermaid-chart-view:hover::after {
-  opacity: 1;
 }
 
 .mermaid-chart-view svg {
@@ -450,6 +425,8 @@ watch(() => route.path, () => {
   transform: scale(1.1);
 }
 
-.dark .mermaid-chart-view { cursor: pointer; }
+.dark .mermaid-chart-view {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='10' cy='10' r='7' fill='none' stroke='%23fff' stroke-width='2'/%3E%3Cline x1='15' y1='15' x2='21' y2='21' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='7' y1='10' x2='13' y2='10' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3Cline x1='10' y1='7' x2='10' y2='13' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") 12 12, pointer;
+}
 </style>
 <!-- [AGC:END] -->
