@@ -122,13 +122,30 @@ async function renderDiagrams() {
       const actions = document.createElement('div')
       actions.className = 'mermaid-actions'
 
+      // 复制按钮（代码模式显示）
+      const btnCopy = document.createElement('button')
+      btnCopy.className = 'mermaid-action-btn'
+      btnCopy.textContent = '📋 复制'
+      btnCopy.style.display = 'none' // 初始隐藏，代码模式显示
+      btnCopy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(code)
+          btnCopy.textContent = '✅ 已复制'
+          setTimeout(() => { btnCopy.textContent = '📋 复制' }, 1500)
+        } catch {
+          /* clipboard not available */
+        }
+      })
+
       const btnZoom = document.createElement('button')
       btnZoom.className = 'mermaid-action-btn'
       btnZoom.textContent = '🔍 放大'
+
       const btnDownload = document.createElement('button')
       btnDownload.className = 'mermaid-action-btn'
       btnDownload.textContent = '⬇ 下载'
 
+      actions.appendChild(btnCopy)
       actions.appendChild(btnZoom)
       actions.appendChild(btnDownload)
 
@@ -164,12 +181,16 @@ async function renderDiagrams() {
         tabCode.classList.remove('active')
         chartView.style.display = ''
         codeView.style.display = 'none'
+        btnCopy.style.display = 'none'
+        btnZoom.style.display = ''
       })
       tabCode.addEventListener('click', () => {
         tabCode.classList.add('active')
         tabChart.classList.remove('active')
         chartView.style.display = 'none'
         codeView.style.display = ''
+        btnCopy.style.display = ''
+        btnZoom.style.display = 'none'
       })
 
       // 事件：放大（全屏）
