@@ -163,6 +163,8 @@ async function renderDiagrams() {
         svgEl.removeAttribute('width')
         svgEl.removeAttribute('height')
       }
+      // 单击图表区域全屏
+      chartView.addEventListener('click', () => openFullscreen(svg))
 
       // 代码视图
       const codeView = document.createElement('div')
@@ -324,7 +326,7 @@ watch(() => route.path, () => {
   overflow-x: auto;
   display: flex;
   justify-content: center;
-  cursor: zoom-in;
+  cursor: pointer;
   min-height: 120px;
 }
 
@@ -423,6 +425,6 @@ watch(() => route.path, () => {
   transform: scale(1.1);
 }
 
-.dark .mermaid-chart-view { cursor: zoom-in; }
+.dark .mermaid-chart-view { cursor: pointer; }
 </style>
 <!-- [AGC:END] -->
