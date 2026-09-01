@@ -1,14 +1,15 @@
 <!-- [AGC:FILE] tool=Cc author=fangkun date=2026-09-01 -->
 <!-- [AGC:START] tool=Cc author=fangkun -->
 <template>
-  <div v-show="false"></div>
-  <!-- 全屏查看 Modal -->
-  <div v-if="showFullscreen" class="mermaid-fullscreen" @click.self="closeFullscreen">
-    <!-- 关闭按钮 -->
-    <button class="mermaid-close-btn" @click="closeFullscreen" title="关闭 (ESC)">✕</button>
-    <!-- 图表内容 -->
-    <div class="mermaid-fullscreen-content" @wheel.prevent="handleWheel" @mousedown="startDrag" @mousemove="onDrag" @mouseup="endDrag" @mouseleave="endDrag">
-      <div class="mermaid-fullscreen-diagram" :style="fsDiagramStyle" v-html="fullscreenSvg"></div>
+  <div>
+    <!-- 全屏查看 Modal -->
+    <div v-if="showFullscreen" class="mermaid-fullscreen" @click.self="closeFullscreen">
+      <!-- 关闭按钮 -->
+      <button class="mermaid-close-btn" @click="closeFullscreen" title="关闭 (ESC)">✕</button>
+      <!-- 图表内容 -->
+      <div class="mermaid-fullscreen-content" @wheel.prevent="handleWheel" @mousedown="startDrag" @mousemove="onDrag" @mouseup="endDrag" @mouseleave="endDrag">
+        <div class="mermaid-fullscreen-diagram" :style="fsDiagramStyle" v-html="fullscreenSvg"></div>
+      </div>
     </div>
   </div>
 </template>
