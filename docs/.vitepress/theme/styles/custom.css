@@ -231,16 +231,19 @@ a:hover {
 .mermaid-diagram {
   margin: 1.5em 0;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   overflow-x: auto;
-  padding: 1em;
+  padding: 1.5em;
   background: var(--vp-c-bg-soft);
   border-radius: 8px;
+  border: 1px solid var(--vp-c-divider);
 }
 
 .mermaid-diagram svg {
-  max-width: 100%;
+  max-width: none;
+  width: 100%;
   height: auto;
+  min-width: 600px;
 }
 
 .dark .mermaid-diagram {

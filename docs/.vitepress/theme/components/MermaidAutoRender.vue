@@ -23,7 +23,17 @@ mermaid.initialize({
   },
   flowchart: {
     htmlLabels: true,
-    useMaxWidth: true,
+    useMaxWidth: false,
+    padding: 20,
+    nodeSpacing: 30,
+    rankSpacing: 50,
+    curve: 'basis',
+  },
+  sequence: {
+    useMaxWidth: false,
+  },
+  gantt: {
+    useMaxWidth: false,
   },
 })
 
@@ -44,6 +54,14 @@ async function renderDiagrams() {
       const wrapper = document.createElement('div')
       wrapper.className = 'mermaid-diagram'
       wrapper.innerHTML = svg
+      // 移除 SVG 上的固定宽度，让它自适应
+      const svgEl = wrapper.querySelector('svg')
+      if (svgEl) {
+        svgEl.removeAttribute('width')
+        svgEl.removeAttribute('height')
+        svgEl.style.width = '100%'
+        svgEl.style.height = 'auto'
+      }
       block.replaceWith(wrapper)
     } catch (e) {
       console.error('Mermaid render error:', e)
