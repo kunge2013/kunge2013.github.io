@@ -27,6 +27,11 @@ while read -r file; do
     continue
   fi
 
+  # 跳过 source 目录（原始文档，不需要校验）
+  if [[ "$file" == */source/* ]]; then
+    continue
+  fi
+
   CHECKED=$((CHECKED + 1))
 
   # 检查是否有 frontmatter（frontmatter 在文件头部，以 --- 包围）

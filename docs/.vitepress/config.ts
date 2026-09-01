@@ -36,6 +36,8 @@ function buildCategoryNav(prefix: string, labelsKey: 'categoryLabels' | 'enCateg
 }
 
 export default defineConfig({
+  srcExclude: ['**/source/**'],
+
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon-light.svg', id: 'favicon-light' }],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon-dark.svg', id: 'favicon-dark', media: '(prefers-color-scheme: dark)' }],
