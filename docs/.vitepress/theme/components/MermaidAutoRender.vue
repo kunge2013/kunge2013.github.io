@@ -139,7 +139,7 @@ async function renderDiagrams() {
 
       const btnZoom = document.createElement('button')
       btnZoom.className = 'mermaid-action-btn'
-      btnZoom.textContent = '🔍 放大'
+      btnZoom.textContent = '⤢ 全屏'
 
       const btnDownload = document.createElement('button')
       btnDownload.className = 'mermaid-action-btn'
@@ -262,11 +262,11 @@ watch(() => route.path, () => {
 }
 
 .mermaid-tab {
-  padding: 5px 14px;
-  font-size: 13px;
+  padding: 3px 10px;
+  font-size: 12px;
   font-weight: 500;
   border: 1px solid var(--vp-c-divider);
-  border-radius: 6px;
+  border-radius: 14px;
   background: var(--vp-c-bg);
   color: var(--vp-c-text-2);
   cursor: pointer;
@@ -291,11 +291,11 @@ watch(() => route.path, () => {
 .mermaid-action-btn {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 5px 12px;
-  font-size: 12px;
+  gap: 3px;
+  padding: 3px 8px;
+  font-size: 11px;
   border: 1px solid var(--vp-c-divider);
-  border-radius: 6px;
+  border-radius: 14px;
   background: var(--vp-c-bg);
   color: var(--vp-c-text-2);
   cursor: pointer;
@@ -352,8 +352,7 @@ watch(() => route.path, () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.9);
-  backdrop-filter: blur(12px);
+  background: #e8f3ff;
   animation: mFadeIn 0.2s ease;
 }
 
@@ -400,8 +399,8 @@ watch(() => route.path, () => {
   height: 44px;
   border-radius: 50%;
   border: none;
-  background: rgba(255,255,255,0.1);
-  color: #fff;
+  background: rgba(0,0,0,0.08);
+  color: #333;
   font-size: 24px;
   cursor: pointer;
   display: flex;
@@ -409,11 +408,10 @@ watch(() => route.path, () => {
   justify-content: center;
   transition: all 0.2s;
   z-index: 10000;
-  backdrop-filter: blur(8px);
 }
 
 .mermaid-close-btn:hover {
-  background: rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.15);
   transform: scale(1.1);
 }
 
