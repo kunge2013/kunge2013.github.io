@@ -107,6 +107,14 @@ function openModal(svg: string) {
   panX.value = 0
   panY.value = 0
   showModal.value = true
+  // 等待 DOM 渲染后调整 SVG 样式
+  setTimeout(() => {
+    const modalSvgEl = document.querySelector('.mermaid-modal-diagram svg')
+    if (modalSvgEl) {
+      // 让 SVG 使用 viewBox 自然尺寸
+      modalSvgEl.removeAttribute('style')
+    }
+  }, 50)
 }
 
 function handleWheel(e: WheelEvent) {
@@ -309,7 +317,7 @@ watch(() => route.path, () => {
 
 .mermaid-modal-body {
   flex: 1;
-  overflow: hidden;
+  overflow: auto;
   position: relative;
   background: var(--vp-c-bg-soft);
   cursor: grab;
@@ -320,16 +328,18 @@ watch(() => route.path, () => {
 }
 
 .mermaid-modal-diagram {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: max-content;
-  height: max-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100%;
+  min-height: 100%;
+  padding: 40px;
 }
 
 .mermaid-modal-diagram svg {
   display: block;
   max-width: none;
+  height: auto;
 }
 
 .mermaid-modal-hint {
