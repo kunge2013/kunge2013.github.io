@@ -53,6 +53,7 @@ const fsDiagramStyle = computed(() => ({
 function closeFullscreen() {
   showFullscreen.value = false
   resetFsZoom()
+  document.body.style.overflow = ''
 }
 
 function resetFsZoom() {
@@ -65,6 +66,7 @@ function openFullscreen(svg: string) {
   fullscreenSvg.value = svg
   resetFsZoom()
   showFullscreen.value = true
+  document.body.style.overflow = 'hidden'
   setTimeout(() => {
     const el = document.querySelector('.mermaid-fullscreen-diagram svg')
     if (el) el.removeAttribute('style')
