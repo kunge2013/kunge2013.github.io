@@ -6,29 +6,35 @@
   <div v-if="showModal" class="mermaid-modal" @click.self="closeModal">
     <div class="mermaid-modal-content">
       <div class="mermaid-modal-toolbar">
+        <span class="mermaid-modal-title">流程图查看</span>
+        <div class="mermaid-modal-zoom-info">{{ Math.round(zoomLevel * 100) }}%</div>
         <button class="mermaid-modal-btn" @click="zoomIn" title="放大">
           <span>🔍+</span>
         </button>
         <button class="mermaid-modal-btn" @click="zoomOut" title="缩小">
           <span>🔍-</span>
         </button>
-        <button class="mermaid-modal-btn" @click="resetZoom" title="恢复原始大小">
-          <span></span>
+        <button class="mermaid-modal-btn" @click="resetZoom" title="适应屏幕">
+          <span>⊡</span>
         </button>
         <button class="mermaid-modal-btn mermaid-modal-close" @click="closeModal" title="关闭">
           <span>✕</span>
         </button>
       </div>
-      <div class="mermaid-modal-body" ref="modalBody">
+      <div class="mermaid-modal-body" @wheel="handleWheel" @mousedown="startDrag" @mousemove="onDrag" @mouseup="endDrag" @mouseleave="endDrag">
         <div class="mermaid-modal-diagram" :style="diagramStyle" v-html="modalSvg"></div>
       </div>
-      <div class="mermaid-modal-hint">双击图表可放大查看 · 拖动可移动 · 滚轮可缩放</div>
+      <div class="mermaid-modal-hint">
+        <span>🖱️ 滚轮缩放</span>
+        <span>✋ 拖拽移动</span>
+        <span>⌨️ ESC 关闭</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vitepress'
 import mermaid from 'mermaid'
 
@@ -70,19 +76,18 @@ const isDragging = ref(false)
 const dragStartX = ref(0)
 const dragStartY = ref(0)
 
-const diagramStyle = {
-  transform: () => `translate(${panX.value}px, ${panY.value}px) scale(${zoomLevel.value})`,
+const diagramStyle = computed(() => ({
+  transform: `translate(${panX.value}px, ${panY.value}px) scale(${zoomLevel.value})`,
   transformOrigin: 'center center',
-  transition: 'transform 0.2s ease',
-  cursor: 'grab',
-}
+  transition: isDragging.value ? 'none' : 'transform 0.2s ease',
+}))
 
 function zoomIn() {
-  zoomLevel.value = Math.min(zoomLevel.value + 0.2, 4)
+  zoomLevel.value = Math.min(zoomLevel.value + 0.25, 5)
 }
 
 function zoomOut() {
-  zoomLevel.value = Math.max(zoomLevel.value - 0.2, 0.3)
+  zoomLevel.value = Math.max(zoomLevel.value - 0.25, 0.2)
 }
 
 function resetZoom() {
@@ -104,6 +109,28 @@ function openModal(svg: string) {
   showModal.value = true
 }
 
+function handleWheel(e: WheelEvent) {
+  e.preventDefault()
+  const delta = e.deltaY > 0 ? -0.1 : 0.1
+  zoomLevel.value = Math.max(0.2, Math.min(5, zoomLevel.value + delta))
+}
+
+function startDrag(e: MouseEvent) {
+  isDragging.value = true
+  dragStartX.value = e.clientX - panX.value
+  dragStartY.value = e.clientY - panY.value
+}
+
+function onDrag(e: MouseEvent) {
+  if (!isDragging.value) return
+  panX.value = e.clientX - dragStartX.value
+  panY.value = e.clientY - dragStartY.value
+}
+
+function endDrag() {
+  isDragging.value = false
+}
+
 async function renderDiagrams() {
   const blocks = document.querySelectorAll('pre.mermaid')
   for (const block of blocks) {
@@ -120,10 +147,12 @@ async function renderDiagrams() {
       wrapper.innerHTML = svg
       const svgEl = wrapper.querySelector('svg')
       if (svgEl) {
+        // 保留原始 viewBox，但让 SVG 在容器中自适应
+        svgEl.style.maxWidth = '100%'
+        svgEl.style.height = 'auto'
+        // 移除固定的 width/height，让 SVG 使用 viewBox 自然缩放
         svgEl.removeAttribute('width')
         svgEl.removeAttribute('height')
-        svgEl.style.width = '100%'
-        svgEl.style.height = 'auto'
       }
       // 添加双击放大功能
       wrapper.addEventListener('dblclick', () => {
@@ -140,7 +169,6 @@ async function renderDiagrams() {
 
 onMounted(() => {
   setTimeout(renderDiagrams, 100)
-  // ESC 关闭
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && showModal.value) closeModal()
   })
@@ -155,7 +183,7 @@ watch(() => route.path, () => {
 .mermaid-diagram {
   margin: 1.5em 0;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   overflow-x: auto;
   padding: 1.5em;
   background: var(--vp-c-bg-soft);
@@ -170,10 +198,8 @@ watch(() => route.path, () => {
 }
 
 .mermaid-diagram svg {
-  max-width: none;
-  width: 100%;
+  max-width: 100%;
   height: auto;
-  min-width: 600px;
 }
 
 .dark .mermaid-diagram {
@@ -192,8 +218,8 @@ watch(() => route.path, () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
   animation: fadeIn 0.2s ease;
 }
 
@@ -204,8 +230,9 @@ watch(() => route.path, () => {
 
 .mermaid-modal-content {
   position: relative;
-  max-width: 95vw;
-  max-height: 95vh;
+  width: 90vw;
+  height: 90vh;
+  max-width: 1400px;
   background: var(--vp-c-bg);
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
@@ -227,6 +254,24 @@ watch(() => route.path, () => {
   padding: 12px 16px;
   background: var(--vp-c-bg-soft);
   border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.mermaid-modal-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+  margin-right: 8px;
+}
+
+.mermaid-modal-zoom-info {
+  font-size: 12px;
+  color: var(--vp-c-text-2);
+  background: var(--vp-c-bg);
+  padding: 4px 8px;
+  border-radius: 4px;
+  min-width: 45px;
+  text-align: center;
+  border: 1px solid var(--vp-c-divider);
 }
 
 .mermaid-modal-btn {
@@ -264,27 +309,36 @@ watch(() => route.path, () => {
 
 .mermaid-modal-body {
   flex: 1;
-  overflow: auto;
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 300px;
+  overflow: hidden;
+  position: relative;
+  background: var(--vp-c-bg-soft);
+  cursor: grab;
+}
+
+.mermaid-modal-body:active {
+  cursor: grabbing;
 }
 
 .mermaid-modal-diagram {
-  transition: transform 0.2s ease;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max-content;
+  height: max-content;
 }
 
 .mermaid-modal-diagram svg {
+  display: block;
   max-width: none;
 }
 
 .mermaid-modal-hint {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
   padding: 10px 16px;
   font-size: 12px;
   color: var(--vp-c-text-3);
-  text-align: center;
   border-top: 1px solid var(--vp-c-divider);
   background: var(--vp-c-bg-soft);
 }
