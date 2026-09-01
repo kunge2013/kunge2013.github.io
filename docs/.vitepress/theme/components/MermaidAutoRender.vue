@@ -440,7 +440,7 @@ watch(() => route.path, () => {
 .mermaid-fullscreen-content {
   width: 100%;
   height: 100%;
-  overflow: auto;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
