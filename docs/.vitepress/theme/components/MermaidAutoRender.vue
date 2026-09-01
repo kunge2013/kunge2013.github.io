@@ -270,6 +270,7 @@ watch(() => route.path, () => {
 .mermaid-tab {
   padding: 3px 10px;
   font-size: 12px;
+  line-height: 1.4;
   font-weight: 500;
   border: 1px solid var(--vp-c-divider);
   border-radius: 14px;
@@ -298,8 +299,9 @@ watch(() => route.path, () => {
   display: flex;
   align-items: center;
   gap: 3px;
-  padding: 3px 8px;
-  font-size: 11px;
+  padding: 3px 10px;
+  font-size: 12px;
+  line-height: 1.4;
   border: 1px solid var(--vp-c-divider);
   border-radius: 14px;
   background: var(--vp-c-bg);
