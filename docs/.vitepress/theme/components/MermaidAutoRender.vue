@@ -198,7 +198,13 @@ async function renderDiagrams() {
 
       // 事件：下载
       btnDownload.addEventListener('click', () => {
-        const blob = new Blob([svg], { type: 'image/svg+xml' })
+        // SVG 是严格的 XML，HTML 标签必须自闭合
+        const cleanSvg = svg
+          .replace(/<br\s*>/gi, '<br/>')
+          .replace(/<hr\s*>/gi, '<hr/>')
+          .replace(/<img\s([^>]*?)(?<!\/)>/gi, '<img $1/>')
+          .replace(/<input\s([^>]*?)(?<!\/)>/gi, '<input $1/>')
+        const blob = new Blob([cleanSvg], { type: 'image/svg+xml' })
         const url = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = url
