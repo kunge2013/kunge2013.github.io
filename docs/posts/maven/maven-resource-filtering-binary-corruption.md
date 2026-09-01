@@ -94,28 +94,28 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    START(["🚀 开始 process-resources 阶段"]) --> SCAN
+    START([" 开始 process-resources 阶段"]) --> SCAN
 
-    subgraph SCAN_PHASE["📂 第一步：扫描资源"]
-        SCAN["扫描所有 <resource> 配置"]
-        DIR["读取 <directory> 目录"]
-        MATCH["应用 <includes> / <excludes> 匹配规则"]
+    subgraph SCAN_PHASE[" 第一步：扫描资源"]
+        SCAN["扫描 pom.xml 中所有 resource 配置"]
+        DIR["读取 directory 指定的目录"]
+        MATCH["应用 includes / excludes 匹配规则"]
     end
 
     SCAN_PHASE --> CHECK
 
-    subgraph FILTER["🔄 第二步：逐个处理文件"]
-        CHECK{"文件是否在<br/>nonFilteredFileExtensions 中?"}
-        CHECK -->|"✅ 是（二进制文件）"| COPY["📋 原样复制<br/>不做任何修改"]
-        CHECK -->|"❌ 否"| F2{"<filtering> = true?"}
-        F2 -->|"❌ false"| COPY2["📋 原样复制<br/>不做任何修改"]
-        F2 -->|"✅ true"| READ["📖 用 <encoding> 编码读取文件"]
-        READ --> REPLACE["🔍 扫描并替换 ${xxx} 占位符"]
-        REPLACE --> WRITE["✍️ 写入 target/classes"]
+    subgraph FILTER[" 第二步：逐个处理文件"]
+        CHECK{"该文件扩展名是否在<br/>nonFilteredFileExtensions 列表中?"}
+        CHECK -->|" 是<br/>例如 xlsx, docx, ttf"| COPY[" 原样复制文件<br/>不做任何修改"]
+        CHECK -->|" 否<br/>继续检查 filtering"| F2{"该 resource 配置中<br/>filtering 是否为 true?"}
+        F2 -->|" false<br/>默认值"| COPY2[" 原样复制文件<br/>不做任何修改"]
+        F2 -->|" true<br/>危险!"| READ[" 用 encoding 编码<br/>读取文件内容"]
+        READ --> REPLACE[" 扫描并替换<br/>xxx 占位符<br/>例如 project.version"]
+        REPLACE --> WRITE[" 将修改后的内容<br/>写入 target/classes"]
     end
 
-    subgraph OUTPUT["📦 第三步：输出"]
-        DONE(["✅ 资源处理完成<br/>所有文件在 target/classes 中"])
+    subgraph OUTPUT[" 第三步：输出"]
+        DONE([" 资源处理完成<br/>所有文件已复制到 target/classes"])
     end
 
     COPY --> DONE
@@ -128,17 +128,17 @@ flowchart TB
     style F2 fill:#fff9c4,stroke:#f9a825,stroke-width:2px
     style COPY fill:#c8e6c9,stroke:#388e3c
     style COPY2 fill:#c8e6c9,stroke:#388e3c
-    style READ fill:#ffecb3,stroke:#ff8f00
-    style REPLACE fill:#ffecb3,stroke:#ff8f00
-    style WRITE fill:#ffecb3,stroke:#ff8f00
+    style READ fill:#ffccbc,stroke:#d84315
+    style REPLACE fill:#ffccbc,stroke:#d84315
+    style WRITE fill:#ffccbc,stroke:#d84315
     style SCAN_PHASE fill:#e8eaf6,stroke:#3f51b5,stroke-width:1px
     style FILTER fill:#fce4ec,stroke:#c2185b,stroke-width:1px
     style OUTPUT fill:#e0f2f1,stroke:#00796b,stroke-width:1px
 ```
 
-> ⚠️ **危险路径**：当二进制文件不在 `nonFilteredFileExtensions` 中，且 `filtering=true` 时，文件会走"读取→替换→写回"路径，导致损坏！
-
-### 3.3 二进制文件为什么会损坏
+> ️ **危险路径**：当二进制文件不在 `nonFilteredFileExtensions` 中，且 `filtering=true` 时，文件会走"读取→替换→写回"路径，导致损坏！
+>
+> 🔑 **关键判断**：第一个判断节点问的是"扩展名是否在白名单中"，第二个判断节点问的是"filtering 配置是否为 true"。只有两个答案都是"否"和"是"时，才会触发过滤（危险路径）。
 
 以 `.xlsx` 为例（本质是 ZIP 压缩包）：
 
@@ -495,39 +495,48 @@ src/main/webapp/css/style.css  →  target/classes/static/css/style.css
 ```mermaid
 flowchart TB
     subgraph POM["📄 pom.xml"]
-        subgraph BUILD_TAG["🏗️ <build>"]
-            subgraph RESOURCES_TAG["📂 <resources>"]
-                R1["📦 <resource> #1<br/>原样复制"]
-                R2["📦 <resource> #2<br/>过滤配置"]
+        subgraph BUILD_TAG["🏗️ <build> 构建配置根节点"]
+            subgraph RESOURCES_TAG[" <resources> 资源列表容器"]
+                R1["📦 <resource> #1<br/>🟢 原样复制模式"]
+                R2["📦 <resource> #2<br/> 过滤模式"]
+                R3[" <resource> #3<br/> 额外目录"]
             end
-            subgraph PLUGINS_TAG["🔌 <plugins>"]
+            subgraph PLUGINS_TAG[" <plugins> 插件配置"]
                 PLUGIN["🔧 maven-resources-plugin<br/>全局配置"]
             end
         end
     end
 
-    subgraph R1_CONFIG["资源 #1 配置详情"]
+    subgraph R1_CONFIG["资源 #1 配置详情<br/>🟢 安全模式：所有文件原样复制"]
         direction TB
         D1["📁 <directory><br/>src/main/resources"]
-        F1["⚙️ <filtering><br/>false"]
-        I1["📋 <includes><br/>**/*（所有文件）"]
+        F1["⚙️ <filtering><br/>false ✅"]
+        I1["📋 <includes><br/>**/*<br/>所有文件"]
     end
 
-    subgraph R2_CONFIG["资源 #2 配置详情"]
+    subgraph R2_CONFIG["资源 #2 配置详情<br/> 过滤模式：只处理配置文件"]
         direction TB
         D2["📁 <directory><br/>src/main/resources"]
-        F2["⚙️ <filtering><br/>true 🔥"]
-        I2["📋 <includes><br/>**/*.properties<br/>**/*.yml, **/*.yaml"]
+        F2["⚙️ <filtering><br/>true ️"]
+        I2["📋 <includes><br/>**/*.properties<br/>**/*.yml<br/>**/*.yaml<br/>**/*.xml"]
     end
 
-    subgraph PLUGIN_CONFIG["插件全局配置"]
+    subgraph R3_CONFIG["资源 #3 配置详情<br/>📁 额外配置目录"]
+        direction TB
+        D3[" <directory><br/>src/main/config"]
+        F3["⚙️ <filtering><br/>true"]
+        TP3[" <targetPath><br/>config"]
+    end
+
+    subgraph PLUGIN_CONFIG["插件全局配置<br/> 影响所有 resource"]
         direction TB
         ENC["🔤 <encoding><br/>UTF-8"]
-        NFE["🚫 <nonFilteredFileExtensions><br/>xlsx, docx, ttf, pfx..."]
+        NFE["🚫 <nonFilteredFileExtensions><br/>xlsx, docx, ttf, pfx...<br/>二进制文件保护名单"]
     end
 
     R1 --> R1_CONFIG
     R2 --> R2_CONFIG
+    R3 --> R3_CONFIG
     PLUGIN --> PLUGIN_CONFIG
 
     style POM fill:#fafafa,stroke:#333,stroke-width:2px
@@ -536,17 +545,24 @@ flowchart TB
     style PLUGINS_TAG fill:#e8f5e9,stroke:#388e3c,stroke-width:1px
     style R1_CONFIG fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
     style R2_CONFIG fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style R3_CONFIG fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
     style PLUGIN_CONFIG fill:#e0f2f1,stroke:#00796b,stroke-width:2px
     style F1 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
     style F2 fill:#ffccbc,stroke:#d84315,stroke-width:2px,color:#000
+    style F3 fill:#b3e5fc,stroke:#0288d1
     style R1 fill:#c8e6c9,stroke:#388e3c
     style R2 fill:#ffecb3,stroke:#ff8f00
+    style R3 fill:#b3e5fc,stroke:#0288d1
     style PLUGIN fill:#b2dfdb,stroke:#00796b
 ```
 
-> 💡 **配置优先级**：`<resource>` 级别的配置（如 `filtering`）优先于插件全局配置。每个 `<resource>` 可以独立控制自己的处理规则。
-
-### 6.5 完整配置示例
+> 💡 **配置说明**：
+> - **资源 #1**（绿色）：`filtering=false`，所有文件原样复制，**最安全**
+> - **资源 #2**（橙色）：`filtering=true`，但通过 `<includes>` 限定只处理配置文件，**推荐**
+> - **资源 #3**（蓝色）：额外的配置目录，可指定 `<targetPath>` 改变输出位置
+> - **插件全局配置**（青色）：`<encoding>` 和 `<nonFilteredFileExtensions>` 影响所有 resource
+>
+> 🔑 **配置优先级**：`<resource>` 级别的配置优先于插件全局配置。每个 `<resource>` 可以独立控制自己的处理规则。
 
 ```xml
 <build>
