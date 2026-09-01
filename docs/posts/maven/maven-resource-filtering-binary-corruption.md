@@ -37,11 +37,56 @@ sticky: false
 
 执行 `mvn package` 时，Maven 按顺序执行以下阶段：
 
+```mermaid
+flowchart LR
+    subgraph EARLY["🔍 前置校验"]
+        direction LR
+        V["validate<br/>校验项目"]
+        I["initialize<br/>初始化"]
+    end
+
+    subgraph GEN["📦 资源生成"]
+        direction LR
+        GS["generate-sources<br/>生成源码"]
+        PS["process-sources<br/>处理源码"]
+        GR["generate-resources<br/>生成资源"]
+    end
+
+    subgraph KEY["⚡ 关键阶段"]
+        direction LR
+        PR["process-resources<br/>🔥 资源过滤发生在这里"]
+    end
+
+    subgraph BUILD["🔨 编译构建"]
+        direction LR
+        C["compile<br/>编译"]
+        PC["process-classes<br/>处理类"]
+    end
+
+    subgraph TEST["🧪 测试"]
+        direction LR
+        TS["test<br/>执行测试"]
+    end
+
+    subgraph PKG["📤 打包发布"]
+        direction LR
+        PP["package<br/>打包"]
+        IN["install<br/>安装"]
+        DP["deploy<br/>部署"]
+    end
+
+    V --> I --> GS --> PS --> GR --> PR --> C --> PC --> TS --> PP --> IN --> DP
+
+    style KEY fill:#fff3e0,stroke:#e65100,stroke-width:3px
+    style PR fill:#ff6f00,stroke:#e65100,stroke-width:2px,color:#fff
+    style EARLY fill:#e3f2fd,stroke:#1565c0,stroke-width:1px
+    style GEN fill:#f3e5f5,stroke:#7b1fa2,stroke-width:1px
+    style BUILD fill:#e8f5e9,stroke:#388e3c,stroke-width:1px
+    style TEST fill:#fce4ec,stroke:#c2185b,stroke-width:1px
+    style PKG fill:#e0f2f1,stroke:#00796b,stroke-width:1px
 ```
-validate → generate-resources → process-resources → compile → test → package → install → deploy
-                                  ⬆
-                        资源过滤在这里发生！
-```
+
+> 💡 **关键认知**：资源过滤发生在 `process-resources` 阶段，这是编译之前的一步。文件在这个阶段被复制到 `target/classes`，如果开启了 filtering，就会同时进行占位符替换。
 
 ### 3.2 maven-resources-plugin 做了什么
 
@@ -49,16 +94,49 @@ validate → generate-resources → process-resources → compile → test → p
 
 ```mermaid
 flowchart TB
-    A["扫描 src/main/resources"] --> B{"文件标记 filtering=true?"}
-    B -->|否| C["原样复制到 target/classes"]
-    B -->|是| D["用指定编码读取文件内容"]
-    D --> E["扫描并替换 ${xxx} 占位符"]
-    E --> F["写回 target/classes"]
-    
-    style D fill:#fff3cd,stroke:#ffc107
-    style E fill:#fff3cd,stroke:#ffc107
-    style F fill:#fff3cd,stroke:#ffc107
+    START(["🚀 开始 process-resources 阶段"]) --> SCAN
+
+    subgraph SCAN_PHASE["📂 第一步：扫描资源"]
+        SCAN["扫描所有 <resource> 配置"]
+        DIR["读取 <directory> 目录"]
+        MATCH["应用 <includes> / <excludes> 匹配规则"]
+    end
+
+    SCAN_PHASE --> CHECK
+
+    subgraph FILTER["🔄 第二步：逐个处理文件"]
+        CHECK{"文件是否在<br/>nonFilteredFileExtensions 中?"}
+        CHECK -->|"✅ 是（二进制文件）"| COPY["📋 原样复制<br/>不做任何修改"]
+        CHECK -->|"❌ 否"| F2{"<filtering> = true?"}
+        F2 -->|"❌ false"| COPY2["📋 原样复制<br/>不做任何修改"]
+        F2 -->|"✅ true"| READ["📖 用 <encoding> 编码读取文件"]
+        READ --> REPLACE["🔍 扫描并替换 ${xxx} 占位符"]
+        REPLACE --> WRITE["✍️ 写入 target/classes"]
+    end
+
+    subgraph OUTPUT["📦 第三步：输出"]
+        DONE(["✅ 资源处理完成<br/>所有文件在 target/classes 中"])
+    end
+
+    COPY --> DONE
+    COPY2 --> DONE
+    WRITE --> DONE
+
+    style START fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style DONE fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style CHECK fill:#fff9c4,stroke:#f9a825,stroke-width:2px
+    style F2 fill:#fff9c4,stroke:#f9a825,stroke-width:2px
+    style COPY fill:#c8e6c9,stroke:#388e3c
+    style COPY2 fill:#c8e6c9,stroke:#388e3c
+    style READ fill:#ffecb3,stroke:#ff8f00
+    style REPLACE fill:#ffecb3,stroke:#ff8f00
+    style WRITE fill:#ffecb3,stroke:#ff8f00
+    style SCAN_PHASE fill:#e8eaf6,stroke:#3f51b5,stroke-width:1px
+    style FILTER fill:#fce4ec,stroke:#c2185b,stroke-width:1px
+    style OUTPUT fill:#e0f2f1,stroke:#00796b,stroke-width:1px
 ```
+
+> ⚠️ **危险路径**：当二进制文件不在 `nonFilteredFileExtensions` 中，且 `filtering=true` 时，文件会走"读取→替换→写回"路径，导致损坏！
 
 ### 3.3 二进制文件为什么会损坏
 
@@ -416,31 +494,57 @@ src/main/webapp/css/style.css  →  target/classes/static/css/style.css
 
 ```mermaid
 flowchart TB
-    subgraph BUILD["<build>"]
-        subgraph RESOURCES["<resources>"]
-            R1["<resource> #1"]
-            R2["<resource> #2"]
+    subgraph POM["📄 pom.xml"]
+        subgraph BUILD_TAG["🏗️ <build>"]
+            subgraph RESOURCES_TAG["📂 <resources>"]
+                R1["📦 <resource> #1<br/>原样复制"]
+                R2["📦 <resource> #2<br/>过滤配置"]
+            end
+            subgraph PLUGINS_TAG["🔌 <plugins>"]
+                PLUGIN["🔧 maven-resources-plugin<br/>全局配置"]
+            end
         end
     end
-    
-    subgraph R1_DETAIL["资源 #1 配置"]
-        D1["<directory>src/main/resources</directory>"]
-        F1["<filtering>false</filtering>"]
-        I1["<includes>**/*</includes>"]
+
+    subgraph R1_CONFIG["资源 #1 配置详情"]
+        direction TB
+        D1["📁 <directory><br/>src/main/resources"]
+        F1["⚙️ <filtering><br/>false"]
+        I1["📋 <includes><br/>**/*（所有文件）"]
     end
-    
-    subgraph R2_DETAIL["资源 #2 配置"]
-        D2["<directory>src/main/resources</directory>"]
-        F2["<filtering>true</filtering>"]
-        I2["<includes>**/*.properties, **/*.yml</includes>"]
+
+    subgraph R2_CONFIG["资源 #2 配置详情"]
+        direction TB
+        D2["📁 <directory><br/>src/main/resources"]
+        F2["⚙️ <filtering><br/>true 🔥"]
+        I2["📋 <includes><br/>**/*.properties<br/>**/*.yml, **/*.yaml"]
     end
-    
-    R1 --> R1_DETAIL
-    R2 --> R2_DETAIL
-    
-    style F1 fill:#e8f5e9,stroke:#388e3c
-    style F2 fill:#fff3cd,stroke:#ffc107
+
+    subgraph PLUGIN_CONFIG["插件全局配置"]
+        direction TB
+        ENC["🔤 <encoding><br/>UTF-8"]
+        NFE["🚫 <nonFilteredFileExtensions><br/>xlsx, docx, ttf, pfx..."]
+    end
+
+    R1 --> R1_CONFIG
+    R2 --> R2_CONFIG
+    PLUGIN --> PLUGIN_CONFIG
+
+    style POM fill:#fafafa,stroke:#333,stroke-width:2px
+    style BUILD_TAG fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style RESOURCES_TAG fill:#f3e5f5,stroke:#7b1fa2,stroke-width:1px
+    style PLUGINS_TAG fill:#e8f5e9,stroke:#388e3c,stroke-width:1px
+    style R1_CONFIG fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    style R2_CONFIG fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style PLUGIN_CONFIG fill:#e0f2f1,stroke:#00796b,stroke-width:2px
+    style F1 fill:#c8e6c9,stroke:#2e7d32,stroke-width:2px
+    style F2 fill:#ffccbc,stroke:#d84315,stroke-width:2px,color:#000
+    style R1 fill:#c8e6c9,stroke:#388e3c
+    style R2 fill:#ffecb3,stroke:#ff8f00
+    style PLUGIN fill:#b2dfdb,stroke:#00796b
 ```
+
+> 💡 **配置优先级**：`<resource>` 级别的配置（如 `filtering`）优先于插件全局配置。每个 `<resource>` 可以独立控制自己的处理规则。
 
 ### 6.5 完整配置示例
 
