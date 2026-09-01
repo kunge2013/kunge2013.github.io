@@ -4,37 +4,17 @@
   <div v-show="false"></div>
   <!-- 全屏查看 Modal -->
   <div v-if="showFullscreen" class="mermaid-fullscreen" @click.self="closeFullscreen">
-    <div class="mermaid-fullscreen-content">
-      <div class="mermaid-fullscreen-toolbar">
-        <div class="mermaid-fullscreen-tabs">
-          <button class="mermaid-tab" :class="{ active: fullscreenMode === 'chart' }" @click="fullscreenMode = 'chart'">图表</button>
-          <button class="mermaid-tab" :class="{ active: fullscreenMode === 'code' }" @click="fullscreenMode = 'code'">代码</button>
-        </div>
-        <div class="mermaid-fullscreen-actions">
-          <button class="mermaid-action-btn" @click="copyCode" title="复制">📋 复制</button>
-          <button class="mermaid-action-btn" @click="downloadSvg" title="下载">⬇ 下载</button>
-          <button class="mermaid-action-btn" @click="closeFullscreen" title="退出全屏">✕ 关闭</button>
-        </div>
-      </div>
-      <div class="mermaid-fullscreen-body">
-        <div v-if="fullscreenMode === 'chart'" class="mermaid-fullscreen-chart" ref="fsBody" @wheel.prevent="handleWheel" @mousedown="startDrag" @mousemove="onDrag" @mouseup="endDrag" @mouseleave="endDrag">
-          <div class="mermaid-fullscreen-diagram" :style="fsDiagramStyle" v-html="fullscreenSvg"></div>
-        </div>
-        <div v-else class="mermaid-fullscreen-code-wrap">
-          <pre class="mermaid-fullscreen-code"><code v-html="highlightedCode"></code></pre>
-        </div>
-      </div>
-      <div class="mermaid-fullscreen-hint">
-        <span v-if="fullscreenMode === 'chart'">🖱️ 滚轮缩放 ·  拖拽移动</span>
-        <span v-else>📋 点击复制按钮可复制源码</span>
-        <span style="margin-left:auto">当前缩放: {{ Math.round(fsZoom * 100) }}%</span>
-      </div>
+    <!-- 关闭按钮 -->
+    <button class="mermaid-close-btn" @click="closeFullscreen" title="关闭 (ESC)">✕</button>
+    <!-- 图表内容 -->
+    <div class="mermaid-fullscreen-content" @wheel.prevent="handleWheel" @mousedown="startDrag" @mousemove="onDrag" @mouseup="endDrag" @mouseleave="endDrag">
+      <div class="mermaid-fullscreen-diagram" :style="fsDiagramStyle" v-html="fullscreenSvg"></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, nextTick } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vitepress'
 import mermaid from 'mermaid'
 
@@ -56,8 +36,6 @@ let counter = 0
 // Fullscreen Modal 状态
 const showFullscreen = ref(false)
 const fullscreenSvg = ref('')
-const fullscreenCode = ref('')
-const fullscreenMode = ref<'chart' | 'code'>('chart')
 const fsZoom = ref(1)
 const fsPanX = ref(0)
 const fsPanY = ref(0)
@@ -71,21 +49,6 @@ const fsDiagramStyle = computed(() => ({
   transition: fsDragging.value ? 'none' : 'transform 0.15s ease',
 }))
 
-const highlightedCode = computed(() => {
-  return escapeHtml(fullscreenCode.value)
-    .replace(/^(\s*flowchart\s+.*)$/gm, '<span class="mc-keyword">$1</span>')
-    .replace(/^(\s*subgraph\s+.*)$/gm, '<span class="mc-keyword">$1</span>')
-    .replace(/^(\s*end)$/gm, '<span class="mc-keyword">$1</span>')
-    .replace(/(style\s+\w+\s+fill:[^,]*,stroke:[^\s]*)/g, '<span class="mc-style">$1</span>')
-    .replace(/\|([^|]+)\|/g, '<span class="mc-label">|$1|</span>')
-    .replace(/"([^"]+)"/g, '<span class="mc-string">"$1"</span>')
-    .replace(/(style\s+\w+\s+)/g, '<span class="mc-keyword">$1</span>')
-})
-
-function escapeHtml(str: string) {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-}
-
 function closeFullscreen() {
   showFullscreen.value = false
   resetFsZoom()
@@ -97,10 +60,8 @@ function resetFsZoom() {
   fsPanY.value = 0
 }
 
-function openFullscreen(svg: string, code: string) {
+function openFullscreen(svg: string) {
   fullscreenSvg.value = svg
-  fullscreenCode.value = code
-  fullscreenMode.value = 'chart'
   resetFsZoom()
   showFullscreen.value = true
   setTimeout(() => {
@@ -127,30 +88,6 @@ function onDrag(e: MouseEvent) {
 }
 
 function endDrag() { fsDragging.value = false }
-
-async function copyCode() {
-  try {
-    await navigator.clipboard.writeText(fullscreenCode.value)
-    const btn = document.querySelector('.mermaid-action-btn')
-    if (btn) {
-      const orig = btn.textContent
-      btn.textContent = '✅ 已复制'
-      setTimeout(() => { btn.textContent = orig }, 1500)
-    }
-  } catch {
-    /* clipboard not available */
-  }
-}
-
-function downloadSvg() {
-  const blob = new Blob([fullscreenSvg.value], { type: 'image/svg+xml' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = `mermaid-diagram.svg`
-  a.click()
-  URL.revokeObjectURL(url)
-}
 
 async function renderDiagrams() {
   const blocks = document.querySelectorAll('pre.mermaid')
@@ -191,13 +128,9 @@ async function renderDiagrams() {
       const btnDownload = document.createElement('button')
       btnDownload.className = 'mermaid-action-btn'
       btnDownload.textContent = '⬇ 下载'
-      const btnFull = document.createElement('button')
-      btnFull.className = 'mermaid-action-btn'
-      btnFull.textContent = '⤢ 全屏'
 
       actions.appendChild(btnZoom)
       actions.appendChild(btnDownload)
-      actions.appendChild(btnFull)
 
       toolbar.appendChild(tabs)
       toolbar.appendChild(actions)
@@ -239,8 +172,8 @@ async function renderDiagrams() {
         codeView.style.display = ''
       })
 
-      // 事件：放大
-      btnZoom.addEventListener('click', () => openFullscreen(svg, code))
+      // 事件：放大（全屏）
+      btnZoom.addEventListener('click', () => openFullscreen(svg))
 
       // 事件：下载
       btnDownload.addEventListener('click', () => {
@@ -252,9 +185,6 @@ async function renderDiagrams() {
         a.click()
         URL.revokeObjectURL(url)
       })
-
-      // 事件：全屏
-      btnFull.addEventListener('click', () => openFullscreen(svg, code))
 
       container.appendChild(toolbar)
       container.appendChild(chartView)
@@ -392,11 +322,6 @@ watch(() => route.path, () => {
   font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
 }
 
-.mc-keyword { color: #c2185b; font-weight: 600; }
-.mc-label { color: #1565c0; }
-.mc-string { color: #2e7d32; }
-.mc-style { color: #e65100; }
-
 /* ---- 全屏 Modal ---- */
 
 .mermaid-fullscreen {
@@ -406,8 +331,8 @@ watch(() => route.path, () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0,0,0,0.85);
-  backdrop-filter: blur(8px);
+  background: rgba(0,0,0,0.9);
+  backdrop-filter: blur(12px);
   animation: mFadeIn 0.2s ease;
 }
 
@@ -417,53 +342,16 @@ watch(() => route.path, () => {
 }
 
 .mermaid-fullscreen-content {
-  position: relative;
-  width: 92vw;
-  height: 92vh;
-  max-width: 1400px;
-  background: var(--vp-c-bg);
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  animation: mSlideUp 0.25s ease;
-}
-
-@keyframes mSlideUp {
-  from { transform: translateY(30px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.mermaid-fullscreen-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px;
-  background: var(--vp-c-bg-soft);
-  border-bottom: 1px solid var(--vp-c-divider);
-}
-
-.mermaid-fullscreen-actions {
-  display: flex;
-  gap: 6px;
-}
-
-.mermaid-fullscreen-body {
-  flex: 1;
-  overflow: hidden;
-  position: relative;
-}
-
-.mermaid-fullscreen-chart {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background: var(--vp-c-bg-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: grab;
 }
 
-.mermaid-fullscreen-chart:active {
+.mermaid-fullscreen-content:active {
   cursor: grabbing;
 }
 
@@ -473,7 +361,7 @@ watch(() => route.path, () => {
   justify-content: center;
   min-width: 100%;
   min-height: 100%;
-  padding: 40px;
+  padding: 60px;
 }
 
 .mermaid-fullscreen-diagram svg {
@@ -482,30 +370,30 @@ watch(() => route.path, () => {
   height: auto;
 }
 
-.mermaid-fullscreen-code-wrap {
-  height: 100%;
-  overflow: auto;
-  padding: 20px;
-  background: var(--vp-code-bg);
-}
-
-.mermaid-fullscreen-code {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.8;
-  color: var(--vp-c-text-1);
-  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-  white-space: pre;
-}
-
-.mermaid-fullscreen-hint {
+/* 关闭按钮 */
+.mermaid-close-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  padding: 8px 16px;
-  font-size: 12px;
-  color: var(--vp-c-text-3);
-  border-top: 1px solid var(--vp-c-divider);
-  background: var(--vp-c-bg-soft);
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 10000;
+  backdrop-filter: blur(8px);
+}
+
+.mermaid-close-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.1);
 }
 
 .dark .mermaid-chart-view { cursor: zoom-in; }
