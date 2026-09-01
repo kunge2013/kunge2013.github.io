@@ -8,6 +8,8 @@ import type { Post } from '../../data/posts'
 
 const { lang } = useData()
 const activeTag = ref<string>('')
+const showAllTags = ref(false)
+const MAX_TAGS_DISPLAY = 20
 
 const isEn = computed(() => lang.value === 'en-US')
 
@@ -47,6 +49,16 @@ const tags = computed<TagInfo[]>(() => {
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
 })
+
+// 默认显示 top 20 标签
+const displayTags = computed<TagInfo[]>(() => {
+  if (showAllTags.value) return tags.value
+  return tags.value.slice(0, MAX_TAGS_DISPLAY)
+})
+
+const hasMoreTags = computed(() => tags.value.length > MAX_TAGS_DISPLAY)
+
+const moreTagsCount = computed(() => tags.value.length - MAX_TAGS_DISPLAY)
 
 const filteredPosts = computed<PostWithCategory[]>(() => {
   if (!activeTag.value) return allPosts.value
@@ -89,7 +101,7 @@ const noTagEmpty = computed(() =>
           <span class="chip-count">{{ allPosts.length }}</span>
         </button>
         <button
-          v-for="tag in tags"
+          v-for="tag in displayTags"
           :key="tag.name"
           class="tag-chip"
           :class="{ active: activeTag === tag.name }"
@@ -98,6 +110,16 @@ const noTagEmpty = computed(() =>
         >
           {{ tag.name }}
           <span class="chip-count">{{ tag.count }}</span>
+        </button>
+        <button
+          v-if="hasMoreTags"
+          class="tag-chip tag-toggle-btn"
+          type="button"
+          @click="showAllTags = !showAllTags"
+        >
+          {{ showAllTags
+            ? (isEn ? '▲ Show less' : '▲ 收起')
+            : (isEn ? `▼ ${moreTagsCount} more` : `▼ 还有${moreTagsCount}个`) }}
         </button>
       </div>
 
@@ -217,6 +239,19 @@ const noTagEmpty = computed(() =>
 .tag-chip.active .chip-count {
   background: rgba(255, 255, 255, 0.2);
   color: #fff;
+}
+
+.tag-toggle-btn {
+  background: var(--vp-c-brand-soft);
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+  font-weight: 500;
+}
+
+.tag-toggle-btn:hover {
+  background: var(--vp-c-brand-1);
+  color: #fff;
+  transform: none;
 }
 
 .filter-title {
