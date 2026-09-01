@@ -72,7 +72,7 @@ function openFullscreen(svg: string) {
 
 function handleWheel(e: WheelEvent) {
   const delta = e.deltaY > 0 ? -0.08 : 0.08
-  fsZoom.value = Math.max(0.15, Math.min(5, fsZoom.value + delta))
+  fsZoom.value = Math.max(0.15, Math.min(3, fsZoom.value + delta))
 }
 
 function startDrag(e: MouseEvent) {
