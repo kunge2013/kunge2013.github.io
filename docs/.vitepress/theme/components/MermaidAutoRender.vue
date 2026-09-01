@@ -129,7 +129,7 @@ async function renderDiagrams() {
       btnCopy.style.display = 'none' // 初始隐藏，代码模式显示
       btnCopy.addEventListener('click', async () => {
         try {
-          await navigator.clipboard.writeText(code)
+          await navigator.clipboard.writeText(currentCode)
           btnCopy.textContent = '✅ 已复制'
           setTimeout(() => { btnCopy.textContent = '📋 复制' }, 1500)
         } catch {
@@ -164,18 +164,51 @@ async function renderDiagrams() {
         svgEl.removeAttribute('height')
       }
       // 单击图表区域全屏
-      chartView.addEventListener('click', () => openFullscreen(svg))
+      chartView.addEventListener('click', () => openFullscreen(chartView.innerHTML))
 
-      // 代码视图
+      // 代码视图（可编辑 textarea）
+      let currentCode = code
       const codeView = document.createElement('div')
       codeView.className = 'mermaid-code-view'
       codeView.style.display = 'none'
-      const pre = document.createElement('pre')
-      pre.className = 'mermaid-code-block'
-      const codeEl = document.createElement('code')
-      codeEl.textContent = code
-      pre.appendChild(codeEl)
-      codeView.appendChild(pre)
+      const textarea = document.createElement('textarea')
+      textarea.className = 'mermaid-code-editor'
+      textarea.value = code
+      textarea.spellcheck = false
+      codeView.appendChild(textarea)
+
+      // 错误提示区域
+      const errorMsg = document.createElement('div')
+      errorMsg.className = 'mermaid-error-msg'
+      errorMsg.style.display = 'none'
+      codeView.appendChild(errorMsg)
+
+      // 实时渲染图表
+      let renderTimer: ReturnType<typeof setTimeout> | null = null
+      textarea.addEventListener('input', () => {
+        currentCode = textarea.value
+        if (renderTimer) clearTimeout(renderTimer)
+        renderTimer = setTimeout(async () => {
+          try {
+            const newId = `mermaid-${++counter}`
+            const { svg: newSvg } = await mermaid.render(newId, currentCode)
+            chartView.innerHTML = newSvg
+            const svgEl = chartView.querySelector('svg')
+            if (svgEl) {
+              svgEl.style.maxWidth = '100%'
+              svgEl.style.height = 'auto'
+              svgEl.removeAttribute('width')
+              svgEl.removeAttribute('height')
+            }
+            errorMsg.style.display = 'none'
+            textarea.classList.remove('has-error')
+          } catch (e: any) {
+            errorMsg.textContent = e?.message || '语法错误'
+            errorMsg.style.display = ''
+            textarea.classList.add('has-error')
+          }
+        }, 400)
+      })
 
       // 事件：标签切换
       tabChart.addEventListener('click', () => {
@@ -200,8 +233,9 @@ async function renderDiagrams() {
 
       // 事件：下载
       btnDownload.addEventListener('click', () => {
+        const svgContent = chartView.innerHTML || svg
         // SVG 是严格的 XML，HTML 标签必须自闭合
-        const cleanSvg = svg
+        const cleanSvg = svgContent
           .replace(/<br\s*>/gi, '<br/>')
           .replace(/<hr\s*>/gi, '<hr/>')
           .replace(/<img\s([^>]*?)(?<!\/)>/gi, '<img $1/>')
@@ -339,18 +373,47 @@ watch(() => route.path, () => {
 
 .mermaid-code-view {
   padding: 16px 20px;
-  overflow-x: auto;
   background: var(--vp-code-bg);
+  position: relative;
 }
 
-.mermaid-code-block {
+.mermaid-code-editor {
+  width: 100%;
+  min-height: 120px;
+  max-height: 500px;
   margin: 0;
-  padding: 0;
+  padding: 12px 16px;
   font-size: 13px;
   line-height: 1.7;
   color: var(--vp-c-text-1);
   background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  outline: none;
+  resize: vertical;
   font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  tab-size: 2;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.mermaid-code-editor:focus {
+  border-color: var(--vp-c-brand-1);
+}
+
+.mermaid-code-editor.has-error {
+  border-color: #e53935;
+  background: rgba(229, 57, 53, 0.04);
+}
+
+.mermaid-error-msg {
+  margin-top: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #e53935;
+  background: rgba(229, 57, 53, 0.08);
+  border-radius: 6px;
+  line-height: 1.5;
 }
 
 /* ---- 全屏 Modal ---- */
