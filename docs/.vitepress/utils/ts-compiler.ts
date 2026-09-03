@@ -148,6 +148,7 @@ export async function executeJavaScript(jsCode: string): Promise<ExecutionResult
     originalConsole.table(data);
   };
 
+// [AGC:START] tool=Cc author=fangkun
   try {
     const wrappedCode = `
       return (async () => {
@@ -158,8 +159,14 @@ export async function executeJavaScript(jsCode: string): Promise<ExecutionResult
     const func = new Function(wrappedCode);
     returnValue = await func();
   } catch (e) {
-    error = e instanceof Error ? e.message : String(e);
+    // 捕获完整的错误信息，包括堆栈
+    if (e instanceof Error) {
+      error = `${e.message}\n\nStack: ${e.stack || 'No stack trace'}`;
+    } else {
+      error = String(e);
+    }
   } finally {
+// [AGC:END]
     console.log = originalConsole.log;
     console.warn = originalConsole.warn;
     console.error = originalConsole.error;
