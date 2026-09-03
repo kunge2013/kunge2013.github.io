@@ -18,10 +18,13 @@ const allCategoryIds = new Set([
 const categories: CategoryInfo[] = [...allCategoryIds].map((id) => ({
   id,
   name: categoryLabels[id] || id,
+  // [AGC:START] tool=Cc author=fangkun
+  // 排序已在 generate-posts-data.mjs 中完成，这里直接合并（保留各自分类内的顺序）
   posts: [
     ...(zhPosts[id] || []),
     ...(enPosts[id] || []),
-  ].sort((a, b) => b.date.localeCompare(a.date)),
+  ],
+  // [AGC:END]
 }))
 
 const activeFilter = ref<string>('all')

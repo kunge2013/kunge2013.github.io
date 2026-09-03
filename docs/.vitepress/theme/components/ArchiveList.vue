@@ -27,11 +27,10 @@ const allPosts = computed<Post[]>(() => {
       })
     }
   }
-  return posts.sort((a, b) => {
-    if (a.sticky && !b.sticky) return -1
-    if (!a.sticky && b.sticky) return 1
-    return b.date.localeCompare(a.date)
-  })
+  // [AGC:START] tool=Cc author=fangkun
+  // 排序已在 generate-posts-data.mjs 中完成，这里直接信任数据源顺序
+  return posts
+  // [AGC:END]
 })
 
 const archiveGroups = computed<ArchiveGroup[]>(() => {

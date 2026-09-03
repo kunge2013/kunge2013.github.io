@@ -18,13 +18,10 @@ const currentIsEn = computed(() => lang.value === 'en-US')
 const allPosts = computed(() => {
   const isEn = currentIsEn.value
   const source = isEn ? enPosts : zhPosts
-  const posts = source[currentCategory.value] || []
-
-  return posts.sort((a, b) => {
-    if (a.sticky && !b.sticky) return -1
-    if (!a.sticky && b.sticky) return 1
-    return b.date.localeCompare(a.date)
-  })
+  // [AGC:START] tool=Cc author=fangkun
+  // 排序已在 generate-posts-data.mjs 中完成，这里直接信任数据源顺序
+  return source[currentCategory.value] || []
+  // [AGC:END]
 })
 </script>
 

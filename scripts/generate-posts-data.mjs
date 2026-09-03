@@ -81,6 +81,52 @@ function parseValue(val) {
   return val.replace(/^['"]|['"]$/g, '')
 }
 
+// [AGC:START] tool=Cc author=fangkun
+/**
+ * 从 frontmatter 或文件名提取文章序号。
+ * 优先级：frontmatter.order > 文件名中的数字 > Infinity
+ * 文件名数字匹配：第N章、N.xxx、N-xxx
+ */
+function extractOrder(fm, fileName) {
+  // 1. frontmatter 的 order 字段
+  if (typeof fm.order === 'number' && !isNaN(fm.order)) {
+    return fm.order
+  }
+  // 2. 文件名中的数字
+  const slug = fileName.replace(/\.md$/, '')
+  // 匹配 "第N章" 格式
+  const chMatch = slug.match(/第(\d+)章/)
+  if (chMatch) return parseInt(chMatch[1], 10)
+  // 匹配 "N.xxx" 或 "N-xxx" 格式（开头的数字）
+  const numMatch = slug.match(/^(\d+)[.\-]/)
+  if (numMatch) return parseInt(numMatch[1], 10)
+  // 3. 没有序号
+  return Infinity
+}
+
+/**
+ * 文章排序比较函数。
+ * 排序规则（优先级从高到低）：
+ * 1. sticky = true → 永远置顶
+ * 2. date 升序（老的在前，新的在后）
+ * 3. order 降序（同日期内，大序号在前）
+ * 4. fileName 升序（文件名 tiebreak）
+ */
+function comparePosts(a, b) {
+  // sticky 置顶
+  if (a.sticky && !b.sticky) return -1
+  if (!a.sticky && b.sticky) return 1
+  // date 升序
+  const dateCmp = (a.date || '').localeCompare(b.date || '')
+  if (dateCmp !== 0) return dateCmp
+  // order 降序（大序号在前）
+  const orderCmp = (b.order ?? Infinity) - (a.order ?? Infinity)
+  if (orderCmp !== 0) return orderCmp
+  // fileName 升序（tiebreak）
+  return (a.fileName || '').localeCompare(b.fileName || '')
+}
+// [AGC:END]
+
 function readCategoryLabel(categoryDir) {
   const indexPath = join(categoryDir, 'index.md')
   if (!existsSync(indexPath)) return ''
@@ -127,8 +173,17 @@ function scanDir(dir, isEn) {
         sticky: fm.sticky || false,
         category,
         i18nLink: fm['i18n-link'] || '',
+        // [AGC:START] tool=Cc author=fangkun
+        order: extractOrder(fm, file),
+        fileName: file,
+        // [AGC:END]
       })
     }
+
+    // [AGC:START] tool=Cc author=fangkun
+    // 排序：sticky → date 升序 → order 降序 → fileName 升序
+    categoryPosts.sort(comparePosts)
+    // [AGC:END]
 
     const label = readCategoryLabel(entryPath)
     if (label) labels[category] = label

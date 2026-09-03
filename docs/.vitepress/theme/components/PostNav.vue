@@ -22,28 +22,31 @@ const currentUrl = computed(() => {
 
 const sortedPosts = computed(() => {
   const source = isEn.value ? enPosts : zhPosts
-  const posts = source[currentCategory.value] || []
-  return [...posts].sort((a, b) => {
-    if (a.sticky && !b.sticky) return -1
-    if (!a.sticky && b.sticky) return 1
-    return b.date.localeCompare(a.date)
-  })
+  // [AGC:START] tool=Cc author=fangkun
+  // 排序已在 generate-posts-data.mjs 中完成，这里直接信任数据源顺序
+  return source[currentCategory.value] || []
+  // [AGC:END]
 })
 
 const currentIndex = computed(() =>
   sortedPosts.value.findIndex((p) => p.url === currentUrl.value)
 )
 
+// [AGC:START] tool=Cc author=fangkun
+// 日期升序：index 小 = 更旧，index 大 = 更新
+// prevPost = 更旧的文章（index - 1）
+// nextPost = 更新的文章（index + 1）
 const prevPost = computed(() => {
+  if (currentIndex.value <= 0) return null
+  return sortedPosts.value[currentIndex.value - 1]
+})
+
+const nextPost = computed(() => {
   if (currentIndex.value < 0) return null
   const next = currentIndex.value + 1
   return next < sortedPosts.value.length ? sortedPosts.value[next] : null
 })
-
-const nextPost = computed(() => {
-  if (currentIndex.value <= 0) return null
-  return sortedPosts.value[currentIndex.value - 1]
-})
+// [AGC:END]
 
 const labels = computed(() => ({
   prev: isEn.value ? 'Previous Post' : '上一篇',
