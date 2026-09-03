@@ -40,7 +40,7 @@
       <div v-if="result.typeErrors.length > 0" class="output-section error-section">
         <div class="section-title">❌ 类型错误</div>
         <div class="error-list">
-          <div v-for="(err, idx) in result.typeErrors" :key="idx" class="error-item">
+          <div v-for="(err, idx) in result.typeErrors" :key="'type-' + idx" class="error-item">
             {{ err }}
           </div>
         </div>
@@ -52,12 +52,45 @@
         <div class="error-item">{{ result.error }}</div>
       </div>
 
-      <!-- console.log 输出 -->
+      <!-- 日志输出（支持不同级别） -->
       <div v-if="result.logs.length > 0" class="output-section log-section">
-        <div class="section-title">📝 console.log</div>
+        <div class="section-title">📝 输出</div>
         <div class="log-list">
-          <div v-for="(log, idx) in result.logs" :key="idx" class="log-item">
-            {{ log }}
+          <div
+            v-for="(log, idx) in result.logs"
+            :key="'log-' + idx"
+            class="log-item"
+            :class="'log-' + log.level"
+          >
+            <!-- 日志级别图标 -->
+            <span class="log-icon">{{ getLogIcon(log.level) }}</span>
+
+            <!-- 表格数据 -->
+            <template v-if="log.level === 'table' && log.tableData">
+              <div class="console-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th v-for="(value, key) in getTableHeaders(log.tableData)" :key="key">{{ key }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(row, rowIdx) in getTableRows(log.tableData)" :key="rowIdx">
+                      <td v-for="(value, colIdx) in row" :key="colIdx">{{ formatValue(value) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </template>
+
+            <!-- 普通日志 -->
+            <template v-else>
+              <span
+                v-for="(arg, argIdx) in log.args"
+                :key="argIdx"
+                class="log-arg"
+              >{{ formatValue(arg) }} </span>
+            </template>
           </div>
         </div>
       </div>
@@ -85,7 +118,7 @@ import { EditorState } from '@codemirror/state';
 import { javascript } from '@codemirror/lang-javascript';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { keymap } from '@codemirror/view';
-import { compileAndRun, generatePlaygroundUrl, type ExecutionResult } from '../../utils/ts-compiler';
+import { compileAndRun, generatePlaygroundUrl, type ExecutionResult, type LogEntry } from '../../utils/ts-compiler';
 
 // Props
 interface Props {
@@ -179,6 +212,46 @@ function formatValue(value: any): string {
     }
   }
   return String(value);
+}
+
+function getLogIcon(level: string): string {
+  const icons: Record<string, string> = {
+    log: '›',
+    warn: '⚠',
+    error: '✖',
+    info: 'ℹ',
+    debug: '🐛',
+    table: '📊',
+  };
+  return icons[level] || '›';
+}
+
+function getTableHeaders(data: any): string[] {
+  if (Array.isArray(data)) {
+    if (data.length === 0) return [];
+    if (typeof data[0] === 'object') {
+      return ['(index)', ...Object.keys(data[0])];
+    }
+    return ['(index)', '(values)'];
+  }
+  if (typeof data === 'object') {
+    return ['(index)', '(values)'];
+  }
+  return [];
+}
+
+function getTableRows(data: any): any[][] {
+  if (Array.isArray(data)) {
+    if (data.length === 0) return [];
+    if (typeof data[0] === 'object') {
+      return data.map((item, idx) => [idx, ...Object.values(item)]);
+    }
+    return data.map((item, idx) => [idx, item]);
+  }
+  if (typeof data === 'object') {
+    return Object.entries(data).map(([key, value]) => [key, value]);
+  }
+  return [];
 }
 
 // 生命周期
@@ -434,19 +507,93 @@ onBeforeUnmount(() => {
 .log-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .log-item {
   font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
   font-size: 13px;
   line-height: 1.5;
-  color: var(--vp-c-text-1);
   white-space: pre-wrap;
   word-break: break-word;
   padding: 4px 8px;
-  background: var(--vp-c-bg-soft);
   border-radius: 4px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.log-icon {
+  flex-shrink: 0;
+  width: 16px;
+  text-align: center;
+}
+
+.log-arg {
+  flex: 1;
+}
+
+/* 不同日志级别的颜色 */
+.log-log {
+  color: var(--vp-c-text-1);
+  background: var(--vp-c-bg-soft);
+}
+
+.log-warn {
+  color: var(--vp-c-warning-1, #b45309);
+  background: var(--vp-c-warning-soft, rgba(245, 158, 11, 0.1));
+  border-left: 3px solid var(--vp-c-warning-1, #f59e0b);
+}
+
+.log-error {
+  color: var(--vp-c-danger-1, #dc2626);
+  background: var(--vp-c-danger-soft, rgba(239, 68, 68, 0.1));
+  border-left: 3px solid var(--vp-c-danger-1, #ef4444);
+}
+
+.log-info {
+  color: var(--vp-c-brand-1, #2563eb);
+  background: var(--vp-c-brand-soft, rgba(37, 99, 235, 0.1));
+  border-left: 3px solid var(--vp-c-brand-1, #3b82f6);
+}
+
+.log-debug {
+  color: var(--vp-c-text-2);
+  background: var(--vp-c-bg-soft);
+  opacity: 0.8;
+}
+
+.log-table {
+  background: var(--vp-c-bg-soft);
+}
+
+/* 表格样式 */
+.console-table {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.console-table table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.console-table th,
+.console-table td {
+  border: 1px solid var(--vp-c-divider);
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.console-table th {
+  background: var(--vp-c-bg);
+  font-weight: 600;
+}
+
+.console-table tbody tr:nth-child(even) {
+  background: var(--vp-c-bg);
 }
 
 /* 返回值样式 */

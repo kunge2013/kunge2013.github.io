@@ -12,9 +12,16 @@ interface TypeScriptCompiler {
 let tsCompiler: TypeScriptCompiler | null = null;
 let loadingPromise: Promise<TypeScriptCompiler> | null = null;
 
+// 日志条目类型
+export interface LogEntry {
+  level: 'log' | 'warn' | 'error' | 'info' | 'debug' | 'table';
+  args: any[];
+  tableData?: any; // console.table 的数据
+}
+
 // 输出捕获接口
 export interface ExecutionResult {
-  logs: string[];
+  logs: LogEntry[];
   returnValue: any;
   error?: string;
   typeErrors: string[];
@@ -79,48 +86,74 @@ export async function compileTypeScript(code: string): Promise<{
   };
 }
 
-// 执行编译后的 JavaScript（使用 Web Worker 隔离）
+// 执行编译后的 JavaScript
 export async function executeJavaScript(jsCode: string): Promise<ExecutionResult> {
-  const logs: string[] = [];
+  const logs: LogEntry[] = [];
   let returnValue: any = undefined;
   let error: string | undefined = undefined;
 
+  // 保存原始 console 方法
+  const originalConsole = {
+    log: console.log,
+    warn: console.warn,
+    error: console.error,
+    info: console.info,
+    debug: console.debug,
+    table: console.table,
+  };
+
+  // 拦截所有 console 方法
+  console.log = (...args: any[]) => {
+    logs.push({ level: 'log', args });
+    originalConsole.log(...args);
+  };
+
+  console.warn = (...args: any[]) => {
+    logs.push({ level: 'warn', args });
+    originalConsole.warn(...args);
+  };
+
+  console.error = (...args: any[]) => {
+    logs.push({ level: 'error', args });
+    originalConsole.error(...args);
+  };
+
+  console.info = (...args: any[]) => {
+    logs.push({ level: 'info', args });
+    originalConsole.info(...args);
+  };
+
+  console.debug = (...args: any[]) => {
+    logs.push({ level: 'debug', args });
+    originalConsole.debug(...args);
+  };
+
+  console.table = (data: any) => {
+    logs.push({ level: 'table', args: [data], tableData: data });
+    originalConsole.table(data);
+  };
+
   try {
-    // 拦截 console.log
-    const originalLog = console.log;
-    const capturedLogs: any[][] = [];
+    // 使用 Function 构造函数执行代码
+    // 将代码包装成异步函数以支持 await
+    const wrappedCode = `
+      return (async () => {
+        ${jsCode}
+      })();
+    `;
 
-    console.log = (...args: any[]) => {
-      capturedLogs.push(args);
-      logs.push(args.map(arg => {
-        if (typeof arg === 'object' && arg !== null) {
-          try {
-            return JSON.stringify(arg, null, 2);
-          } catch {
-            return String(arg);
-          }
-        }
-        return String(arg);
-      }).join(' '));
-    };
-
-    try {
-      // 使用 Function 构造函数执行代码
-      // 将代码包装成异步函数以支持 await
-      const wrappedCode = `
-        return (async () => {
-          ${jsCode}
-        })();
-      `;
-
-      const func = new Function(wrappedCode);
-      returnValue = await func();
-    } finally {
-      // 恢复 console.log
-      console.log = originalLog;
-    }
+    const func = new Function(wrappedCode);
+    returnValue = await func();
   } catch (e) {
     error = e instanceof Error ? e.message : String(e);
+  } finally {
+    // 恢复原始 console 方法
+    console.log = originalConsole.log;
+    console.warn = originalConsole.warn;
+    console.error = originalConsole.error;
+    console.info = originalConsole.info;
+    console.debug = originalConsole.debug;
+    console.table = originalConsole.table;
   }
 
   return {
@@ -162,12 +195,7 @@ export async function compileAndRun(code: string): Promise<ExecutionResult> {
 
 // 生成 TypeScript Playground 链接
 export function generatePlaygroundUrl(code: string): string {
-  // 使用 LZString 压缩代码（TypeScript Playground 使用此格式）
-  const encoded = encodeURIComponent(code);
-  const lzstringUrl = `https://www.typescriptlang.org/play/#code/${encoded}`;
-
-  // 备用：使用 Base64 编码（更简单但 URL 更长）
+  // 使用 Base64 编码
   const base64Url = `https://www.typescriptlang.org/play?ts=5.7.3#code/${btoa(unescape(encodeURIComponent(code)))}`;
-
   return base64Url;
 }
