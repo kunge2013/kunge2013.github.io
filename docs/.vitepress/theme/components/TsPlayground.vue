@@ -24,14 +24,7 @@
           </button>
         </div>
       </div>
-      <textarea
-        v-model="code"
-        class="code-input"
-        placeholder="输入 TypeScript 代码..."
-        spellcheck="false"
-        @keydown.ctrl.enter="runCode"
-        @keydown.meta.enter="runCode"
-      ></textarea>
+      <div ref="editorContainer" class="code-input"></div>
     </div>
 
     <!-- 输出区 -->
@@ -86,7 +79,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue';
+import { EditorView, basicSetup } from 'codemirror';
+import { EditorState } from '@codemirror/state';
+import { javascript } from '@codemirror/lang-javascript';
+import { oneDark } from '@codemirror/theme-one-dark';
+import { keymap } from '@codemirror/view';
 import { compileAndRun, generatePlaygroundUrl, type ExecutionResult } from '../../utils/ts-compiler';
 
 // Props
@@ -99,7 +97,8 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 // 状态
-const code = ref(props.code);
+const editorContainer = ref<HTMLElement | null>(null);
+const editorView = ref<EditorView | null>(null);
 const result = ref<ExecutionResult>({
   logs: [],
   returnValue: undefined,
@@ -126,13 +125,23 @@ const isEmpty = computed(() => {
   );
 });
 
+// 检测当前主题
+function isDarkMode(): boolean {
+  return document.documentElement.classList.contains('dark');
+}
+
 // 方法
+function getCode(): string {
+  return editorView.value?.state.doc.toString() || '';
+}
+
 async function runCode() {
   if (isCompiling.value) return;
 
   isCompiling.value = true;
   try {
-    result.value = await compileAndRun(code.value);
+    const code = getCode();
+    result.value = await compileAndRun(code);
   } catch (e) {
     result.value = {
       logs: [],
@@ -146,7 +155,8 @@ async function runCode() {
 }
 
 function openInPlayground() {
-  const url = generatePlaygroundUrl(code.value);
+  const code = getCode();
+  const url = generatePlaygroundUrl(code);
   window.open(url, '_blank');
 }
 
@@ -173,8 +183,106 @@ function formatValue(value: any): string {
 
 // 生命周期
 onMounted(() => {
+  if (!editorContainer.value) return;
+
+  // 自定义快捷键
+  const customKeymap = keymap.of([
+    {
+      key: 'Ctrl-Enter',
+      run: () => {
+        runCode();
+        return true;
+      },
+    },
+    {
+      key: 'Cmd-Enter',
+      run: () => {
+        runCode();
+        return true;
+      },
+    },
+  ]);
+
+  // 创建编辑器
+  const startState = EditorState.create({
+    doc: props.code,
+    extensions: [
+      basicSetup,
+      javascript({ typescript: true }),
+      isDarkMode() ? oneDark : [],
+      customKeymap,
+      EditorView.theme({
+        '&': {
+          fontSize: '14px',
+          height: 'auto',
+          minHeight: '200px',
+          maxHeight: '500px',
+        },
+        '.cm-content': {
+          padding: '12px 0',
+          fontFamily: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
+        },
+        '.cm-gutters': {
+          borderRight: '1px solid var(--vp-c-divider)',
+        },
+      }),
+    ],
+  });
+
+  editorView.value = new EditorView({
+    state: startState,
+    parent: editorContainer.value,
+  });
+
+  // 监听主题变化
+  const observer = new MutationObserver(() => {
+    if (!editorView.value) return;
+    // 重新创建编辑器以切换主题
+    const code = getCode();
+    editorView.value.destroy();
+
+    const newState = EditorState.create({
+      doc: code,
+      extensions: [
+        basicSetup,
+        javascript({ typescript: true }),
+        isDarkMode() ? oneDark : [],
+        customKeymap,
+        EditorView.theme({
+          '&': {
+            fontSize: '14px',
+            height: 'auto',
+            minHeight: '200px',
+            maxHeight: '500px',
+          },
+          '.cm-content': {
+            padding: '12px 0',
+            fontFamily: "'JetBrains Mono', 'Fira Code', 'Courier New', monospace",
+          },
+          '.cm-gutters': {
+            borderRight: '1px solid var(--vp-c-divider)',
+          },
+        }),
+      ],
+    });
+
+    editorView.value = new EditorView({
+      state: newState,
+      parent: editorContainer.value!,
+    });
+  });
+
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class'],
+  });
+
   // 预加载 TypeScript 编译器
   compileAndRun('// preload').catch(() => {});
+});
+
+onBeforeUnmount(() => {
+  editorView.value?.destroy();
 });
 </script>
 
@@ -243,22 +351,18 @@ onMounted(() => {
 }
 
 .code-input {
-  width: 100%;
   min-height: 200px;
-  padding: 12px;
-  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
-  font-size: 14px;
-  line-height: 1.6;
-  border: none;
-  outline: none;
-  resize: vertical;
-  background: var(--vp-c-bg);
-  color: var(--vp-c-text-1);
-  tab-size: 2;
 }
 
-.code-input::placeholder {
-  color: var(--vp-c-text-3);
+.code-input :deep(.cm-editor) {
+  height: auto;
+  min-height: 200px;
+  max-height: 500px;
+  overflow: auto;
+}
+
+.code-input :deep(.cm-editor.cm-focused) {
+  outline: none;
 }
 
 /* 输出区 */
