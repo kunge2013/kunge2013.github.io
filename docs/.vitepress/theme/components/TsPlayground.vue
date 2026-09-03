@@ -112,12 +112,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, onBeforeUnmount } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { EditorView, basicSetup } from 'codemirror';
 import { EditorState } from '@codemirror/state';
 import { javascript } from '@codemirror/lang-javascript';
 import { oneDark } from '@codemirror/theme-one-dark';
-import { keymap } from '@codemirror/view';
 import { compileAndRun, generatePlaygroundUrl, type ExecutionResult, type LogEntry } from '../../utils/ts-compiler';
 
 // Props
@@ -258,32 +257,24 @@ function getTableRows(data: any): any[][] {
 onMounted(() => {
   if (!editorContainer.value) return;
 
-  // 自定义快捷键
-  const customKeymap = keymap.of([
-    {
-      key: 'Ctrl-Enter',
-      run: () => {
-        runCode();
-        return true;
-      },
-    },
-    {
-      key: 'Cmd-Enter',
-      run: () => {
-        runCode();
-        return true;
-      },
-    },
-  ]);
-
-  // 创建编辑器
+  // 创建编辑器（不使用 keymap，避免打包问题）
   const startState = EditorState.create({
     doc: props.code,
     extensions: [
       basicSetup,
       javascript({ typescript: true }),
       isDarkMode() ? oneDark : [],
-      customKeymap,
+      EditorView.domEventHandlers({
+        keydown: (event, view) => {
+          // Ctrl+Enter 或 Cmd+Enter 运行代码
+          if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+            event.preventDefault();
+            runCode();
+            return true;
+          }
+          return false;
+        },
+      }),
       EditorView.theme({
         '&': {
           fontSize: '14px',
@@ -320,7 +311,16 @@ onMounted(() => {
         basicSetup,
         javascript({ typescript: true }),
         isDarkMode() ? oneDark : [],
-        customKeymap,
+        EditorView.domEventHandlers({
+          keydown: (event, view) => {
+            if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+              event.preventDefault();
+              runCode();
+              return true;
+            }
+            return false;
+          },
+        }),
         EditorView.theme({
           '&': {
             fontSize: '14px',

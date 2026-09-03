@@ -41,11 +41,18 @@ async function getCompiler(): Promise<TypeScriptCompiler> {
     try {
       // 动态导入 TypeScript 编译器
       const ts = await import('typescript');
+
+      // 验证导入的模块是否有必要的方法
+      if (!ts.transpileModule) {
+        throw new Error('TypeScript module loaded but transpileModule is not available');
+      }
+
       tsCompiler = ts as any;
       return tsCompiler;
     } catch (e) {
       loadingPromise = null;
-      throw new Error(`Failed to load TypeScript compiler: ${e}`);
+      const errorMsg = e instanceof Error ? e.message : String(e);
+      throw new Error(`Failed to load TypeScript compiler: ${errorMsg}`);
     }
   })();
 
@@ -142,6 +149,7 @@ export async function executeJavaScript(jsCode: string): Promise<ExecutionResult
       })();
     `;
 
+    // 使用 Function 构造函数（GitHub Pages 默认 CSP 不会阻止）
     const func = new Function(wrappedCode);
     returnValue = await func();
   } catch (e) {
