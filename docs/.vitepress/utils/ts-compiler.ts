@@ -1,13 +1,19 @@
 // [AGC:FILE] tool=Cc author=fangkun date=2026-09-03
 
-// TypeScript 编译器 - 使用静态导入（Vite 生产环境下动态 import 会导致命名空间解析失败）
-import * as tsCompiler from 'typescript';
+// TypeScript 编译器 - 从 CDN 加载，避免 Vite 打包导致的命名空间解析问题
+// TypeScript 编译器接口（仅用于类型检查）
+interface TypeScriptCompiler {
+  transpileModule: (code: string, options: any) => { outputText: string; diagnostics: any[] };
+  ScriptTarget: any;
+  ModuleKind: any;
+  flattenDiagnosticMessageText: (msg: any, newline: string) => string;
+}
 
 // 日志条目类型
 export interface LogEntry {
   level: 'log' | 'warn' | 'error' | 'info' | 'debug' | 'table';
   args: any[];
-  tableData?: any; // console.table 的数据
+  tableData?: any;
 }
 
 // 输出捕获接口
@@ -19,16 +25,62 @@ export interface ExecutionResult {
 }
 
 // [AGC:START] tool=Cc author=fangkun
-// 编译 TypeScript 代码（同步，无需懒加载）
-export function compileTypeScript(code: string): {
+// TypeScript 编译器懒加载（从 CDN 加载）
+let tsCompiler: TypeScriptCompiler | null = null;
+let loadingPromise: Promise<TypeScriptCompiler> | null = null;
+
+// TypeScript CDN 版本
+const TS_VERSION = '5.7.3';
+const TS_CDN_URL = `https://cdn.jsdelivr.net/npm/typescript@${TS_VERSION}/lib/typescript.min.js`;
+
+async function getCompiler(): Promise<TypeScriptCompiler> {
+  if (tsCompiler) return tsCompiler;
+  if (loadingPromise) return loadingPromise;
+
+  loadingPromise = (async () => {
+    try {
+      // 检查是否已加载（全局 window.ts）
+      if (typeof (window as any).ts !== 'undefined' && (window as any).ts.transpileModule) {
+        tsCompiler = (window as any).ts;
+        return tsCompiler;
+      }
+
+      // 动态加载 TypeScript CDN
+      await new Promise<void>((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = TS_CDN_URL;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error(`Failed to load TypeScript from CDN: ${TS_CDN_URL}`));
+        document.head.appendChild(script);
+      });
+
+      // 验证加载结果
+      if (typeof (window as any).ts === 'undefined' || !(window as any).ts.transpileModule) {
+        throw new Error('TypeScript loaded but transpileModule not available');
+      }
+
+      tsCompiler = (window as any).ts;
+      return tsCompiler;
+    } catch (e) {
+      loadingPromise = null;
+      throw e;
+    }
+  })();
+
+  return loadingPromise;
+}
+
+// 编译 TypeScript 代码
+export async function compileTypeScript(code: string): Promise<{
   js: string;
   typeErrors: string[];
-} {
-  // 编译选项
-  const result = tsCompiler.transpileModule(code, {
+}> {
+  const compiler = await getCompiler();
+
+  const result = compiler.transpileModule(code, {
     compilerOptions: {
-      target: tsCompiler.ScriptTarget.ES2020,
-      module: tsCompiler.ModuleKind.ESNext,
+      target: compiler.ScriptTarget.ES2020,
+      module: compiler.ModuleKind.ESNext,
       strict: true,
       noEmit: false,
       removeComments: false,
@@ -36,11 +88,10 @@ export function compileTypeScript(code: string): {
     reportDiagnostics: true,
   });
 
-  // 提取类型错误
   const typeErrors: string[] = [];
   if (result.diagnostics && result.diagnostics.length > 0) {
     for (const diag of result.diagnostics) {
-      const message = tsCompiler.flattenDiagnosticMessageText(diag.messageText, '\n');
+      const message = compiler.flattenDiagnosticMessageText(diag.messageText, '\n');
       typeErrors.push(message);
     }
   }
@@ -58,7 +109,6 @@ export async function executeJavaScript(jsCode: string): Promise<ExecutionResult
   let returnValue: any = undefined;
   let error: string | undefined = undefined;
 
-  // 保存原始 console 方法
   const originalConsole = {
     log: console.log,
     warn: console.warn,
@@ -68,7 +118,6 @@ export async function executeJavaScript(jsCode: string): Promise<ExecutionResult
     table: console.table,
   };
 
-  // 拦截所有 console 方法
   console.log = (...args: any[]) => {
     logs.push({ level: 'log', args });
     originalConsole.log(...args);
@@ -100,21 +149,17 @@ export async function executeJavaScript(jsCode: string): Promise<ExecutionResult
   };
 
   try {
-    // 使用 Function 构造函数执行代码
-    // 将代码包装成异步函数以支持 await
     const wrappedCode = `
       return (async () => {
         ${jsCode}
       })();
     `;
 
-    // 使用 Function 构造函数（GitHub Pages 默认 CSP 不会阻止）
     const func = new Function(wrappedCode);
     returnValue = await func();
   } catch (e) {
     error = e instanceof Error ? e.message : String(e);
   } finally {
-    // 恢复原始 console 方法
     console.log = originalConsole.log;
     console.warn = originalConsole.warn;
     console.error = originalConsole.error;
@@ -135,10 +180,8 @@ export async function executeJavaScript(jsCode: string): Promise<ExecutionResult
 // 完整的编译 + 执行流程
 export async function compileAndRun(code: string): Promise<ExecutionResult> {
   try {
-    // 1. 编译 TypeScript（同步）
-    const { js, typeErrors } = compileTypeScript(code);
+    const { js, typeErrors } = await compileTypeScript(code);
 
-    // 如果有类型错误，返回错误信息
     if (typeErrors.length > 0) {
       return {
         logs: [],
@@ -147,9 +190,7 @@ export async function compileAndRun(code: string): Promise<ExecutionResult> {
       };
     }
 
-    // 2. 执行 JavaScript
     const result = await executeJavaScript(js);
-
     return result;
   } catch (e) {
     return {
@@ -164,7 +205,6 @@ export async function compileAndRun(code: string): Promise<ExecutionResult> {
 
 // 生成 TypeScript Playground 链接
 export function generatePlaygroundUrl(code: string): string {
-  // 使用 Base64 编码
-  const base64Url = `https://www.typescriptlang.org/play?ts=5.7.3#code/${btoa(unescape(encodeURIComponent(code)))}`;
+  const base64Url = `https://www.typescriptlang.org/play?ts=${TS_VERSION}#code/${btoa(unescape(encodeURIComponent(code)))}`;
   return base64Url;
 }
