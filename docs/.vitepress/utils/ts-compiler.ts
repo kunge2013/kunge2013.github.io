@@ -1,16 +1,7 @@
 // [AGC:FILE] tool=Cc author=fangkun date=2026-09-03
 
-// TypeScript 编译器接口
-interface TypeScriptCompiler {
-  transpileModule: (code: string, options: any) => { outputText: string; diagnostics: any[] };
-  ScriptTarget: any;
-  ModuleKind: any;
-  flattenDiagnosticMessageText: (msg: any, newline: string) => string;
-}
-
-// 编译器懒加载缓存
-let tsCompiler: TypeScriptCompiler | null = null;
-let loadingPromise: Promise<TypeScriptCompiler> | null = null;
+// TypeScript 编译器 - 使用静态导入（Vite 生产环境下动态 import 会导致命名空间解析失败）
+import * as tsCompiler from 'typescript';
 
 // 日志条目类型
 export interface LogEntry {
@@ -27,50 +18,17 @@ export interface ExecutionResult {
   typeErrors: string[];
 }
 
-// 懒加载 TypeScript 编译器（动态导入，减少初始包体积）
-async function getCompiler(): Promise<TypeScriptCompiler> {
-  if (tsCompiler) {
-    return tsCompiler;
-  }
-
-  if (loadingPromise) {
-    return loadingPromise;
-  }
-
-  loadingPromise = (async () => {
-    try {
-      // 动态导入 TypeScript 编译器
-      const ts = await import('typescript');
-
-      // 验证导入的模块是否有必要的方法
-      if (!ts.transpileModule) {
-        throw new Error('TypeScript module loaded but transpileModule is not available');
-      }
-
-      tsCompiler = ts as any;
-      return tsCompiler;
-    } catch (e) {
-      loadingPromise = null;
-      const errorMsg = e instanceof Error ? e.message : String(e);
-      throw new Error(`Failed to load TypeScript compiler: ${errorMsg}`);
-    }
-  })();
-
-  return loadingPromise;
-}
-
-// 编译 TypeScript 代码
-export async function compileTypeScript(code: string): Promise<{
+// [AGC:START] tool=Cc author=fangkun
+// 编译 TypeScript 代码（同步，无需懒加载）
+export function compileTypeScript(code: string): {
   js: string;
   typeErrors: string[];
-}> {
-  const compiler = await getCompiler();
-
+} {
   // 编译选项
-  const result = compiler.transpileModule(code, {
+  const result = tsCompiler.transpileModule(code, {
     compilerOptions: {
-      target: compiler.ScriptTarget.ES2020,
-      module: compiler.ModuleKind.ESNext,
+      target: tsCompiler.ScriptTarget.ES2020,
+      module: tsCompiler.ModuleKind.ESNext,
       strict: true,
       noEmit: false,
       removeComments: false,
@@ -82,7 +40,7 @@ export async function compileTypeScript(code: string): Promise<{
   const typeErrors: string[] = [];
   if (result.diagnostics && result.diagnostics.length > 0) {
     for (const diag of result.diagnostics) {
-      const message = compiler.flattenDiagnosticMessageText(diag.messageText, '\n');
+      const message = tsCompiler.flattenDiagnosticMessageText(diag.messageText, '\n');
       typeErrors.push(message);
     }
   }
@@ -92,6 +50,7 @@ export async function compileTypeScript(code: string): Promise<{
     typeErrors,
   };
 }
+// [AGC:END]
 
 // 执行编译后的 JavaScript
 export async function executeJavaScript(jsCode: string): Promise<ExecutionResult> {
@@ -172,11 +131,12 @@ export async function executeJavaScript(jsCode: string): Promise<ExecutionResult
   };
 }
 
+// [AGC:START] tool=Cc author=fangkun
 // 完整的编译 + 执行流程
 export async function compileAndRun(code: string): Promise<ExecutionResult> {
   try {
-    // 1. 编译 TypeScript
-    const { js, typeErrors } = await compileTypeScript(code);
+    // 1. 编译 TypeScript（同步）
+    const { js, typeErrors } = compileTypeScript(code);
 
     // 如果有类型错误，返回错误信息
     if (typeErrors.length > 0) {
@@ -200,6 +160,7 @@ export async function compileAndRun(code: string): Promise<ExecutionResult> {
     };
   }
 }
+// [AGC:END]
 
 // 生成 TypeScript Playground 链接
 export function generatePlaygroundUrl(code: string): string {
