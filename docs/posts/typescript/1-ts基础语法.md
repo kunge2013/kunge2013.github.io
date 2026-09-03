@@ -87,7 +87,7 @@ mindmap
 
 **Pi 项目出处**：所有文件都在用。
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：类型注解 =====
 
@@ -122,7 +122,7 @@ let names: Array<string> = ["Alice", "Bob"]; // 泛型写法，等价
 
 **Pi 项目出处**：`coding-agent` 的 `EventBus` 用 `unknown` 替代 `any`。
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：基础类型 =====
 
@@ -167,7 +167,7 @@ data = 123; // 不报错，但也不安全
 - `agent`: `type ThinkingLevel = "off" | "minimal" | "low" | "medium" | "high"`
 - `coding-agent`: `type Direction = "up" | "down" | "left" | "right"`（snake 示例）
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：字面量类型 =====
 
@@ -207,7 +207,7 @@ setTransport("sse");    // ✅ OK
 - `ai`: `type Message = UserMessage | AssistantMessage | ToolResultMessage`
 - `agent`: `type AgentMessage = Message | CustomAgentMessages[keyof CustomAgentMessages]`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：联合类型 =====
 
@@ -254,7 +254,7 @@ function handle(msg: Message) {
 - `agent`: `interface AgentLoopConfig extends SimpleStreamOptions { ... }`
 - `coding-agent`: `interface EventBus { emit(...): void; on(...): () => void }`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：interface =====
 
@@ -318,7 +318,7 @@ let cfg: Config = { host: "localhost", port: 3000 };
 
 **Pi 项目出处**：几乎所有文件。
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：type 类型别名 =====
 
@@ -358,7 +358,7 @@ type Callback = (data: string) => void;
 **Pi 项目出处**：
 - `agent`: `type AgentEventSink = (event: AgentEvent) => Promise<void> | void`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：函数类型 =====
 
@@ -398,7 +398,7 @@ async function subscribe(sink: EventSink) {
 **Pi 项目出处**：
 - `agent/src/agent.ts`: `prompt` 方法支持传字符串或 Message 对象
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：函数重载 =====
 
@@ -436,7 +436,7 @@ format(true);     // ✅ 匹配签名 3，返回 "Boolean: 是"
 - `agent/src/agent.ts`: `class Agent { private _state: MutableAgentState; ... }`
 - `coding-agent` snake 示例: `private state: GameState; private onClose: () => void`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：类与访问修饰符 =====
 
@@ -485,7 +485,7 @@ console.log(acc.getBalance());  // ✅ 1000
 **Pi 项目出处**：
 - `agent/src/agent.ts`: `get state(): AgentState` 和 `get/set steeringMode()`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：getter / setter =====
 
@@ -528,7 +528,7 @@ console.log(temp.fahrenheit); // ✅ 212
 **Pi 项目出处**：
 - `coding-agent` 示例: `abstract class BaseOverlay { ... }`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：抽象类 =====
 
@@ -579,7 +579,7 @@ console.log(c.describe()); // "我是圆形，面积是 78.54..."
 **Pi 项目出处**：
 - `agent/src/harness/types.ts`: `class FileError extends Error`、`class ExecutionError extends Error`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：自定义错误类 =====
 
@@ -633,7 +633,7 @@ try {
 - `ai/src/utils/event-stream.ts`: `class EventStream<T, R = T>`
 - `agent/src/harness/result.ts`: `ok<TValue, TError>(value): Result<TValue, TError>`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：泛型函数 =====
 
@@ -672,7 +672,7 @@ const pair = makePair("age", 18); // pair: [string, number]
 - `ai`: `class EventStream<T, R = T> implements AsyncIterable<T>`
 - `agent`: `interface SessionStorage<TMetadata extends SessionMetadata>`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：泛型接口和类 =====
 
@@ -723,7 +723,7 @@ console.log(numBox.get());        // ✅ number
 - `ai`: `function wrapStream<TApi extends Api, TOptions extends StreamOptions>(...)`
 - `agent`: `interface SessionStorage<TMetadata extends SessionMetadata>`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：泛型约束 =====
 
@@ -769,7 +769,7 @@ getProperty(user, "name");  // ✅ string
 **Pi 项目出处**：
 - `ai/src/model-catalog.ts`: `function flattenModelCatalog<const TProvider extends ProviderId, const TGroups extends ModelGroups>(...)`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：const 泛型参数 =====
 
@@ -806,7 +806,7 @@ type Color = typeof COLORS[number]; // "red" | "green" | "blue"
 **Pi 项目出处**：
 - `ai`: `type ProviderStreamOptions = StreamOptions & Record<string, unknown>`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：交叉类型 =====
 
@@ -843,7 +843,7 @@ let opts: ProviderOptions = {
 - `agent`: `type ProvisionedEntry<T> = T extends Entry ? Omit<T, "parentId"> : never`
 - `coding-agent`: `type WithoutPartial<T> = T extends { partial: unknown } ? Omit<T, "partial"> : T`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：条件类型 =====
 
@@ -882,7 +882,7 @@ type OpenAIOpts = ApiOptions<"openai";   // { model: string; temperature: number
 - `ai`: `type ModelCatalog<TGroups> = { [TModelId in ModelId<TGroups>]: Model<...> }`
 - `agent`: `type ErrorMatchers<TError> = { [Tag in TError["_tag"]]: (error: ...) => TValue }`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：映射类型 =====
 
@@ -940,7 +940,7 @@ const descriptions: LevelDescriptions = {
 - `ai`: `Partial<Record<...>>`、`Pick<SimpleStreamOptions, ...>`、`Extract<StopReason, ...>`
 - `agent`: `Omit<AgentState, "isStreaming" | ...>`、`Partial<Omit<...>>`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：工具类型 =====
 
@@ -996,7 +996,7 @@ type UserReturn = ReturnType<typeof getUser>; // User
 **Pi 项目出处**：
 - `ai/src/types.ts`: `type JsonValue = string | number | ... | JsonValue[] | { [key: string]: JsonValue }`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：递归类型 =====
 
@@ -1048,7 +1048,7 @@ const tree: TreeNode<number> = {
 
 **注意**：Pi 项目中发现主要是运行时模板字符串，模板字符串**类型**用得较少。
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：模板字符串类型 =====
 
@@ -1087,7 +1087,7 @@ type EventHandler = `handle${Capitalize<DOMEvent>}`;
 - `ai`: `function hasExplicitApiKey(apiKey: string | undefined): apiKey is string`
 - `agent`: `isOk(result): result is { ok: true; value: TValue }`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：类型守卫 =====
 
@@ -1135,7 +1135,7 @@ if (isOk(result)) {
 
 **Pi 项目出处**：三个包的每个文件都在用。
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：类型导入 =====
 
@@ -1171,7 +1171,7 @@ import { type User, createUser } from "./user";
 - `ai`: `return { type: "text" as const, text: ... }`
 - `coding-agent`: `const FIELDS = ["reasoning", "reasoning_content"] as const`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：as const =====
 
@@ -1217,7 +1217,7 @@ function makeTextContent(text: string) {
 - `agent`: `const failureMessage = { ... } satisfies AgentMessage`
 - `coding-agent`: `details: { ... } satisfies StructuredOutputDetails`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：satisfies =====
 
@@ -1263,7 +1263,7 @@ const cfg = {
 - `ai`: `ReturnType<typeof fn>`、`Promise<infer U>`
 - `agent`: 在 `TaggedError` 工厂模式中隐式使用
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：keyof 和 infer =====
 
@@ -1317,7 +1317,7 @@ type Inner = Awaited<Promise<string>>; // string
 - `agent`: `declare module "../types.ts" { interface CustomAgentMessages { ... } }`
 - `coding-agent`: `declare module "highlight.js/lib/core.js" { ... }`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：declare 和声明合并 =====
 
@@ -1374,7 +1374,7 @@ declare module "./framework" {
 - `ai`: `error.headers?.get("retry-after-ms")`、`options.signal?.aborted`
 - `agent`: `await config.getSteeringMessages?.()`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：可选链 =====
 
@@ -1423,7 +1423,7 @@ const first = arr?.[0]; // undefined
 - `ai`: `options.maxRetries ?? 0`
 - `agent`: `runtimeOptions.convertToLlm ?? defaultConvertToLlm`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：空值合并 =====
 
@@ -1467,7 +1467,7 @@ connect({}); // "连接 localhost，最多重试 3 次"
 - `agent`: `export type AgentEventSink = (event: AgentEvent) => Promise<void> | void`
 - `coding-agent`: `async function execCommand(...): Promise<ExecResult>`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：async/await 与 Promise 类型 =====
 
@@ -1523,7 +1523,7 @@ async function safeFetch(): Promise<string | null> {
 - `agent`: `readonly isStreaming: boolean; readonly pendingToolCalls: ReadonlySet<string>`
 - `coding-agent`: `private readonly wadPath: string`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：readonly 与不可变模式 =====
 
@@ -1571,7 +1571,7 @@ function updateUser(user: User, age: number): User {
 **Pi 项目出处**：
 - `agent`: `ok<T>(v): Result<T, never>`、穷举检查 `const _check: never = proxyEvent`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：never 类型 =====
 
@@ -1624,7 +1624,7 @@ function err<E>(error: E): Result<never, E> {
 - `coding-agent`: `emit(channel: string, data: unknown)`
 - `agent`: `static is(value: unknown): value is TaggedErrorValue<Tag>`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：unknown 类型 =====
 
@@ -1684,7 +1684,7 @@ if (typeof data === "object" && data !== null && "name" in data) {
 - `agent`: `type RunOutcome = { kind: "completed" } | { kind: "failed" } | ...`
 - `coding-agent`: `type ResourceDiagnostic = { type: "warning" | "error" | "collision" }`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：Discriminated Unions =====
 
@@ -1745,7 +1745,7 @@ function handleEvent(e: Event) {
 - `coding-agent`: `interface EventBus { emit(channel: string, data: unknown): void; on(...): () => void }`
 - `agent`: `subscribe(listener): () => void`（返回取消订阅函数）
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：基础事件监听 =====
 
@@ -1806,7 +1806,7 @@ bus.emit("user_login", "alice"); // 不再触发
 - `agent/src/harness/events.ts`: `HarnessEventBus` + `Extract<HarnessEvent, { type: TType }>`
 - `agent/src/types.ts`: `AgentEvent` 联合类型（10 种变体）
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：类型安全的事件系统 =====
 
@@ -1877,7 +1877,7 @@ bus.emit({ type: "user_login", userId: "u1", timestamp: Date.now() });
 **Pi 项目出处**：
 - `ai/src/utils/event-stream.ts`: `class EventStream<T, R = T> implements AsyncIterable<T>`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：异步事件流 =====
 
@@ -1957,7 +1957,7 @@ main();
 **Pi 项目出处**：
 - `ai/src/utils/retry.ts`: `interface RetryCallbacks { onRetryScheduled?: ...; onRetryAttemptStart?: ... }`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：可选回调 =====
 
@@ -2013,7 +2013,7 @@ retry(
 **Pi 项目出处**：
 - `coding-agent`: TUI 动态代理（全 trap Proxy）、Theme 全局只读代理
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：Proxy 基础 =====
 
@@ -2074,7 +2074,7 @@ user.name = "fangkun"; // ✅
 **Pi 项目出处**：
 - `coding-agent`: `Reflect.get(tui, property, tui)`、`Reflect.apply(method, methodTui, args)`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：Reflect 基础 =====
 
@@ -2127,7 +2127,7 @@ logged.y = 100;    // 日志: 设置 y = 100
 - `coding-agent/src/modes/interactive/interactive-mode.ts`:
   `createInteractiveTuiReference(getTui)` —— TUI 实例在 alt screen 切换时被替换
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：全 Trap Proxy（惰性重绑定） =====
 
@@ -2215,7 +2215,7 @@ console.log(ref.greet());   // "Hello, I'm Bob"
 - `coding-agent/src/modes/interactive/theme/theme.ts`:
   `export const theme = new Proxy({} as Theme, { get(...) {...} })`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：只读代理 =====
 
@@ -2278,7 +2278,7 @@ console.log(config.fontSize);     // 14
 └─────────────────────┴──────────────────────────────────────────────┘
 ```
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：Proxy 应用模式（缓存/Memoize）=====
 
@@ -2325,7 +2325,7 @@ console.log(expensiveCalc(3)); // [computing] 3 → 9
 **Pi 项目出处**：
 - `agent/src/harness/result.ts`: `function TaggedError<Tag>(tag: Tag): TaggedErrorFactory<Tag>`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：Tagged Error 模式 =====
 
@@ -2369,7 +2369,7 @@ function handleLaneError(err: LaneBusy | LaneNotFound) {
 **Pi 项目出处**：
 - `ai/src/model-catalog.ts`: `type ModelId<TGroups>` 和 `type ModelApi<TGroups, TModelId>`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：多层泛型推导 =====
 
@@ -2408,7 +2408,7 @@ type ClaudeApi = ModelApi<Groups, "claude-3">; // "anthropic"
 **Pi 项目出处**：
 - `coding-agent`: `type DistributiveOmit<T, K extends keyof T> = T extends unknown ? Omit<T, K> : never`
 
-```typescript
+```ts-playground
 // [AGC:START] tool=Cc author=fangkun
 // ===== Hello World：分布式条件类型 =====
 

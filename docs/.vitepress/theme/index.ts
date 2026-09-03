@@ -11,6 +11,7 @@ import TagCloud from './components/TagCloud.vue'
 import SearchModal from './components/SearchModal.vue'
 import PostNav from './components/PostNav.vue'
 import MermaidAutoRender from './components/MermaidAutoRender.vue'
+import TsPlayground from './components/TsPlayground.vue'
 import './styles/vars.css'
 import './styles/custom.css'
 
@@ -32,6 +33,7 @@ export default {
     app.component('CategoryPage', CategoryPage)
     app.component('ArchiveList', ArchiveList)
     app.component('TagCloud', TagCloud)
+    app.component('TsPlayground', TsPlayground)
   },
 }
 // [AGC:END]

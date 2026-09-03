@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import mermaidPlugin from './mermaid-plugin'
+import tsPlaygroundPlugin from './ts-playground-plugin'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -119,6 +120,7 @@ export default defineConfig({
   markdown: {
     config: (md) => {
       md.use(mermaidPlugin)
+      md.use(tsPlaygroundPlugin)
     },
   },
 
