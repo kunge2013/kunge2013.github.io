@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "e6031fe9f717718b",
+        "id": "86f06695b24a288c",
         "type": "tabs",
         "children": [
           {
-            "id": "8d941683a40dfa65",
+            "id": "1a01bf505b7a0041",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/posts/feynman-technique/index.md",
+                "file": "docs/posts/pi-agent/第5章：工具系统 —— Agent 的手脚是怎么被管住的.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "index"
+              "title": "第5章：工具系统 —— Agent 的手脚是怎么被管住的"
             }
           }
         ]
@@ -83,7 +83,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 595.5
   },
   "right": {
     "id": "3beafe231c42bb81",
@@ -160,7 +160,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "docs/posts/feynman-technique/index.md",
+                "file": "docs/posts/pi-agent/第5章：工具系统 —— Agent 的手脚是怎么被管住的.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -180,7 +180,7 @@
             }
           }
         ],
-        "currentTab": 5
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
@@ -199,53 +199,53 @@
       "hearth:打开 Hearth 主页": false
     }
   },
-  "active": "8d941683a40dfa65",
+  "active": "1a01bf505b7a0041",
   "lastOpenFiles": [
-    "docs/posts/pi-agent/24-2026-08-31-pi-extension-breakpoint-debug.md.tmp.17908.524b10bbce49",
-    "docs/posts/pi-agent/24-2026-08-31-pi-extension-breakpoint-debug.md.tmp.17908.e9ac011ca2b2",
-    "docs/posts/pi-agent/images/debug-setting.png",
-    "docs/posts/pi-agent/images",
-    "docs/debug-setting配置.png",
-    "docs/posts/pi-agent/24-2026-08-31-pi-extension-breakpoint-debug.md",
-    "docs/posts/pi-agent/24-pi-extension-breakpoint-debug.md.tmp.17908.8f480a5f5870",
-    "docs/posts/pi-agent/24-pi-extension-breakpoint-debug.md",
-    "pi 插件断点调试 配置.md",
-    "docs/posts/feynman-technique/feynman-note-pi-agent.md",
-    "docs/posts/feynman-technique/feynman-note-pi-agent.md.tmp.20744.9dbcf5c8a932",
-    "docs/posts/feynman-technique/feynman-skill-guide.md.tmp.22384.e28544ba1641",
-    "docs/posts/feynman-technique/feynman-skill-guide.md.tmp.22384.8b9946a86e6d",
-    "docs/posts/feynman-technique/feynman-skill-guide.md",
-    "docs/posts/feynman-technique/feynman-skill-guide.md.tmp.22384.3efa9fa453a0",
-    "docs/posts/feynman-technique/guide.md.tmp.22384.82a1f1d4bcba",
-    "docs/posts/feynman-technique/guide.md.tmp.22384.23b953ea74b4",
-    "docs/posts/design-patterns/index.md",
-    "docs/posts/agentic-design-patterns/index.md",
-    "docs/posts/feynman-technique/index.md",
-    "docs/posts/feynman-technique/guide.md",
-    "posts/javascript/promise-async-await.md",
-    "notes/ml-chinese.md",
-    "templates/category-index.md",
-    "docs/posts/pi-agent/9-custom-ui.md",
-    "notes",
-    "CLAUDE.md",
-    "README.md",
-    "docs/posts/pi-agent/10-hellopi-extension.md",
+    "docs/posts/pi-agent/第6章：消息系统 —— Agent 的记忆如何组织与传递.md",
+    "docs/posts/pi-agent/第6章：消息系统 —— Agent 的记忆如何组织与传递.md.tmp.21244.63727497ce43",
+    "docs/posts/pi-agent/第3章：Agent Loop —— 让模型转动起来的引擎.md",
+    "docs/posts/pi-agent/第4章：模型调用 —— 一行代码驾驭多个模型.md",
+    "docs/posts/pi-agent/第5章：工具系统 —— Agent 的手脚是怎么被管住的.md",
+    "docs/posts/pi-agent/第5章：工具系统 —— Agent 的手脚是怎么被管住的.md.tmp.19448.db5c6031d0bf",
+    "docs/posts/pi-agent/3.2026-08-31-pi-extension-breakpoint-debug.md",
+    "docs/posts/pi-agent/第5章：工具系统 —— Agent 的手脚是怎么被管住的.md.tmp.19448.9c5e5aa97ec7",
     "docs/posts/pi-agent/1.Pi Coding Agent-快速开始.md",
-    "docs/posts/pi-agent/index.md",
-    "docs/posts/pi-agent/5-events.md",
+    "docs/posts/pi-agent/第4章：模型调用 —— 一行代码驾驭多个模型.md.tmp.17404.ccaaad62b160",
+    "docs/posts/pi-agent/第3章：Agent Loop —— 让模型转动起来的引擎.md.tmp.17404.621e2f5f6ee4",
+    "docs/posts/pi-agent/source/M03 · 第3章：Agent Loop —— 让模型转动起来的引擎.md",
+    "docs/posts/pi-agent/第3章：Agent Loop —— 让模型转动起来的引擎.md.tmp.17404.f73868517f79",
+    "docs/posts/pi-agent/第1章：开篇 —— 为什么 Pi-Agent 值得花时间 - 大白话版.md",
+    "docs/posts/pi-agent/第2章：三层架构 —— Pi-Agent 项目的骨骼.md",
+    "2026-08-28.md",
+    "docs/posts/pi-agent/2.agent对比.md",
+    "docs/posts/pi-agent/source/M01 · 第1章：开篇 —— 为什么 Pi-Agent 值得你花时间.md",
+    "docs/posts/pi-agent/第2章：三层架构 —— Pi-Agent 项目的骨骼.md.tmp.16512.5f739fd4befc",
+    "docs/posts/pi-agent/第2章：三层架构 —— Pi-Agent 项目的骨骼.md.tmp.16512.871b0466926b",
+    "docs/posts/pi-agent/第2章：三层架构 —— Pi-Agent 项目的骨骼.md.tmp.16512.087a19652173",
+    "docs/posts/pi-agent/第2章：三层架构 —— Pi-Agent 项目的骨骼.md.tmp.16512.28f2bb7fdf17",
+    "docs/posts/pi-agent/source/M02 · 第2章：三层架构 —— Pi-Agent 项目的骨骼.md",
+    "docs/posts/feynman-technique/index.md",
+    "docs/posts/pi-agent/source/M10 · 第10章：会话管理 —— 对话的存储、恢复与分叉.md",
+    "docs/posts/pi-agent/source/M09 · 第9章：上下文压缩 —— 当对话太长怎么办.md",
+    "docs/posts/pi-agent/source/M08 · 第8章：上下文工程 —— 让有限窗口装下无限对话.md",
+    "docs/posts/pi-agent/source/M07 · 第7章：事件驱动 —— Agent 的神经系统.md",
+    "docs/posts/pi-agent/source/M06 · 第6章：消息系统 —— Agent 的记忆如何组织与传递.md",
+    "docs/posts/pi-agent/source/M05 · 第5章：工具系统 —— Agent 的手脚是怎么被管住的.md",
+    "docs/posts/pi-agent/source/M04 · 第4章：模型调用 —— 一行代码驾驭多个模型.md",
+    "docs/posts/pi-agent/M02 · 第2章：三层架构 —— Pi-Agent 项目的骨骼.md",
+    "docs/posts/pi-agent/M01 · 第1章：开篇 —— 为什么 Pi-Agent 值得你花时间.md",
+    "docs/posts/pi-agent/M10 · 第10章：会话管理 —— 对话的存储、恢复与分叉.md",
+    "docs/posts/pi-agent/M09 · 第9章：上下文压缩 —— 当对话太长怎么办.md",
+    "docs/posts/pi-agent/M08 · 第8章：上下文工程 —— 让有限窗口装下无限对话.md",
+    "docs/1.png",
+    "docs/posts/pi-agent/images/debug-setting.png",
+    "docs/debug-setting配置.png",
     "docs/4.png",
-    "docs/posts/pi-agent/22-hellopi-user-bash.md",
-    "docs/posts/pi-agent/21-hellopi-tool-intercept.md",
-    "docs/posts/pi-agent/20-hellopi-model.md",
-    "docs/posts/pi-agent/19-hellopi-provider.md",
-    "docs/posts/pi-agent/18-hellopi-context.md",
-    "docs/posts/pi-agent/17-hellopi-tool-execution.md",
     "docs/3.png",
     "docs/2.png",
     "node_modules/non-layered-tidy-tree-layout/screenshots/1.png",
     "node_modules/@zenuml/core/dist/vite.svg",
     "node_modules/highlight.js/styles/pojoaque.jpg",
-    "node_modules/highlight.js/styles/brown-papersq.png",
-    "node_modules/cytoscape-fcose/node_modules/layout-base/layout-schema.png"
+    "node_modules/highlight.js/styles/brown-papersq.png"
   ]
 }
