@@ -33,9 +33,9 @@ const currentIndex = computed(() =>
 )
 
 // [AGC:START] tool=Cc author=fangkun
-// 日期升序：index 小 = 更旧，index 大 = 更新
-// prevPost = 更旧的文章（index - 1）
-// nextPost = 更新的文章（index + 1）
+// 日期降序：index 小 = 更新，index 大 = 更旧
+// prevPost = 更新的文章（index - 1）
+// nextPost = 更旧的文章（index + 1）
 const prevPost = computed(() => {
   if (currentIndex.value <= 0) return null
   return sortedPosts.value[currentIndex.value - 1]

@@ -108,7 +108,7 @@ function extractOrder(fm, fileName) {
  * 文章排序比较函数。
  * 排序规则（优先级从高到低）：
  * 1. sticky = true → 永远置顶
- * 2. date 升序（老的在前，新的在后）
+ * 2. date 降序（新的在前，旧的在后）
  * 3. order 降序（同日期内，大序号在前）
  * 4. fileName 升序（文件名 tiebreak）
  */
@@ -116,8 +116,8 @@ function comparePosts(a, b) {
   // sticky 置顶
   if (a.sticky && !b.sticky) return -1
   if (!a.sticky && b.sticky) return 1
-  // date 升序
-  const dateCmp = (a.date || '').localeCompare(b.date || '')
+  // date 降序（新的在前）
+  const dateCmp = (b.date || '').localeCompare(a.date || '')
   if (dateCmp !== 0) return dateCmp
   // order 降序（大序号在前）
   const orderCmp = (b.order ?? Infinity) - (a.order ?? Infinity)
