@@ -13,15 +13,44 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/posts/pi-agent/第5章：工具系统 —— Agent 的手脚是怎么被管住的.md",
+                "file": "docs/posts/pi-agent/第6章：消息系统 —— Agent 的记忆如何组织与传递.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "第5章：工具系统 —— Agent 的手脚是怎么被管住的"
+              "title": "第6章：消息系统 —— Agent 的记忆如何组织与传递"
+            }
+          },
+          {
+            "id": "233fce8201c8d597",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/posts/typescript/1-ts基础语法.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "1-ts基础语法"
+            }
+          },
+          {
+            "id": "2ca2793a9291a7bc",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/posts/langchain/1.langchain结构化输出原理-大白话版本.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "1.langchain结构化输出原理-大白话版本"
             }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -160,7 +189,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "docs/posts/pi-agent/第5章：工具系统 —— Agent 的手脚是怎么被管住的.md",
+                "file": "docs/posts/langchain/1.langchain结构化输出原理-大白话版本.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -199,45 +228,44 @@
       "hearth:打开 Hearth 主页": false
     }
   },
-  "active": "1a01bf505b7a0041",
+  "active": "2ca2793a9291a7bc",
   "lastOpenFiles": [
-    "docs/posts/pi-agent/第6章：消息系统 —— Agent 的记忆如何组织与传递.md",
-    "docs/posts/pi-agent/第6章：消息系统 —— Agent 的记忆如何组织与传递.md.tmp.21244.63727497ce43",
-    "docs/posts/pi-agent/第3章：Agent Loop —— 让模型转动起来的引擎.md",
-    "docs/posts/pi-agent/第4章：模型调用 —— 一行代码驾驭多个模型.md",
-    "docs/posts/pi-agent/第5章：工具系统 —— Agent 的手脚是怎么被管住的.md",
-    "docs/posts/pi-agent/第5章：工具系统 —— Agent 的手脚是怎么被管住的.md.tmp.19448.db5c6031d0bf",
-    "docs/posts/pi-agent/3.2026-08-31-pi-extension-breakpoint-debug.md",
-    "docs/posts/pi-agent/第5章：工具系统 —— Agent 的手脚是怎么被管住的.md.tmp.19448.9c5e5aa97ec7",
-    "docs/posts/pi-agent/1.Pi Coding Agent-快速开始.md",
-    "docs/posts/pi-agent/第4章：模型调用 —— 一行代码驾驭多个模型.md.tmp.17404.ccaaad62b160",
-    "docs/posts/pi-agent/第3章：Agent Loop —— 让模型转动起来的引擎.md.tmp.17404.621e2f5f6ee4",
-    "docs/posts/pi-agent/source/M03 · 第3章：Agent Loop —— 让模型转动起来的引擎.md",
-    "docs/posts/pi-agent/第3章：Agent Loop —— 让模型转动起来的引擎.md.tmp.17404.f73868517f79",
-    "docs/posts/pi-agent/第1章：开篇 —— 为什么 Pi-Agent 值得花时间 - 大白话版.md",
-    "docs/posts/pi-agent/第2章：三层架构 —— Pi-Agent 项目的骨骼.md",
-    "2026-08-28.md",
-    "docs/posts/pi-agent/2.agent对比.md",
-    "docs/posts/pi-agent/source/M01 · 第1章：开篇 —— 为什么 Pi-Agent 值得你花时间.md",
-    "docs/posts/pi-agent/第2章：三层架构 —— Pi-Agent 项目的骨骼.md.tmp.16512.5f739fd4befc",
-    "docs/posts/pi-agent/第2章：三层架构 —— Pi-Agent 项目的骨骼.md.tmp.16512.871b0466926b",
-    "docs/posts/pi-agent/第2章：三层架构 —— Pi-Agent 项目的骨骼.md.tmp.16512.087a19652173",
-    "docs/posts/pi-agent/第2章：三层架构 —— Pi-Agent 项目的骨骼.md.tmp.16512.28f2bb7fdf17",
-    "docs/posts/pi-agent/source/M02 · 第2章：三层架构 —— Pi-Agent 项目的骨骼.md",
-    "docs/posts/feynman-technique/index.md",
-    "docs/posts/pi-agent/source/M10 · 第10章：会话管理 —— 对话的存储、恢复与分叉.md",
-    "docs/posts/pi-agent/source/M09 · 第9章：上下文压缩 —— 当对话太长怎么办.md",
-    "docs/posts/pi-agent/source/M08 · 第8章：上下文工程 —— 让有限窗口装下无限对话.md",
-    "docs/posts/pi-agent/source/M07 · 第7章：事件驱动 —— Agent 的神经系统.md",
-    "docs/posts/pi-agent/source/M06 · 第6章：消息系统 —— Agent 的记忆如何组织与传递.md",
-    "docs/posts/pi-agent/source/M05 · 第5章：工具系统 —— Agent 的手脚是怎么被管住的.md",
-    "docs/posts/pi-agent/source/M04 · 第4章：模型调用 —— 一行代码驾驭多个模型.md",
-    "docs/posts/pi-agent/M02 · 第2章：三层架构 —— Pi-Agent 项目的骨骼.md",
-    "docs/posts/pi-agent/M01 · 第1章：开篇 —— 为什么 Pi-Agent 值得你花时间.md",
-    "docs/posts/pi-agent/M10 · 第10章：会话管理 —— 对话的存储、恢复与分叉.md",
-    "docs/posts/pi-agent/M09 · 第9章：上下文压缩 —— 当对话太长怎么办.md",
-    "docs/posts/pi-agent/M08 · 第8章：上下文工程 —— 让有限窗口装下无限对话.md",
+    "docs/posts/langchain/1.langchain结构化输出原理-大白话版本.md",
+    "scripts/_check_crlf.mjs",
+    "scripts/_check_crlf.mjs.tmp.2192.f8e6c28da264",
+    "docs/posts/langchain/1.langchain结构化输出原理-大白话版本.md.tmp.2192.8556fb99c71c",
+    "docs/posts/langchain/langchain结构化输出原理-大白话版本.md",
+    "docs/posts/typescript/1-ts基础语法.md",
+    "node_modules/style-mod/test/test-style-mod.js",
+    "node_modules/style-mod/test",
+    "node_modules/crelt/dist/index.d.cts",
+    "node_modules/crelt/dist/index.cjs",
+    "node_modules/crelt/dist",
+    "node_modules/@marijn/find-cluster-break/test/test-cluster.js",
+    "node_modules/@marijn/find-cluster-break/test",
     "docs/1.png",
+    "node_modules/style-mod/src/README.md",
+    "node_modules/@codemirror/search/README.md",
+    "node_modules/@codemirror/search/CHANGELOG.md",
+    "node_modules/codemirror/README.md",
+    "node_modules/codemirror/CHANGELOG.md",
+    "node_modules/@codemirror/view/README.md",
+    "node_modules/@codemirror/view/CHANGELOG.md",
+    "node_modules/@codemirror/state/README.md",
+    "node_modules/@lezer/javascript/README.md",
+    "node_modules/@lezer/javascript/CHANGELOG.md",
+    "docs/posts/typescript/playground-test.md",
+    "node_modules/markdown-it-container/README.md",
+    "node_modules/@types/markdown-it-container/README.md",
+    "docs/posts/typescript/index.md",
+    "docs/posts/typescript/ts基础语法.md",
+    "docs/posts/javascript/index.md",
+    "docs/posts/pi-agent/第6章：消息系统 —— Agent 的记忆如何组织与传递.md",
+    "docs/posts/pi-agent/第10章：会话管理 —— 对话的存储、恢复与分叉.md",
+    "docs/posts/pi-agent/第9章：上下文压缩 —— 当对话太长怎么办.md",
+    "docs/posts/pi-agent/第7章：事件驱动 —— Agent 的神经系统.md",
+    "docs/posts/pi-agent/第8章：上下文工程 —— 让有限窗口装下无限对话.md",
+    "docs/posts/pi-agent/第5章：工具系统 —— Agent 的手脚是怎么被管住的.md",
     "docs/posts/pi-agent/images/debug-setting.png",
     "docs/debug-setting配置.png",
     "docs/4.png",
