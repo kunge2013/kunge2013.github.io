@@ -200,7 +200,6 @@ const { posts: zhPosts, labels: zhLabels } = scanDir(POSTS_DIR, false)
 const { posts: enPosts, labels: enLabels } = scanDir(EN_POSTS_DIR, true)
 
 const fallbackLabels = {
-  javascript: 'JavaScript',
   typescript: 'TypeScript',
   python: 'Python',
   react: 'React',

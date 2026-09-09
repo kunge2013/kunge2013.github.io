@@ -11,13 +11,9 @@ hero:
       link: /en/archives
     - theme: alt
       text: 🏷️ Browse Categories
-      link: /en/posts/javascript/
+      link: /en/posts/typescript/
 
 features:
-  - icon: 🟨
-    title: JavaScript
-    details: ES2026+, async programming, core language features
-    link: /en/posts/javascript/
   - icon: 🟦
     title: TypeScript
     details: Type system, generics, engineering practices

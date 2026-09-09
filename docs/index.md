@@ -11,7 +11,7 @@ hero:
       link: /archives
     - theme: alt
       text: 🏷️ 浏览分类
-      link: /posts/javascript/
+      link: /posts/typescript/
 ---
 
 <!-- [AGC:START] tool=Cc author=fangkun -->
