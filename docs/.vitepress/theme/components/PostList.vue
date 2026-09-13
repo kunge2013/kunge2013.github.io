@@ -9,8 +9,11 @@ const { lang } = useData()
 const route = useRoute()
 
 const currentCategory = computed(() => {
-  const match = route.path.match(/posts\/([^/]+)/)
+  // [AGC:START] tool=Cc author=fangkun date=2026-09-13
+  // 支持多级分类路径，如 langchain/3.RAG
+  const match = route.path.match(/\/posts\/(.+?)(?:\/index\.html|\/)?$/)
   return match ? match[1] : ''
+  // [AGC:END]
 })
 
 const currentIsEn = computed(() => lang.value === 'en-US')

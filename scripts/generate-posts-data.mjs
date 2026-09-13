@@ -135,6 +135,75 @@ function readCategoryLabel(categoryDir) {
   return fm.title || ''
 }
 
+// [AGC:START] tool=Cc author=fangkun
+/**
+ * 递归扫描分类目录，收集文章。
+ * 支持任意深度的子目录嵌套，子目录自动成为子分类。
+ * 忽略名为 source 的目录（用于存放图片等静态资源）。
+ *
+ * @param {string} dir - 当前扫描的目录路径
+ * @param {string} categoryKey - 分类路径 key（如 "langchain" 或 "langchain/3.RAG"）
+ * @param {boolean} isEn - 是否为英文站
+ * @param {object} result - 累积结果 { posts, labels }
+ */
+function scanCategoryDir(dir, categoryKey, isEn, result) {
+  const { posts, labels } = result
+  if (!existsSync(dir)) return
+
+  const entries = readdirSync(dir)
+  const categoryPosts = []
+
+  for (const entry of entries) {
+    const entryPath = join(dir, entry)
+    const stat = statSync(entryPath)
+
+    if (stat.isDirectory()) {
+      // 跳过 source 目录（存放图片等静态资源）
+      if (entry === 'source') continue
+
+      // 递归进入子目录，categoryKey 用路径拼接
+      const childKey = categoryKey ? `${categoryKey}/${entry}` : entry
+      scanCategoryDir(entryPath, childKey, isEn, result)
+    } else if (entry.endsWith('.md') && entry !== 'index.md') {
+      // 扫描文章文件
+      const content = readFileSync(entryPath, 'utf-8')
+      const fm = parseFrontmatter(content)
+
+      if (fm.draft === true) continue
+
+      const slug = entry.replace(/\.md$/, '')
+      const url = isEn
+        ? `/en/posts/${categoryKey}/${slug}`
+        : `/posts/${categoryKey}/${slug}`
+
+      categoryPosts.push({
+        title: fm.title || slug,
+        date: fm.date || '',
+        description: fm.description || '',
+        url,
+        tags: fm.tags || [],
+        sticky: fm.sticky || false,
+        category: categoryKey,
+        i18nLink: fm['i18n-link'] || '',
+        order: extractOrder(fm, entry),
+        fileName: entry,
+      })
+    }
+  }
+
+  // 排序：sticky → date 降序 → order 降序 → fileName 升序
+  categoryPosts.sort(comparePosts)
+
+  // 读取当前目录 index.md 的分类标签
+  const label = readCategoryLabel(dir)
+  if (label) labels[categoryKey] = label
+
+  if (categoryPosts.length > 0) {
+    posts[categoryKey] = categoryPosts
+  }
+}
+// [AGC:END]
+
 function scanDir(dir, isEn) {
   const posts = {}
   const labels = {}
@@ -146,51 +215,11 @@ function scanDir(dir, isEn) {
   for (const entry of entries) {
     const entryPath = join(dir, entry)
     if (!statSync(entryPath).isDirectory()) continue
+    // 跳过 source 目录
+    if (entry === 'source') continue
 
-    const category = entry
-    const categoryPosts = []
-
-    for (const file of readdirSync(entryPath)) {
-      if (!file.endsWith('.md') || file === 'index.md') continue
-
-      const filePath = join(entryPath, file)
-      const content = readFileSync(filePath, 'utf-8')
-      const fm = parseFrontmatter(content)
-
-      if (fm.draft === true) continue
-
-      const slug = file.replace(/\.md$/, '')
-      const url = isEn
-        ? `/en/posts/${category}/${slug}`
-        : `/posts/${category}/${slug}`
-
-      categoryPosts.push({
-        title: fm.title || slug,
-        date: fm.date || '',
-        description: fm.description || '',
-        url,
-        tags: fm.tags || [],
-        sticky: fm.sticky || false,
-        category,
-        i18nLink: fm['i18n-link'] || '',
-        // [AGC:START] tool=Cc author=fangkun
-        order: extractOrder(fm, file),
-        fileName: file,
-        // [AGC:END]
-      })
-    }
-
-    // [AGC:START] tool=Cc author=fangkun
-    // 排序：sticky → date 升序 → order 降序 → fileName 升序
-    categoryPosts.sort(comparePosts)
-    // [AGC:END]
-
-    const label = readCategoryLabel(entryPath)
-    if (label) labels[category] = label
-
-    if (categoryPosts.length > 0) {
-      posts[category] = categoryPosts
-    }
+    // 从每个顶层分类目录开始递归扫描
+    scanCategoryDir(entryPath, entry, isEn, { posts, labels })
   }
 
   return { posts, labels }
