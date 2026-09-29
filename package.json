@@ -97,6 +97,12 @@
       "desc": "LangChain 框架与 AI Agent 开发",
       "color": "#1c3c3c",
       "icon": "LangChain"
+    },
+    "ai-side-hustle": {
+      "tag": "AI 变现",
+      "desc": "AI 副业思路、自媒体变现、工具推荐与案例合集",
+      "color": "#ff6b35",
+      "icon": "💰"
     }
   },
   "dependencies": {
