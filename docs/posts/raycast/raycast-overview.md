@@ -123,13 +123,13 @@ Raycast 是一个可扩展的启动器（Launcher），它允许你通过快捷�
 
 ### 📊 效率提升示例
 
-| 场景 | 传统方式 | 使用 Raycast |
-|------|---------|-------------|
-| 打开应用 | 点击 Dock/启动台/Spotlight | `⌥Space` → 输入名称 → 回车 |
-| 查看剪贴板历史 | 需要第三方工具 | `⌥Space` → "Clipboard History" |
-| 调整窗口大小 | 拖动窗口边缘 | `⌥Space` → "Window Management" |
-| 搜索 GitHub | 打开浏览器 → 输入网址 → 搜索 | `⌥Space` → "Search GitHub" → 输入关键词 |
-| 单位转换 | 打开搜索引擎 | `⌥Space` → 直接输入 "100 usd to cny" |
+| 场景        | 传统方式                  | 使用 Raycast                         |
+| --------- | --------------------- | ---------------------------------- |
+| 打开应用      | 点击 Dock/启动台/Spotlight | `⌥Space` → 输入名称 → 回车               |
+| 查看剪贴板历史   | 需要第三方工具               | `⌥Space` → "Clipboard History"     |
+| 调整窗口大小    | 拖动窗口边缘                | `⌥Space` → "Window Management"     |
+| 搜索 GitHub | 打开浏览器 → 输入网址 → 搜索     | `⌥Space` → "Search GitHub" → 输入关键词 |
+| 单位转换      | 打开搜索引擎                | `⌥Space` → 直接输入 "100 usd to cny"   |
 
 ## 常用快捷键
 
@@ -205,6 +205,70 @@ Raycast 允许你为几乎任何操作自定义快捷键：
 - 使用 `⌥` (Option) 作为主要修饰键
 - 避免与系统快捷键冲突
 - 为常用功能设置肌肉记忆快捷键
+
+## 🎁 必收藏官方资源
+
+> 以下是 Raycast 官方提供的高质量资源库，**建议收藏**，能大幅提升你的使用体验。
+
+### 🌟 资源速览
+
+| 资源名称 | 用途 | 一键访问 |
+|---------|------|---------|
+| **Snippet 符号库** | 一键导入 ⇧ ⌘ ⌥ 等常用符号到 Raycast | [🔗 ray.so/snippets/symbols](https://ray.so/snippets/symbols) |
+| **Prompt 代码提示词** | 面向开发者的 AI 提示词合集 | [🔗 prompts.raycast.cc/code](https://prompts.raycast.cc/code) |
+| **Prompt Explorer 源码** | 官方开源的提示词浏览器工具 | [🔗 github.com/raycast/prompt-explorer](https://github.com/raycast/prompt-explorer) |
+
+### ⭐ 资源详情
+
+#### 1. Snippet 符号库 — `ray.so/snippets/symbols`
+
+👉 **[立即访问](https://ray.so/snippets/symbols)**
+
+Raycast 官方的 **Snippet Explorer** 符号分类页，提供开箱即用的符号片段集合，包括：
+
+- **修饰键符号**：`⌘` `⌥` `⌃` `⇧` 等 Mac 常用符号
+- **特殊字符**：`→` `←` `↑` `↓` `✓` `✗` 等
+- **数学符号**：`≈` `≤` `≥` `≠` `∞` 等
+- **排版符号**：`©` `®` `™` `°` 等
+
+💡 **使用方式**：打开网页 → 点击导入按钮 → 自动添加到 Raycast，之后在任何应用中通过缩写即可输入符号。
+
+#### 2. Prompt 代码提示词 — `prompts.raycast.cc/code`
+
+👉 **[立即访问](https://prompts.raycast.cc/code)**
+
+面向 **开发者** 的 AI 提示词合集，覆盖代码编写、调试、重构等场景：
+
+- 🐛 **Debug**：帮助定位和修复代码问题
+- 🔄 **Refactor**：代码重构与优化建议
+- 📝 **Code Review**：代码审查相关提示词
+- 🧪 **Test Generation**：自动生成测试用例
+- 📖 **Documentation**：代码文档和注释生成
+
+💡 **使用方式**：在网页中浏览喜欢的提示词 → 点击"添加到 Raycast" → 在 Raycast 中通过快捷键一键调用。
+
+#### 3. Prompt Explorer — 官方开源工具
+
+👉 **[立即访问 GitHub](https://github.com/raycast/prompt-explorer)**
+
+Raycast 官方开源的 **Prompt Explorer** 工具，让你轻松浏览、分享和管理 AI 提示词。
+
+**核心功能**：
+
+- 🔍 **浏览**：在网页端浏览海量社区提示词
+- ➕ **一键导入**：直接添加到 Raycast 的 AI 命令
+- 🔗 **分享**：生成链接分享给同事或朋友
+- 🌐 **开源**：代码完全开源，可自行扩展和定制
+
+💡 **相关项目**：Raycast 还提供 [Snippet Explorer](https://github.com/raycast/snippet-explorer)（片段浏览）和 [Raycast Explorer](https://www.raycast.com/raycast/raycast-explorer)（应用内浏览 snippets、prompts、themes），都是同一生态下的优质工具。
+
+### 🚀 快速上手路径
+
+```
+第一步：导入符号库       → 访问 ray.so/snippets/symbols，一键导入
+第二步：收藏代码提示词    → 访问 prompts.raycast.cc/code，添加常用提示词
+第三步：探索更多         → Star prompt-explorer 仓库，持续跟进更新
+```
 
 ## 总结
 
