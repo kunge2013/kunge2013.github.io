@@ -103,6 +103,12 @@
       "desc": "AI 副业思路、自媒体变现、工具推荐与案例合集",
       "color": "#ff6b35",
       "icon": "💰"
+    },
+    "raycast": {
+      "tag": "效率工具",
+      "desc": "Raycast 入门教程、扩展开发、使用技巧",
+      "color": "#8B5CF6",
+      "icon": "RC"
     }
   },
   "dependencies": {
