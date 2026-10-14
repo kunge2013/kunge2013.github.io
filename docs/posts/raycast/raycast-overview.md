@@ -216,9 +216,4 @@ Raycast 不仅仅是一个启动器，它是一个**效率平台**。通过整�
 - 产品经理和项目管理者
 - 任何希望提升工作效率的 macOS 用户
 
-**下一步**：
-- [安装与配置指南](/posts/raycast/raycast-setup)
-- [扩展开发入门](/posts/raycast/raycast-extension-basics)
-- [高级技巧与工作流](/posts/raycast/raycast-advanced-workflows)
-
 <!-- [AGC:END] -->
