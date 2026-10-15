@@ -59,6 +59,7 @@ export default defineConfig({
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 })();
     `],
+    ['script', { src: '//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js', async: true }],
   ],
 
   locales: {

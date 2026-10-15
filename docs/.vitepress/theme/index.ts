@@ -12,6 +12,7 @@ import SearchModal from './components/SearchModal.vue'
 import PostNav from './components/PostNav.vue'
 import MermaidAutoRender from './components/MermaidAutoRender.vue'
 import TsPlayground from './components/TsPlayground.vue'
+import Busuanzi from './components/Busuanzi.vue'
 import './styles/vars.css'
 import './styles/custom.css'
 
@@ -24,6 +25,7 @@ export default {
       'nav-bar-content-after': () => h('div', { class: 'search-wrapper' }, [h(SearchModal)]),
       'layout-bottom': () => h(MermaidAutoRender),
       'doc-footer-before': () => h(PostNav),
+      'doc-after': () => h(Busuanzi),
     })
   },
   enhanceApp({ app }) {
@@ -34,6 +36,7 @@ export default {
     app.component('ArchiveList', ArchiveList)
     app.component('TagCloud', TagCloud)
     app.component('TsPlayground', TsPlayground)
+    app.component('Busuanzi', Busuanzi)
   },
 }
 // [AGC:END]
