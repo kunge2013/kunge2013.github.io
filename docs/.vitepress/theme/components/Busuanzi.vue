@@ -2,15 +2,26 @@
 <!-- [AGC:START] tool=Cc author=fangkun -->
 <template>
   <div class="busuanzi-counter">
-    <span id="busuanzi_container_page_pv">
-      📖 本文阅读量：<strong id="busuanzi_value_page_pv">-</strong> 次
-    </span>
-    <span class="divider">|</span>
+    <template v-if="mode === 'post'">
+      <span id="busuanzi_container_page_pv">
+        📖 本文阅读量：<strong id="busuanzi_value_page_pv">-</strong> 次
+      </span>
+      <span class="divider">|</span>
+    </template>
     <span id="busuanzi_container_site_pv">
       🌍 本站总访问：<strong id="busuanzi_value_site_pv">-</strong> 次
     </span>
   </div>
 </template>
+
+<script setup>
+defineProps({
+  mode: {
+    type: String,
+    default: 'post', // 'post' 显示本文阅读+总访问，'home' 只显示总访问
+  },
+})
+</script>
 
 <style scoped>
 .busuanzi-counter {

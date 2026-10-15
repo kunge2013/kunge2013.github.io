@@ -1,6 +1,7 @@
 // [AGC:FILE] tool=Cc author=fangkun date=2026-08-27
 // [AGC:START] tool=Cc author=fangkun
-import { h } from 'vue'
+import { h, computed } from 'vue'
+import { useRoute } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import Comments from './components/Comments.vue'
 import PostList from './components/PostList.vue'
@@ -21,11 +22,15 @@ export interface Theme {}
 export default {
   extends: DefaultTheme,
   Layout() {
+    const route = useRoute()
+    const isHome = computed(() => route.path === '/' || route.path === '/en/')
+
     return h(DefaultTheme.Layout, null, {
       'nav-bar-content-after': () => h('div', { class: 'search-wrapper' }, [h(SearchModal)]),
       'layout-bottom': () => h(MermaidAutoRender),
       'doc-footer-before': () => h(PostNav),
-      'doc-after': () => h(Busuanzi),
+      'doc-after': () => h(Busuanzi, { mode: 'post' }),
+      'home-features-after': () => h(Busuanzi, { mode: 'home' }),
     })
   },
   enhanceApp({ app }) {
