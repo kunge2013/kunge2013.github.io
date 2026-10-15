@@ -1,0 +1,19 @@
+# [AGC:FILE] tool=Cc author=fangkun date=2026-10-15
+# [AGC:START] tool=Cc author=fangkun
+
+name = "blog-stats"
+main = "src/index.js"
+compatibility_date = "2026-10-15"
+
+# KV Namespace 绑定
+# 需要先创建 KV namespace: wrangler kv:namespace create STATS_KV
+# 然后将返回的 id 填入下面的 kv_namespaces
+[[kv_namespaces]]
+binding = "STATS_KV"
+id = "YOUR_KV_NAMESPACE_ID"
+
+# 环境变量
+[vars]
+API_VERSION = "v1"
+
+# [AGC:END]
