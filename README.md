@@ -1,7 +1,7 @@
 <!-- [AGC:FILE] tool=Cc author=fangkun date=2026-08-27 -->
 <!-- [AGC:START] tool=Cc author=fangkun -->
 
-# Kunge2013's Blog
+# fangkunx's Blog
 
 基于 VitePress 的个人技术博客，支持中英文双语，**新增分类和文章零代码改动**。
 
@@ -406,7 +406,7 @@ CI 会在部署前运行此脚本，本地先跑可以提前发现问题。
 ### 使用前提
 
 1. **安装 Claude Code**：参考 [Claude Code 官方文档](https://docs.anthropic.com/en/docs/claude-code)
-2. **进入项目目录**：`cd D:\github.io\kunge2013.github.io`
+2. **进入项目目录**：`cd D:\github.io\fangkunx.github.io`
 3. **启动 Claude Code**：在终端输入 `claude`
 4. **自然语言交互**：直接说出需求，Claude 会自动触发相应 skill
 
@@ -655,7 +655,7 @@ Claude：检查错误信息...
 
 **作用**：按时间倒序展示所有文章，按年份自动分组。
 
-**使用方法**：访问 `https://kunge2013.github.io/archives` 即可，**无需任何配置**。组件 `ArchiveList.vue` 会自动从 `posts-data.json` 读取所有文章，按年份分组展示：
+**使用方法**：访问 `https://fangkunx.github.io/archives` 即可，**无需任何配置**。组件 `ArchiveList.vue` 会自动从 `posts-data.json` 读取所有文章，按年份分组展示：
 
 - 顶部统计：总文章数
 - 按年份倒序分组（2026 → 2025 → ...）
@@ -675,7 +675,7 @@ sticky: true
 
 **作用**：以标签云形式展示所有标签，点击标签过滤文章。
 
-**使用方法**：访问 `https://kunge2013.github.io/tags` 即可，**无需任何配置**。组件 `TagCloud.vue` 会自动从所有文章的 `tags` 字段聚合标签：
+**使用方法**：访问 `https://fangkunx.github.io/tags` 即可，**无需任何配置**。组件 `TagCloud.vue` 会自动从所有文章的 `tags` 字段聚合标签：
 
 - 顶部统计：总标签数
 - 标签云区域：每个标签显示名称 + 文章数，按出现次数倒序

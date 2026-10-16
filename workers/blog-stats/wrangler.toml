@@ -10,7 +10,7 @@ compatibility_date = "2026-10-15"
 # 然后将返回的 id 填入下面的 kv_namespaces
 [[kv_namespaces]]
 binding = "STATS_KV"
-id = "YOUR_KV_NAMESPACE_ID"
+id = "25104e9cd066488b83a97f92ff4955f4"
 
 # 环境变量
 [vars]

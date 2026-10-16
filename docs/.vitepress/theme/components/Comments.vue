@@ -6,7 +6,7 @@ import { useData } from 'vitepress'
 
 const { frontmatter, isDark } = useData()
 
-const repo = import.meta.env.VITE_GISCUS_REPO ?? 'kunge2013/kunge2013.github.io'
+const repo = import.meta.env.VITE_GISCUS_REPO ?? 'fangkunx/fangkunx.github.io'
 const repoId = import.meta.env.VITE_GISCUS_REPO_ID ?? ''
 const categoryId = import.meta.env.VITE_GISCUS_CATEGORY_ID ?? ''
 
@@ -24,7 +24,7 @@ const theme = computed(() =>
     <Comments
       :key="theme"
       :theme="theme"
-      repo="kunge2013/kunge2013.github.io"
+      repo="fangkunx/fangkunx.github.io"
       :repoId="repoId"
       category="Announcements"
       :categoryId="categoryId"

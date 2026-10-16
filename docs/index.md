@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: "Kunge2013's Blog"
+  name: "fangkunx's Blog"
   text: "编程 · 框架 · 架构设计"
   tagline: 记录技术成长，分享编程心得
   actions:

@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: "Kunge2013's Blog"
+  name: "fangkunx's Blog"
   text: "Programming · Frameworks · Architecture"
   tagline: Documenting tech growth, sharing coding insights
   actions:

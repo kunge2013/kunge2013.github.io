@@ -29,7 +29,7 @@ layout: page
 
 ## 联系方式
 
-- **GitHub**：[github.com/kunge2013](https://github.com/kunge2013)
+- **GitHub**：[github.com/fangkunx](https://github.com/fangkunx)
 - **Email**：kunge@example.com
 
 <!-- [AGC:END] -->

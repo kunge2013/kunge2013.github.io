@@ -45,7 +45,7 @@ export default defineConfig({
     ['meta', { name: 'theme-color', content: '#3eaf7c' }],
     ['meta', { name: 'og:type', content: 'website' }],
     ['meta', { name: 'og:locale', content: 'zh-CN' }],
-    ['meta', { name: 'og:site_name', content: 'Kunge2013\'s Blog' }],
+    ['meta', { name: 'og:site_name', content: 'fangkunx\'s Blog' }],
     ['script', {}, `
 (function() {
   var darkLink = document.getElementById('favicon-dark');
@@ -66,7 +66,7 @@ export default defineConfig({
     root: {
       label: '简体中文',
       lang: 'zh-CN',
-      title: 'Kunge2013\'s Blog',
+      title: 'fangkunx\'s Blog',
       description: '个人技术博客 - 编程、框架、架构设计',
       themeConfig: {
         nav: [
@@ -84,7 +84,7 @@ export default defineConfig({
         docFooter: { prev: '上一篇', next: '下一篇' },
         lastUpdated: { text: '最后更新于' },
         editLink: {
-          pattern: 'https://github.com/kunge2013/kunge2013.github.io/edit/main/docs/:path',
+          pattern: 'https://github.com/fangkunx/fangkunx.github.io/edit/main/docs/:path',
           text: '在 GitHub 上编辑此页',
         },
       },
@@ -93,7 +93,7 @@ export default defineConfig({
       label: 'English',
       lang: 'en-US',
       link: '/en/',
-      title: 'Kunge2013\'s Blog',
+      title: 'fangkunx\'s Blog',
       description: 'Personal Tech Blog - Programming, Frameworks, Architecture',
       themeConfig: {
         nav: [
@@ -111,7 +111,7 @@ export default defineConfig({
         docFooter: { prev: 'Previous', next: 'Next' },
         lastUpdated: { text: 'Last updated' },
         editLink: {
-          pattern: 'https://github.com/kunge2013/kunge2013.github.io/edit/main/docs/:path',
+          pattern: 'https://github.com/fangkunx/fangkunx.github.io/edit/main/docs/:path',
           text: 'Edit this page on GitHub',
         },
       },
@@ -127,11 +127,11 @@ export default defineConfig({
 
   themeConfig: {
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/kunge2013' },
+      { icon: 'github', link: 'https://github.com/fangkunx' },
     ],
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright © 2026-present Kunge2013',
+      copyright: 'Copyright © 2026-present fangkunx',
     },
   },
 })
